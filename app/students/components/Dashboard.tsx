@@ -60,18 +60,22 @@ export default function StudentsPage() {
   }
 
   return (
-    <div style={{ padding: 20, color: "#ff0707", background: "#000" }}>
-      <h1>Gotham Play</h1>
+    <div className=" text-red-800 bg-black" >
+      <div className="p-3">
+              <h1 >Ola 'nome' </h1>
+              <h2>Boas Vindas a Gotham Play</h2>
+
+      </div>
       <Player musicaAtual={musicaAtual} />
 
-      <div style={{ margin: "20px 0" }}>
+      <div className="m-5">
         <input
           placeholder="Link do YouTube"
           value={pedido}
           onChange={(e) => setPedido(e.target.value)}
-          style={{ padding: 8, width: "300px" }}
+          className="p-2 w-2xs"
         />
-        <button onClick={adicionarMusica} style={{ marginLeft: 10 }}>
+        <button onClick={adicionarMusica} className="ml-2.5">
           Adicionar
         </button>
       </div>
