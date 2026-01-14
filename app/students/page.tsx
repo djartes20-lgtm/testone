@@ -11,7 +11,7 @@ interface User {
   telefone: string;
 }
 
-export default function students() {
+export default function Students() {
   const [splashVisible, setSplashVisible] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
