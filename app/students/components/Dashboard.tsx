@@ -60,13 +60,18 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className=" text-red-800 bg-black" >
+    <div className=" text-red-800 bg-black h-dvh" >
       <div className="p-3">
               <h1 >Ola 'nome' </h1>
               <h2>Boas Vindas a Gotham Play</h2>
 
       </div>
-      <Player musicaAtual={musicaAtual} />
+      <div className=" p-3 font-sans ">
+        <h3>Música Tocando Agora:</h3>
+
+              <Player musicaAtual={musicaAtual} />
+
+      </div>
 
       <div className="m-5">
         <input
