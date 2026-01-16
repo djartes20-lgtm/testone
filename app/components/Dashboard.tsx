@@ -4,10 +4,10 @@ import { use, useEffect, useState } from "react";
 import { database } from "@/app/lib/firebase";
 import { ref, onValue, push, set, remove } from "firebase/database";
 
-import Splash from "@/app/students/components/Splash";
-import Player from "@/app/students/components/Player";
-import Fila from "@/app/students/components/Fila";
-import MaisTocada from "@/app/students/components/MaisTocada";
+import Splash from "@/app/components/Splash";
+import Player from "@/app/components/Player";
+import Fila from "@/app/components/Fila";
+import MaisTocada from "@/app/components/MaisTocada";
 
 interface GothamUser {
   nome: string;

@@ -1,20 +1,48 @@
 "use client";
 
-export default function Page() {
+import { useEffect, useState } from "react";
+import Head from "next/head";
+import Splash from "@/app/components/Splash";
+import Login from "@/app/components/Login";
+import Dashboard from "@/app/components/Dashboard";
+
+interface User {
+  nome: string;
+  telefone: string;
+}
+
+export default function Home() {
+  const [splashVisible, setSplashVisible] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  // 🔐 Recupera login salvo
+  useEffect(() => {
+    const saved = localStorage.getItem("gotham_user");
+    if (saved) {
+      setUser(JSON.parse(saved));
+    }
+    setLoadingUser(false);
+  }, []);
+
+  if (loadingUser) return null;
+
   return (
-    <div style={{ padding: 20 }}>
-      
-      <div className="neon-card">
-        <h3>Tocando Agora</h3>
-        <p>Player aqui</p>
-      </div>
+    <>
+      <Head>
+        <title>Gotham Play</title>
+        <script src="https://www.youtube.com/iframe_api" />
+      </Head>
 
-      <div className="neon-card">
-        <h3>Fila de Pedidos</h3>
-        <p>Conteúdo da fila</p>
-      </div>
+      {splashVisible && <Splash onFinish={() => setSplashVisible(false)} />}
 
-    </div>
+      {!splashVisible && !user && (
+        <Login onLogin={(u) => setUser(u)} />
+      )}
+
+      {user && <Dashboard user={user} />}
+    </>
   );
 }
+
 

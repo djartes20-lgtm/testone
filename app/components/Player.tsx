@@ -22,7 +22,7 @@ export default function Player({ musicaAtual }: PlayerProps) {
       document.body.appendChild(tag);
     }
 
-    window.onYouTubeIframeAPIReady = () => {''
+    window.onYouTubeIframeAPIReady = () => {
       playerRef.current = new window.YT.Player(divRef.current, {
         height: "200",
         width: "100%",
