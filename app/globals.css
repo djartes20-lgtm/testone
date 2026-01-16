@@ -24,3 +24,92 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+.fade-out {
+  opacity: 1;
+  animation: fadeOut 1s forwards;
+}
+
+.fade-slide-in {
+  animation: slideIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes logoEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.neon-card {
+  border: 2px solid #ff0707;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+
+  background: #000;
+
+  box-shadow:
+    0 0 6px #ff0707,
+    0 0 14px #ff0707,
+    inset 0 0 10px #ff0707;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #ff0707;
+  min-height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+
+

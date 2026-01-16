@@ -1,9 +1,20 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+export default function Page() {
   return (
-    <div> 
-      ola mundo2
+    <div style={{ padding: 20 }}>
+      
+      <div className="neon-card">
+        <h3>Tocando Agora</h3>
+        <p>Player aqui</p>
+      </div>
+
+      <div className="neon-card">
+        <h3>Fila de Pedidos</h3>
+        <p>Conteúdo da fila</p>
+      </div>
+
     </div>
   );
 }
+

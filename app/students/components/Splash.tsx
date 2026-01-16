@@ -32,13 +32,31 @@ export default function Splash({ onFinish }: SplashProps) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 9999,
       }}
     >
-      <img
-        src="/Logo Gotham sem funo.png"
-        alt="Logo"
-        style={{ width: 200, animation: "logoEnter 4s" }}
-      />
+      {/* Halo Neon */}
+      <div
+        style={{
+          padding: 40,
+          borderRadius: "50%",
+          animation: "neonPulse 2s infinite",
+        }}
+      >
+        <img
+  src="/Logo Gotham sem funo.png"
+  alt="Logo"
+  style={{
+    width: 300,
+    animation: "logoEnter 3s ease-out forwards",
+    filter: `
+      drop-shadow(0 0 10px #ff0000)
+      drop-shadow(0 0 25px #ff0000)
+      drop-shadow(0 0 50px #ff0000)
+    `,
+  }}
+/>
+      </div>
     </div>
   );
 }

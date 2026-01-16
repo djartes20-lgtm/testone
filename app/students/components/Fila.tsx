@@ -7,7 +7,7 @@ interface FilaProps {
 export default function Fila({ fila }: FilaProps) {
   return (
     <div className="card p-3">
-      <h2>Fila de Espera</h2>
+      <h2>Fila de Pedidos</h2>
       <ul>
         {fila.map((m) => (
           <li key={m.id}>🎵 {m.titulo}</li>
