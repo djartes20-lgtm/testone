@@ -16,6 +16,17 @@ export default function YouTubeMusic() {
 
   return (
     <div style={{ width: "100%" }}>
+      {videoUrl && (
+        <iframe
+          src={videoUrl}
+          width="100%"
+          height="500"
+          frameBorder="0"
+          allow="autoplay; encrypted-media"
+          allowFullScreen
+          style={{ marginTop: "10px" }}
+        />
+      )}      
       <input
         type="text"
         placeholder="Buscar música ou artista..."
@@ -30,17 +41,7 @@ export default function YouTubeMusic() {
 
       <button onClick={buscarMusica}>Buscar</button>
 
-      {videoUrl && (
-        <iframe
-          src={videoUrl}
-          width="100%"
-          height="500"
-          frameBorder="0"
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-          style={{ marginTop: "10px" }}
-        />
-      )}
+    
       
     </div>
   );
