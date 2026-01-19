@@ -28,20 +28,21 @@ export default function YouTubeMusic() {
         />
       )}      
       <input
-        type="text"
-        placeholder="Buscar música ou artista..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "8px",
-          marginBottom: "10px",
-        }}
-      />
+  type="text"
+  placeholder="Buscar música ou artista..."
+  value={query}
+  onChange={(e) => setQuery(e.target.value)}
+  className="w-full mb-3 px-4 py-2 border-2 border-red-600 rounded-xl shadow-[0_0_20px_#ff0707] bg-black text-red-600 outline-none"
+/>
 
-      <button onClick={buscarMusica}>Buscar</button>
+       
+      <button
+  onClick={buscarMusica}
+  className="border-2 border-red-600 rounded-xl px-4 py-2 shadow-[0_0_20px_#ff0707]"
+>
+  Buscar
+</button>
 
-    
       
     </div>
   );
