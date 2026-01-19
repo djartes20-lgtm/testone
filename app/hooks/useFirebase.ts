@@ -1,81 +1,144 @@
 // hooks/useFirebase.ts
 import { useEffect, useState } from "react";
-import { database } from "@/app/lib/firebase";
-import { ref, onValue, set, push, remove } from "firebase/database";
+import { database, auth } from "@/app/lib/firebase";
+import {
+  ref,
+  onValue,
+  push,
+  set,
+  remove,
+  runTransaction,
+  update
+} from "firebase/database";
 
 export interface Musica {
-  id: string;
-  titulo: string;
+  youtubeId: string;
+  titulo?: string;
   key?: string;
+  requestedBy?: string;
 }
 
-export function useFirebase() {
+export function useFirebase(isAdmin = false) {
   const [fila, setFila] = useState<Musica[]>([]);
   const [musicaAtual, setMusicaAtual] = useState<string | null>(null);
   const [votos, setVotos] = useState<number>(0);
 
-  // Fila
+  const userId = auth.currentUser?.uid;
+
+  /* ==========================
+     FILA DE MÚSICAS
+  ========================== */
   useEffect(() => {
-    const filaRef = ref(database, "fila");
-    const unsubscribe = onValue(filaRef, (snapshot) => {
+    const filaRef = ref(database, "player/fila");
+
+    const unsub = onValue(filaRef, (snapshot) => {
       const data = snapshot.val();
       const novaFila: Musica[] = [];
+
       if (data) {
         for (const key in data) {
-          novaFila.push({ ...data[key], key });
+          novaFila.push({
+            ...data[key],
+            key
+          });
         }
       }
+
       setFila(novaFila);
     });
 
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  // Música atual
+  /* ==========================
+     MÚSICA ATUAL
+  ========================== */
   useEffect(() => {
-    const musicaRef = ref(database, "musicaAtual");
-    const unsubscribe = onValue(musicaRef, (snapshot) => {
-      setMusicaAtual(snapshot.val());
+    const musicaRef = ref(database, "player/estado/musicaAtual");
+
+    const unsub = onValue(musicaRef, (snapshot) => {
+      setMusicaAtual(snapshot.val()?.youtubeId || null);
     });
-    return () => unsubscribe();
+
+    return () => unsub();
   }, []);
 
-  // Votos de pular
+  /* ==========================
+     VOTOS PARA PULAR
+  ========================== */
   useEffect(() => {
-    const votosRef = ref(database, "votosPular");
-    const unsubscribe = onValue(votosRef, (snapshot) => {
+    const votosRef = ref(database, "player/votosPular/count");
+
+    const unsub = onValue(votosRef, (snapshot) => {
       setVotos(snapshot.val() || 0);
     });
-    return () => unsubscribe();
+
+    return () => unsub();
   }, []);
 
-  // Função para adicionar música
-  const adicionarMusica = (videoId: string) => {
-    push(ref(database, "fila")).then((itemRef) => {
-      set(itemRef, { id: videoId, titulo: "Carregando...", origem: "usuario" });
+  /* ==========================
+     ADICIONAR MÚSICA (USUÁRIO)
+  ========================== */
+  const adicionarMusica = (youtubeId: string) => {
+    if (!userId) return;
+
+    push(ref(database, "player/fila"), {
+      youtubeId,
+      requestedBy: userId,
+      requestedAt: Date.now()
     });
   };
 
-  // Função para votar pular
+  /* ==========================
+     VOTAR PARA PULAR (USUÁRIO)
+  ========================== */
   const votarPular = () => {
-    set(ref(database, "votosPular"), votos + 1);
+    if (!userId) return;
+
+    const votosRef = ref(database, "player/votosPular");
+
+    runTransaction(votosRef, (data) => {
+      if (!data) {
+        return {
+          count: 1,
+          users: { [userId]: true }
+        };
+      }
+
+      if (data.users?.[userId]) {
+        return data; // já votou
+      }
+
+      return {
+        count: data.count + 1,
+        users: {
+          ...data.users,
+          [userId]: true
+        }
+      };
+    });
   };
 
-  // Função para tocar próxima música
-  const tocarProxima = () => {
-    if (fila.length === 0) {
-      set(ref(database, "musicaAtual"), null);
-      return;
-    }
+  /* ==========================
+     ADMIN → PULAR MÚSICA
+  ========================== */
+  const adminPularMusica = () => {
+    if (!isAdmin || !userId) return;
 
-    const proxima = fila[0];
-    set(ref(database, "musicaAtual"), proxima.id);
+    update(ref(database, "player/controleADM"), {
+      pular: true,
+      disparadoPor: userId,
+      timestamp: Date.now()
+    });
+  };
 
-    // Remove da fila
-    if (proxima.key) remove(ref(database, `fila/${proxima.key}`));
+  /* ==========================
+     ADMIN → REMOVER DA FILA
+  ========================== */
+  const removerDaFila = (key: string) => {
+    if (!isAdmin) return;
 
-    // Reseta votos
-    set(ref(database, "votosPular"), 0);
+    remove(ref(database, `player/fila/${key}`));
   };
 
   return {
@@ -84,6 +147,7 @@ export function useFirebase() {
     votos,
     adicionarMusica,
     votarPular,
-    tocarProxima
+    adminPularMusica,
+    removerDaFila
   };
 }
