@@ -1,29 +1,50 @@
 "use client";
-import { useEffect, useState } from "react";
-import firebase from "firebase/compat/app";
-import "firebase/compat/database";
 
-interface Musica {
+import { useEffect, useState } from "react";
+import { ref, onValue, get, set } from "firebase/database";
+import { database } from "@/app/lib/firebase";
+
+interface MaisTocadaType {
   titulo: string;
   vezes: number;
 }
 
 export default function MaisTocada() {
-  const [musica, setMusica] = useState<Musica | null>(null);
+  const [maisTocada, setMaisTocada] = useState<MaisTocadaType | null>(null);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const ref = firebase.database().ref("ranking/maisTocada");
-    ref.on("value", (snap) => setMusica(snap.val()));
-    return () => ref.off();
+    const rankingRef = ref(database, "ranking/maisTocada");
+
+    const unsubscribe = onValue(rankingRef, (snap) => {
+      if (snap.exists()) {
+        setMaisTocada(snap.val());
+      } else {
+        setMaisTocada(null);
+      }
+      setCarregando(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
-    <div className="card">
-      <h2>🏆 Música Mais Tocada</h2>
-      <p>{musica ? `🎵 ${musica.titulo} (${musica.vezes}x)` : "Nenhuma música ainda"}</p>
-      <style jsx>{`
-        .card { border:2px solid #ff0707; padding:15px; border-radius:10px; margin-bottom:15px; }
-      `}</style>
+    <div className="p-2 -white rounded-lg">
+      <h3 className="text-lg font-bold mb-2">🏆 Música Mais Tocada</h3>
+
+      {carregando && <p>Carregando ranking...</p>}
+
+      {!carregando && !maisTocada && (
+        <p className="text-red-600">
+          Nenhuma música registrada ainda
+        </p>
+      )}
+
+      {maisTocada && (
+        <p className="text-red-600">
+          🎵 {maisTocada.titulo} ({maisTocada.vezes}x)
+        </p>
+      )}
     </div>
   );
 }

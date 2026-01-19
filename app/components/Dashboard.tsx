@@ -3,10 +3,18 @@
 import { useEffect, useState } from "react";
 import { database } from "@/app/lib/firebase";
 import { ref, onValue, push, set, remove } from "firebase/database";
+import MaisTocada from "@/app/components/MaisTocada";
+
+import YouTubeMusic from "@/app/components/YouTubeMusic";
+
+<MaisTocada />
 
 import Splash from "@/app/components/Splash";
 import Player from "@/app/components/Player";
 import Fila from "@/app/components/Fila";
+
+
+
 
 interface GothamUser {
   nome: string;
@@ -14,11 +22,13 @@ interface GothamUser {
 
 export default function StudentsPage() {
   const [splashFinished, setSplashFinished] = useState(false);
-  const [musicaAtual, setMusicaAtual] = useState<string | null>(null);
+ const [musicaAtual, setMusicaAtual] = useState<string | null>(null);
+
   const [fila, setFila] = useState<{ id: string; titulo: string }[]>([]);
   const [pedido, setPedido] = useState("");
   const [user, setUser] = useState<GothamUser | null>(null);
 
+  
   // 🔹 Carrega usuário do localStorage
   useEffect(() => {
     const data = localStorage.getItem("gotham_user");
@@ -46,11 +56,11 @@ export default function StudentsPage() {
 
   // 🔹 Sincroniza música atual
   useEffect(() => {
-    const musicaRef = ref(database, "musicaAtual");
-    return onValue(musicaRef, (snapshot) => {
-      setMusicaAtual(snapshot.val());
-    });
-  }, []);
+  const musicaRef = ref(database, "musicaAtual");
+  return onValue(musicaRef, (snap) => {
+    setMusicaAtual(snap.val());
+  });
+}, []);
 
   // 🔹 Extrai ID do YouTube
   const extrairVideoId = (url: string) => {
@@ -77,37 +87,6 @@ export default function StudentsPage() {
     setPedido("");
   };
 
-  // 🔥 FUNÇÃO DE VOTAR PARA PULAR (5 usuários diferentes)
-  const votarParaPular = () => {
-    if (!user || !user.nome || !musicaAtual) return;
-
-    const votosRef = ref(database, "votosPular");
-
-    onValue(
-      votosRef,
-      (snapshot) => {
-        const votos = snapshot.val() || {};
-
-        // Impede voto duplicado
-        if (votos[user.nome]) {
-          alert("Você já votou para pular!");
-          return;
-        }
-
-        // Registra voto
-        set(ref(database, `votosPular/${user.nome}`), true);
-
-        const totalVotos = Object.keys(votos).length + 1;
-
-        // Se atingir 5 votos
-        if (totalVotos >= 1) {
-          remove(ref(database, "musicaAtual")); // pula música
-          remove(ref(database, "votosPular"));  // limpa votos
-        }
-      },
-      { onlyOnce: true }
-    );
-  };
 
   if (!splashFinished) {
     return <Splash onFinish={() => setSplashFinished(true)} />;
@@ -121,11 +100,23 @@ export default function StudentsPage() {
         <h2>Boas-vindas à Gotham Play</h2>
       </div>
 
-      <div className="p-3">
-        <h3>Tocando agora:</h3>
-        <Player musicaAtual={musicaAtual} />
-      </div>
 
+  <div className="p-3">
+  <h3>Tocando agora:</h3>
+
+    
+
+
+  {musicaAtual && (
+    
+<div style={{ padding: "20px" }}>
+      <h2>YouTube Music</h2>
+      <YouTubeMusic />
+    </div>
+  )}
+</div>
+
+{/** 
       <div className="p-2 border-2 border-red-600 rounded-xl shadow-[0_0_15px_#ff0707]">
         <input
           placeholder="Link do YouTube"
@@ -142,17 +133,16 @@ export default function StudentsPage() {
           Adicionar Música
         </button>
 
-        <button
-          onClick={votarParaPular}
-          className="p-2 border-2 border-red-600 rounded-xl shadow-[0_0_15px_#ff0707]"
-        >
-          Pular (voto)
-        </button>
       </div>
-
+*/}
       <div className="border-2 border-red-600 rounded-xl shadow-[0_0_20px_#ff0707]">
         <Fila fila={fila} />
       </div>
+
+      <div className="mt-2 border-2 border-red-600 rounded-xl shadow-[0_0_20px_#ff0707] p-3">
+  <MaisTocada />
+</div>
+    
     </div>
   );
 }
