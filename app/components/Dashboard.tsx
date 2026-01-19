@@ -103,17 +103,13 @@ export default function StudentsPage() {
 
   <div className="p-3">
   <h3>Tocando agora:</h3>
-
-    
-
-
-  {musicaAtual && (
+ 
     
 <div style={{ padding: "20px" }}>
       <h2>YouTube Music</h2>
       <YouTubeMusic />
     </div>
-  )}
+  
 </div>
 
 {/** 
