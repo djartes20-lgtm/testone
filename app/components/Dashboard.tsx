@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { database } from "@/app/lib/firebase";
+import { db } from "@/app/lib/firebase";
 import { ref, onValue, push, set, remove } from "firebase/database";
 import MaisTocada from "@/app/components/MaisTocada";
 
@@ -39,7 +39,7 @@ export default function StudentsPage() {
 
   // 🔹 Sincroniza fila
   useEffect(() => {
-    const filaRef = ref(database, "fila");
+    const filaRef = ref(db, "fila");
     return onValue(filaRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -56,7 +56,7 @@ export default function StudentsPage() {
 
   // 🔹 Sincroniza música atual
   useEffect(() => {
-  const musicaRef = ref(database, "musicaAtual");
+  const musicaRef = ref(db, "musicaAtual");
   return onValue(musicaRef, (snap) => {
     setMusicaAtual(snap.val());
   });
@@ -78,7 +78,7 @@ export default function StudentsPage() {
       return;
     }
 
-    const novaRef = push(ref(database, "fila"));
+    const novaRef = push(ref(db, "fila"));
     set(novaRef, {
       id: videoId,
       titulo: "Carregando...",
@@ -113,6 +113,10 @@ export default function StudentsPage() {
 </div>
 
 {/** 
+  
+ 
+  
+ 
       <div className="p-2 border-2 border-red-600 rounded-xl shadow-[0_0_15px_#ff0707]">
         <input
           placeholder="Link do YouTube"

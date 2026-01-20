@@ -35,14 +35,22 @@ export default function YouTubeMusic() {
   className="w-full mb-3 px-4 py-2 border-2 border-red-600 rounded-xl shadow-[0_0_20px_#ff0707] bg-black text-red-600 outline-none"
 />
 
-       
-      <button
+       <div className="flex gap-5">
+         <button
   onClick={buscarMusica}
   className="border-2 border-red-600 rounded-xl px-4 py-2 shadow-[0_0_20px_#ff0707]"
 >
   Buscar
 </button>
-
+   
+      <button
+  onClick={buscarMusica}
+  className="border-2  border-red-600 rounded-xl px-4 py-2 shadow-[0_0_20px_#ff0707]"
+>
+  pular
+</button>
+       </div>
+     
       
     </div>
   );

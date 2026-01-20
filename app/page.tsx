@@ -1,6 +1,6 @@
 "use client";
 
-import { database } from "@/app/lib/firebase";
+import { db } from "@/app/lib/firebase";
 import { ref, onValue, remove, runTransaction } from "firebase/database";
 import { useEffect, useState } from "react";
 import Head from "next/head";
@@ -34,7 +34,7 @@ export default function Home() {
 
   // Sincroniza música atual
   useEffect(() => {
-    const musicaRef = ref(database, "musicaAtual");
+    const musicaRef = ref(db, "musicaAtual");
     return onValue(musicaRef, (snapshot) => {
       setMusicaAtual(snapshot.val());
     });
@@ -42,7 +42,7 @@ export default function Home() {
 
   // Sincroniza votos
   useEffect(() => {
-    const votosRef = ref(database, "votosPular");
+    const votosRef = ref(db, "votosPular");
     return onValue(votosRef, (snapshot) => {
       setVotos(snapshot.val() || {});
     });
@@ -52,7 +52,7 @@ export default function Home() {
   const votarParaPular = async () => {
     if (!user?.nome || !musicaAtual) return;
 
-    const votosRef = ref(database, "votosPular");
+    const votosRef = ref(db, "votosPular");
 
     await runTransaction(votosRef, (current) => {
       if (!current) current = {};
@@ -65,9 +65,9 @@ export default function Home() {
       const votosAtuais = result.snapshot.val();
       const totalVotos = Object.keys(votosAtuais).length;
 
-      if (totalVotos >= 5) {
-        await remove(ref(database, "musicaAtual"));
-        await remove(ref(database, "votosPular"));
+      if (totalVotos >= 1) {
+        await remove(ref(db, "musicaAtual"));
+        await remove(ref(db, "votosPular"));
       }
     });
   };
@@ -88,22 +88,7 @@ export default function Home() {
       )}
 
       {user && (
-  <Dashboard user={user}>
-    <div className="p-4 border-2 border-red-600 rounded-xl">
-
-      <h3>Tocando agora</h3>
-      <p>ID: {musicaAtual?.id || "Nenhuma"}</p>
-      <p>Tempo: {musicaAtual?.tempo ?? 0}s</p>
-
-      <button
-        onClick={votarParaPular}
-        className="mt-2 p-2 bg-red-600 text-white rounded"
-      >
-        Pular Música
-      </button>
-
-    </div>
-  </Dashboard>
+  <Dashboard user={user}/>
 )}
     </>
   );

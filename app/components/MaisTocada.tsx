@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ref, onValue, get, set } from "firebase/database";
-import { database } from "@/app/lib/firebase";
+import { db } from "@/app/lib/firebase";
 
 interface MaisTocadaType {
   titulo: string;
@@ -14,7 +14,7 @@ export default function MaisTocada() {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    const rankingRef = ref(database, "ranking/maisTocada");
+    const rankingRef = ref(db, "ranking/maisTocada");
 
     const unsubscribe = onValue(rankingRef, (snap) => {
       if (snap.exists()) {
