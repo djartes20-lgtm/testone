@@ -1,51 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ref, onValue, remove } from "firebase/database";
-import { db } from "@/app/lib/firebase";
-
-interface QueueItem {
-  videoId: string;
-  title: string;
-  requestedBy: string;
-}
-
-export default function QueueList() {
-  const [queue, setQueue] = useState<[string, QueueItem][]>([]);
-
-  useEffect(() => {
-    const queueRef = ref(db, "queue");
-
-    onValue(queueRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) {
-        setQueue([]);
-        return;
-      }
-
-      setQueue(Object.entries(data));
-    });
-  }, []);
-
-  const removeItem = async (id: string) => {
-    await remove(ref(db, `queue/${id}`));
-  };
-
+export default function QueueList({
+  queue,
+  isAdmin,
+  removeFromQueue,
+}: {
+  queue: any[];
+  isAdmin: boolean;
+  removeFromQueue: (id: string) => void;
+}) {
   return (
     <div>
-      <h2>📃 Fila de Músicas</h2>
+      <h3>🎶 Fila</h3>
 
       {queue.length === 0 && <p>Fila vazia</p>}
 
-      <ul>
-        {queue.map(([id, item], index) => (
-          <li key={id}>
-            <strong>{index + 1}.</strong> {item.title}
-            <small> ({item.requestedBy})</small>
-            <button onClick={() => removeItem(id)}>❌</button>
-          </li>
-        ))}
-      </ul>
+      {queue.map((item, index) => (
+        <div key={item.id}>
+          {index + 1}. {item.title}
+
+          {isAdmin && (
+            <button onClick={() => removeFromQueue(item.id)}>
+              ❌
+            </button>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

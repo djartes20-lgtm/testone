@@ -1,48 +1,163 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ref, onValue, remove } from "firebase/database";
+import YouTube from "react-youtube";
+import { useEffect, useRef, useState } from "react";
+import { ref, onValue, get, remove, set } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
-interface QueueItem {
-  title: string;
-  requestedBy: string;
+interface Props {
+  isAdmin?: boolean;
 }
 
-export default function QueueList() {
-  const [queue, setQueue] = useState<[string, QueueItem][]>([]);
+export default function YouTubePlayer({ isAdmin = false }: Props) {
+  const playerRef = useRef<any>(null);
+  const currentVideoIdRef = useRef<string | null>(null);
+  const syncingRef = useRef(false);
 
+  const [muted, setMuted] = useState(!isAdmin);
+
+  /**
+   * 🔄 Sincronização com Firebase
+   */
   useEffect(() => {
-    const queueRef = ref(db, "queue");
+    const playerDBRef = ref(db, "player");
 
-    onValue(queueRef, (snapshot) => {
+    const unsubscribe = onValue(playerDBRef, (snapshot) => {
       const data = snapshot.val();
-      if (!data) {
-        setQueue([]);
+      if (!data || !playerRef.current) return;
+
+      const { videoId, startedAt } = data;
+
+      const expectedTime = Math.floor(
+        (Date.now() - startedAt) / 1000
+      );
+
+      const playerTime =
+        playerRef.current.getCurrentTime?.() || 0;
+
+      // ▶️ Vídeo mudou
+      if (videoId !== currentVideoIdRef.current) {
+        currentVideoIdRef.current = videoId;
+        syncingRef.current = true;
+
+        playerRef.current.loadVideoById({
+          videoId,
+          startSeconds: Math.max(expectedTime, 0),
+        });
+
+        setTimeout(() => {
+          syncingRef.current = false;
+        }, 1000);
+
         return;
       }
-      setQueue(Object.entries(data));
+
+      // ⏱️ Ajuste fino (sem reload)
+      const diff = Math.abs(playerTime - expectedTime);
+      if (diff > 2 && !syncingRef.current) {
+        syncingRef.current = true;
+        playerRef.current.seekTo(expectedTime, true);
+
+        setTimeout(() => {
+          syncingRef.current = false;
+        }, 500);
+      }
     });
+
+    return () => unsubscribe();
   }, []);
 
-  const removeItem = async (id: string) => {
-    await remove(ref(db, `queue/${id}`));
+  /**
+   * 🎬 Player pronto
+   */
+  const handleReady = (e: any) => {
+    playerRef.current = e.target;
+
+    if (!isAdmin) {
+      e.target.mute();       // permite autoplay
+      e.target.playVideo(); // inicia sozinho
+    }
+  };
+
+  /**
+   * 🔊 Botão de volume (aluno)
+   */
+  const toggleMute = () => {
+    if (!playerRef.current) return;
+
+    if (muted) {
+      playerRef.current.unMute();
+      playerRef.current.setVolume(40);
+    } else {
+      playerRef.current.mute();
+    }
+
+    setMuted(!muted);
+  };
+
+  /**
+   * ⏭️ Avança a fila (ADMIN)
+   */
+  const playNextFromQueue = async () => {
+    const snapshot = await get(ref(db, "queue"));
+    if (!snapshot.exists()) return;
+
+    const queue = snapshot.val();
+    const firstKey = Object.keys(queue)[0];
+    const next = queue[firstKey];
+
+    await set(ref(db, "player"), {
+      videoId: next.videoId,
+      title: next.title,
+      requestedBy: next.requestedBy,
+      startedAt: Date.now(),
+    });
+
+    await remove(ref(db, `queue/${firstKey}`));
+  };
+
+  /**
+   * ✅ FIM DO VÍDEO (SÓ AQUI A FILA ANDA)
+   */
+  const handleEnd = async () => {
+    if (!isAdmin) return;
+    await playNextFromQueue();
   };
 
   return (
     <div>
-      <h2>📃 Fila</h2>
+      <YouTube
+        onReady={handleReady}
+        onEnd={handleEnd} // 🔥 ESSENCIAL
+        opts={{
+          width: "100%",
+          height: "390",
+          playerVars: {
+            autoplay: 1,
+            controls: isAdmin ? 1 : 0,
+            mute: isAdmin ? 0 : 1,
+            disablekb: 1,
+            modestbranding: 1,
+          },
+        }}
+      />
 
-      {queue.length === 0 && <p>Fila vazia</p>}
-
-      <ul>
-        {queue.map(([id, item], index) => (
-          <li key={id}>
-            {index + 1}. {item.title} ({item.requestedBy})
-            <button onClick={() => removeItem(id)}>❌</button>
-          </li>
-        ))}
-      </ul>
+      {/* 🔊 Botão de volume (aluno) */}
+      {!isAdmin && (
+        <button
+          onClick={toggleMute}
+          style={{
+            marginTop: 10,
+            padding: "8px 14px",
+            borderRadius: 6,
+            border: "none",
+            cursor: "pointer",
+            fontSize: 14,
+          }}
+        >
+          {muted ? "🔊 Ativar som" : "🔇 Silenciar"}
+        </button>
+      )}
     </div>
   );
 }

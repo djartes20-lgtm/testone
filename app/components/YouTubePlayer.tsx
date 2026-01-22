@@ -14,23 +14,34 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   const currentVideoIdRef = useRef<string | null>(null);
   const syncingRef = useRef(false);
 
+  const [currentVideoId, setCurrentVideoId] = useState<string | null>(null);
   const [muted, setMuted] = useState(!isAdmin);
 
+  /**
+   * 🔄 Sincronização com Firebase
+   */
   useEffect(() => {
-    const playerRefDB = ref(db, "player");
+    const playerDBRef = ref(db, "player");
 
-    const unsubscribe = onValue(playerRefDB, (snapshot) => {
+    const unsubscribe = onValue(playerDBRef, (snapshot) => {
       const data = snapshot.val();
       if (!data || !playerRef.current) return;
 
       const { videoId, startedAt } = data;
+      if (!videoId || !startedAt) return;
 
-      const expectedTime = (Date.now() - startedAt) / 1000;
-      const playerTime = playerRef.current.getCurrentTime?.() || 0;
+      const expectedTime = Math.floor(
+        (Date.now() - startedAt) / 1000
+      );
 
-      // 🔁 TROCOU O VÍDEO
+      const playerTime =
+        playerRef.current.getCurrentTime?.() || 0;
+
+      // ▶️ Vídeo mudou
       if (videoId !== currentVideoIdRef.current) {
         currentVideoIdRef.current = videoId;
+        setCurrentVideoId(videoId);
+
         syncingRef.current = true;
 
         playerRef.current.loadVideoById({
@@ -45,10 +56,11 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
         return;
       }
 
-      // ⏱️ AJUSTE FINO
+      // ⏱️ Ajuste fino (sem reload)
       const diff = Math.abs(playerTime - expectedTime);
       if (diff > 2 && !syncingRef.current) {
         syncingRef.current = true;
+
         playerRef.current.seekTo(expectedTime, true);
 
         setTimeout(() => {
@@ -60,23 +72,27 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     return () => unsubscribe();
   }, []);
 
-  // 🎬 Player pronto
+  /**
+   * 🎬 Player pronto
+   */
   const handleReady = (e: any) => {
     playerRef.current = e.target;
 
     if (!isAdmin) {
-      e.target.mute();       // 🔥 garante autoplay
-      e.target.playVideo(); // 🔥 inicia sozinho
+      e.target.mute();       // permite autoplay
+      e.target.playVideo();
     }
   };
 
-  // 🔊 BOTÃO DE VOLUME
+  /**
+   * 🔊 Volume (aluno)
+   */
   const toggleMute = () => {
     if (!playerRef.current) return;
 
     if (muted) {
       playerRef.current.unMute();
-      playerRef.current.setVolume(40); // volume confortável
+      playerRef.current.setVolume(40);
     } else {
       playerRef.current.mute();
     }
@@ -84,32 +100,56 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     setMuted(!muted);
   };
 
-  // 👑 SOMENTE ADMIN CONTROLA FILA
+  /**
+   * ⏭️ Avançar fila (ADMIN)
+   */
+  const playNextFromQueue = async () => {
+    const snapshot = await get(ref(db, "queue"));
+    if (!snapshot.exists()) return;
+
+    const queue = snapshot.val();
+
+    const sorted = Object.entries(queue).sort(
+      (a: any, b: any) => a[1].createdAt - b[1].createdAt
+    );
+
+    const [firstKey, next]: any = sorted[0];
+    if (!next?.videoId) return;
+
+    await set(ref(db, "player"), {
+      videoId: next.videoId,
+      title: next.title || "",
+      requestedBy: next.requestedBy || "",
+      startedAt: Date.now(),
+    });
+
+    await remove(ref(db, `queue/${firstKey}`));
+  };
+
+  /**
+   * ⏭️ Botão pular (ADMIN)
+   */
+  const skipMusic = async () => {
+    if (!isAdmin) return;
+    await playNextFromQueue();
+  };
+
+  /**
+   * 🎯 Fim do vídeo (ADMIN)
+   */
   const handleStateChange = async (event: any) => {
     if (!isAdmin) return;
 
+    // 0 = ENDED
     if (event.data === 0) {
-      const snapshot = await get(ref(db, "queue"));
-      if (!snapshot.exists()) return;
-
-      const queue = snapshot.val();
-      const firstKey = Object.keys(queue)[0];
-      const next = queue[firstKey];
-
-      await set(ref(db, "player"), {
-        videoId: next.videoId,
-        title: next.title,
-        requestedBy: next.requestedBy,
-        startedAt: Date.now(),
-      });
-
-      await remove(ref(db, `queue/${firstKey}`));
+      await playNextFromQueue();
     }
   };
 
   return (
     <div>
       <YouTube
+        videoId={currentVideoId ?? undefined}
         onReady={handleReady}
         onStateChange={handleStateChange}
         opts={{
@@ -125,7 +165,25 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
         }}
       />
 
-      {/* 🔊 BOTÃO SÓ PARA ALUNO */}
+      {isAdmin && (
+        <button
+          onClick={skipMusic}
+          style={{
+            marginTop: 12,
+            padding: "10px 18px",
+            borderRadius: 8,
+            border: "none",
+            background: "#e11d48",
+            color: "#fff",
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: 14,
+          }}
+        >
+          ⏭️ Pular música
+        </button>
+      )}
+
       {!isAdmin && (
         <button
           onClick={toggleMute}
@@ -144,3 +202,29 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     </div>
   );
 }
+
+export function extractVideoId(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+
+    // youtu.be/ID
+    if (parsed.hostname.includes("youtu.be")) {
+      return parsed.pathname.replace("/", "");
+    }
+
+    // youtube.com/watch?v=ID
+    if (parsed.searchParams.get("v")) {
+      return parsed.searchParams.get("v");
+    }
+
+    // youtube.com/embed/ID
+    if (parsed.pathname.includes("/embed/")) {
+      return parsed.pathname.split("/embed/")[1];
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+

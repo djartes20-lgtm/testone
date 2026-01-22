@@ -1,6 +1,6 @@
 // hooks/useFirebase.ts
 import { useEffect, useState } from "react";
-import { database, auth } from "@/app/lib/firebase";
+import { db, auth } from "@/app/lib/firebase";
 import {
   ref,
   onValue,
@@ -29,7 +29,7 @@ export function useFirebase(isAdmin = false) {
      FILA DE MÚSICAS
   ========================== */
   useEffect(() => {
-    const filaRef = ref(database, "player/fila");
+    const filaRef = ref(db, "player/fila");
 
     const unsub = onValue(filaRef, (snapshot) => {
       const data = snapshot.val();
@@ -54,7 +54,7 @@ export function useFirebase(isAdmin = false) {
      MÚSICA ATUAL
   ========================== */
   useEffect(() => {
-    const musicaRef = ref(database, "player/estado/musicaAtual");
+    const musicaRef = ref(db, "player/estado/musicaAtual");
 
     const unsub = onValue(musicaRef, (snapshot) => {
       setMusicaAtual(snapshot.val()?.youtubeId || null);
@@ -67,7 +67,7 @@ export function useFirebase(isAdmin = false) {
      VOTOS PARA PULAR
   ========================== */
   useEffect(() => {
-    const votosRef = ref(database, "player/votosPular/count");
+    const votosRef = ref(db, "player/votosPular/count");
 
     const unsub = onValue(votosRef, (snapshot) => {
       setVotos(snapshot.val() || 0);
@@ -82,7 +82,7 @@ export function useFirebase(isAdmin = false) {
   const adicionarMusica = (youtubeId: string) => {
     if (!userId) return;
 
-    push(ref(database, "player/fila"), {
+    push(ref(db, "player/fila"), {
       youtubeId,
       requestedBy: userId,
       requestedAt: Date.now()
@@ -95,7 +95,7 @@ export function useFirebase(isAdmin = false) {
   const votarPular = () => {
     if (!userId) return;
 
-    const votosRef = ref(database, "player/votosPular");
+    const votosRef = ref(db, "player/votosPular");
 
     runTransaction(votosRef, (data) => {
       if (!data) {
@@ -125,7 +125,7 @@ export function useFirebase(isAdmin = false) {
   const adminPularMusica = () => {
     if (!isAdmin || !userId) return;
 
-    update(ref(database, "player/controleADM"), {
+    update(ref(db, "player/controleADM"), {
       pular: true,
       disparadoPor: userId,
       timestamp: Date.now()
@@ -138,7 +138,7 @@ export function useFirebase(isAdmin = false) {
   const removerDaFila = (key: string) => {
     if (!isAdmin) return;
 
-    remove(ref(database, `player/fila/${key}`));
+    remove(ref(db, `player/fila/${key}`));
   };
 
   return {

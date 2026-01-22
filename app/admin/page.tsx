@@ -1,19 +1,25 @@
 "use client";
 
 import YouTubePlayer from "@/app/components/YouTubePlayer";
-import SearchMusic from "@/app/components/SearchMusic";
 import QueueList from "@/app/components/QueueList";
+import AddToQueue from "@/app/components/AddToQueue";
+import { useQueue } from "@/app/hooks/useQueue";
 
-export default function AdminPage() {
+export default function Home() {
+  const isAdmin = true; // depois liga no auth
+  const queueHook = useQueue();
+
   return (
-    <div style={{ padding: 20 }}>
-      <h1>🎛️ Admin - Controle de Música</h1>
+    <main style={{ padding: 20 }}>
+      <YouTubePlayer isAdmin={isAdmin} />
 
-      <SearchMusic />
+      <AddToQueue addToQueue={queueHook.addToQueue} />
 
-      <QueueList />
-
-      <YouTubePlayer isAdmin />
-    </div>
+      <QueueList
+        queue={queueHook.queue}
+        isAdmin={isAdmin}
+        removeFromQueue={queueHook.removeFromQueue}
+      />
+    </main>
   );
 }
