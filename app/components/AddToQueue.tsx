@@ -1,8 +1,7 @@
 "use client";
 
-"use client";
-
 import { useState } from "react";
+import SearchMusic from "./SearchMusic";
 
 export default function AddToQueue({
   addToQueue,
