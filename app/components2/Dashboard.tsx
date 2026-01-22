@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { db } from "@/app/lib/firebase";
 import { ref, onValue, push, set, remove } from "firebase/database";
-import MaisTocada from "@/app/components/MaisTocada";
+import MaisTocada from "@/app/components2/MaisTocada";
 
-import YouTubeMusic from "@/app/components/YouTubeMusic";
+import YouTubeMusic from "@/app/components2/YouTubeMusic";
 
 <MaisTocada />
 
-import Splash from "@/app/components/Splash";
-import Player from "@/app/components/Player";
-import Fila from "@/app/components/Fila";
+import Splash from "@/app/components2/Splash";
+import Player from "@/app/components2/Player";
+import Fila from "@/app/components2/Fila";
 
 
 

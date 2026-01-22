@@ -4,10 +4,10 @@ import { db } from "@/app/lib/firebase";
 import { ref, onValue, remove, runTransaction } from "firebase/database";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import Splash from "@/app/components/Splash";
-import Login from "@/app/components/Login";
-import Dashboard from "@/app/components/Dashboard";
-import Player from "@/app/components/Player";
+import Splash from "@/app/components2/Splash";
+import Login from "@/app/components2/Login";
+import Dashboard from "@/app/components2/Dashboard";
+import Player from "@/app/components2/Player";
 
 interface User {
   nome: string;

@@ -1,11 +1,11 @@
 "use client";
 
-import Player from "@/app/components/Player";
-import Queue from "@/app/components/Queue";
+import Player from "@/app/components2/Player";
+import Queue from "@/app/components2/Queue";
 
-import History from "@/app/components/History";
-import ProfileMenu from "@/app/components/ProfileMenu";
-import ModeSelector from "@/app/components/ModeSelector";
+import History from "@/app/components2/History";
+import ProfileMenu from "@/app/components2/ProfileMenu";
+import ModeSelector from "@/app/components2/ModeSelector";
 
 export default function AdminPage() {
   return (

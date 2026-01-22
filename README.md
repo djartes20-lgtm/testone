@@ -44,3 +44,24 @@ adm login
 restingir /banir usuario 
 
 sincronia de play 
+
+
+*********
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAa-Yukkr__Qi9JsmSAgGCZmrKudBAZ5Y8",
+  authDomain: "gothamplay-c2f22.firebaseapp.com",
+  databaseURL: "https://gothamplay-c2f22-default-rtdb.firebaseio.com",
+  projectId: "gothamplay-c2f22",
+  storageBucket: "gothamplay-c2f22.firebasestorage.app",
+  messagingSenderId: "828839311796",
+  appId: "1:828839311796:web:cc80a84f905cb96ea1dae1"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
