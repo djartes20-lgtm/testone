@@ -1,8 +1,8 @@
 "use client";
 
-"use client";
-
 import { useState } from "react";
+import { push, ref } from "firebase/database";
+import { db } from "@/app/lib/firebase";
 
 export default function AddToQueue({
   addToQueue,

@@ -2,8 +2,8 @@
 
 import YouTubePlayer from "@/app/components/YouTubePlayer";
 import QueueList from "@/app/components/QueueList";
-import AddToQueue from "@/app/components/AddToQueue";
 import { useQueue } from "@/app/hooks/useQueue";
+import SearchMusic from "../components/SearchMusic";
 
 export default function Home() {
   const isAdmin = true; // depois liga no auth
@@ -13,8 +13,7 @@ export default function Home() {
     <main style={{ padding: 20 }}>
       <YouTubePlayer isAdmin={isAdmin} />
 
-      <AddToQueue addToQueue={queueHook.addToQueue} />
-
+<SearchMusic/>
       <QueueList
         queue={queueHook.queue}
         isAdmin={isAdmin}
