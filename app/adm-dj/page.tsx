@@ -1,46 +1,24 @@
 "use client";
 
-import YouTubePlayer from "@/app/components/YouTubePlayer";
-import QueueList from "@/app/components/QueueList";
-import { useQueue } from "@/app/hooks/useQueue";
-import SearchMusic from "../components/SearchMusic";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/app/lib/firebase";
+import { useRouter } from "next/navigation";
+import DashboardPage from "./DashboardPage";
 
-import Player from "@/app/components2/Player";
-import AutoDJToggle from "../components/AutoDJToggle";
-/*
-import Queue from "@/app/components2/Queue";
+export default function Home() {
+  const router = useRouter();
 
-import History from "@/app/components2/History";
-import ProfileMenu from "@/app/components2/ProfileMenu";
-import ModeSelector from "@/app/components2/ModeSelector";
-*/
-export default function AdminPage() {
-  const isAdmin = true; // depois liga no auth
-  const queueHook = useQueue();
-  return (
-    <main className=" flex flex-col gap-0.5 min-h-screen p-6 space-y-6 " >
-      <h1 className="text-3xl font-bold text-red-600 drop-shadow">
-        Gotham Play — Painel Admin
-      </h1>
-      <YouTubePlayer isAdmin={isAdmin} />
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/adm-dj"); // ✅ SEM validação
+      }
+    });
 
-      <SearchMusic />
-      {/** fila de musicas */}
-      <QueueList
-        queue={queueHook.queue}
-        isAdmin={isAdmin}
-        removeFromQueue={queueHook.removeFromQueue}
-      />
+    return () => unsub();
+  }, []);
 
+    return (<DashboardPage/>);
 
-      {/**
-       *       <Player />
-
-      <History />
-      <ProfileMenu />
-*/}
-
-    </main>
-
-  );
 }

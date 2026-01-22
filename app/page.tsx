@@ -4,11 +4,11 @@ import { db } from "@/app/lib/firebase";
 import { ref, onValue, remove, runTransaction } from "firebase/database";
 import { useEffect, useState } from "react";
 import Head from "next/head";
+
 import Splash from "@/app/components2/Splash";
 import Login from "@/app/components2/Login";
 import Dashboard from "@/app/components2/Dashboard";
 import Player from "@/app/components2/Player";
-import { useAuth } from "./hooks/useAuth";
 import AlunoPage from "./aluno/page";
 
 interface User {
@@ -18,16 +18,13 @@ interface User {
 
 export default function Home() {
   const [splashVisible, setSplashVisible] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
   // Para música atual + votos
   const [musicaAtual, setMusicaAtual] = useState<string | null>(null);
   const [votos, setVotos] = useState<{ [key: string]: boolean }>({});
 
-  const { user, loading } = useAuthh();
-
-if (loading) return <p>Carregando...</p>;
-/*
   // 🔐 Recupera login salvo
   useEffect(() => {
     const saved = localStorage.getItem("gotham_user");
@@ -78,10 +75,23 @@ if (loading) return <p>Carregando...</p>;
   };
 
   if (loadingUser) return null;
-*/
+
   return (
     <>
-    <AlunoPage/>
+      <Head>
+        <title>Gotham Play</title>
+        <script src="https://www.youtube.com/iframe_api" />
+      </Head>
+
+      {splashVisible && <Splash onFinish={() => setSplashVisible(false)} />}
+
+      {!splashVisible && !user && (
+        <Login onLogin={(u) => setUser(u)} />
+      )}
+
+      {user && (
+  <AlunoPage />
+)}
     </>
   );
 }

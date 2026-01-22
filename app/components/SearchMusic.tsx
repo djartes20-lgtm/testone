@@ -51,6 +51,7 @@ const addToQueue = async (video: Video) => {
   });
 };
 
+
   return (
     <Card title=" 🔎 Buscar música">
       <input
