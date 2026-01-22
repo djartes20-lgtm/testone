@@ -4,6 +4,8 @@ import YouTube from "react-youtube";
 import { useEffect, useRef, useState } from "react";
 import { ref, onValue, get, remove, set } from "firebase/database";
 import { db } from "@/app/lib/firebase";
+import Card from "../components2/Card";
+import AutoDJToggle from "./AutoDJToggle";
 
 interface Props {
   isAdmin?: boolean;
@@ -147,7 +149,10 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   };
 
   return (
-    <div>
+
+   
+       <Card title="🎵 Tocando Agora">
+
       <YouTube
         videoId={currentVideoId ?? undefined}
         onReady={handleReady}
@@ -172,17 +177,19 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
             marginTop: 12,
             padding: "10px 18px",
             borderRadius: 8,
-            border: "none",
-            background: "#e11d48",
-            color: "#fff",
+            border: "#ff0707",
+            background: "#000",
+            color: "#ff0707",
             fontWeight: "bold",
             cursor: "pointer",
             fontSize: 14,
+
           }}
         >
           ⏭️ Pular música
         </button>
       )}
+<AutoDJToggle/>
 
       {!isAdmin && (
         <button
@@ -199,7 +206,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
           {muted ? "🔊 Ativar som" : "🔇 Silenciar"}
         </button>
       )}
-    </div>
+  </Card>
   );
 }
 

@@ -10,7 +10,7 @@ type Perfil = {
 export default function ProfileMenu() {
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [aberto, setAberto] = useState(false);
-
+ 
   useEffect(() => {
     const p = localStorage.getItem("perfilSelecionado");
     if (p) setPerfil(JSON.parse(p));

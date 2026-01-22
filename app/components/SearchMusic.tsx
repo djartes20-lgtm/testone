@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ref, set, push } from "firebase/database";
 import { db } from "@/app/lib/firebase";
+import Card from "../components2/Card";
 
 interface Video {
   videoId: string;
@@ -51,9 +52,7 @@ const addToQueue = async (video: Video) => {
 };
 
   return (
-    <div>
-      <h2>🔎 Buscar música</h2>
-
+    <Card title=" 🔎 Buscar música">
       <input
         placeholder="Nome da música"
         value={query}
@@ -80,6 +79,6 @@ const addToQueue = async (video: Video) => {
           </li>
         ))}
       </ul>
-    </div>
+    </Card>
   );
 }

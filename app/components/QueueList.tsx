@@ -1,5 +1,7 @@
 "use client";
 
+import Card from "../components2/Card";
+
 export default function QueueList({
   queue,
   isAdmin,
@@ -11,21 +13,28 @@ export default function QueueList({
 }) {
   return (
     <div>
-      <h3>🎶 Fila</h3>
+      <Card title="📜 Fila de Músicas">
+        <ul className="space-y-2">
 
-      {queue.length === 0 && <p>Fila vazia</p>}
+          {queue.length === 0 && <p>Fila vazia</p>}
 
-      {queue.map((item, index) => (
-        <div key={item.id}>
-          {index + 1}. {item.title}
+          {queue.map((item, index) => (
+            <div key={item.id} 
+            className="flex justify-between border-b border-red-600 pb-1">
+              {index + 1}. {item.title}
+              {isAdmin && (
+                <button onClick={() => removeFromQueue(item.id)}
+                                className="hover:text-white"
+>
+                  ❌
+                </button>
+              )}
+            </div>
+          ))}
 
-          {isAdmin && (
-            <button onClick={() => removeFromQueue(item.id)}>
-              ❌
-            </button>
-          )}
-        </div>
-      ))}
+        </ul>
+      </Card>
+
     </div>
   );
 }

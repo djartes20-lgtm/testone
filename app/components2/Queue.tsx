@@ -6,7 +6,7 @@ import { db } from "@/app/lib/firebase";
 import Card from "./Card";
 
 type Music = {
-  key: string;
+  key: string; 
   titulo: string;
 };
 
