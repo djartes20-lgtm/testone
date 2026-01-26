@@ -155,8 +155,15 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
             fontSize: 14,
           }}
         >
-          {muted ? "🔊 Ativar som" : "🔇 Silenciar"}
+          <button
+  className={`btn-audio ${muted ? "ativo" : "mutado"}`}
+  onClick={() => setMuted(!muted)}
+>
+  {muted ? "🔊 Ativar som" : "🔇 Silenciar"}
+</button>
+
         </button>
+
       )}
     </div>
   );

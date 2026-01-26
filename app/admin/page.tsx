@@ -8,7 +8,7 @@ import SearchMusic from "../components/SearchMusic";
 export default function Home() {
   const isAdmin = true; // depois liga no auth
   const queueHook = useQueue();
-
+ 
   return (
     <main style={{ padding: 20 }}>
       <YouTubePlayer isAdmin={isAdmin} />
@@ -20,5 +20,6 @@ export default function Home() {
         removeFromQueue={queueHook.removeFromQueue}
       />
     </main>
+
   );
 }

@@ -9,5 +9,6 @@ export default function Card({ title, children }: {
       <h2 className="text-xl font-semibold mb-3">{title}</h2>
       {children}
     </div>
-  );
+  
+);
 }

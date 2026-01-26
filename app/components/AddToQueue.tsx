@@ -4,6 +4,7 @@ import { useState } from "react";
 import { push, ref } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
+
 export default function AddToQueue({
   addToQueue,
 }: {
@@ -11,6 +12,8 @@ export default function AddToQueue({
 }) {
   const [link, setLink] = useState("");
   const [title, setTitle] = useState("");
+  
+  
 
   return (
     <div style={{ marginBottom: 20 }}>

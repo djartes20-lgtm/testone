@@ -4,63 +4,72 @@ import YouTubePlayer from "@/app/components/YouTubePlayer";
 import QueueList from "@/app/components/QueueList";
 import { useQueue } from "@/app/hooks/useQueue";
 import SearchMusic from "../components/SearchMusic";
+import Clock from "@/app/components/RelogioeData";
+import History from "@/app/components/AlunoHistory";
+import MaisTocadas from "@/app/components/MaisTocadas";
+import AlunosGenerosRestritos from "@/app/components/AlunosGenerosRestritos";
 
-import Player from "@/app/components2/Player";
+
 import { useEffect, useState } from "react";
 import LoginButton from "../components/LoginButton";
-/*
-import Queue from "@/app/components2/Queue";
-
-import History from "@/app/components2/History";
-import ProfileMenu from "@/app/components2/ProfileMenu";
-import ModeSelector from "@/app/components2/ModeSelector";
-*/
-
 
 interface GothamUser {
   nome: string;
 }
 
 export default function AlunoPage() {
-    const [user, setUser] = useState<GothamUser | null>(null);
-  
-  const isAdmin = false; // depois liga no auth
+  const [user, setUser] = useState<GothamUser | null>(null);
+
+  const isAdmin = false;
   const queueHook = useQueue();
-  
-    // 🔹 Carrega usuário do localStorage
-    useEffect(() => {
-      const data = localStorage.getItem("gotham_user");
-      if (data) {
-        setUser(JSON.parse(data));
-      }
-    }, []);
+
+  // 🔹 Carrega usuário do localStorage
+  useEffect(() => {
+    const data = localStorage.getItem("gotham_user");
+    if (data) {
+      setUser(JSON.parse(data));
+    }
+  }, []);
+
   return (
-    <main className=" flex flex-col gap-0.5 min-h-screen p-6 space-y-6 " >
-       <div className="p-3">
-        <h1>Olá {user?.nome}</h1> 
-        <LoginButton/>
+    <main className="flex flex-col gap-2 min-h-screen p-6">
+      {/* HEADER */}
+      <div className="p-3">
+        <h1>Olá {user?.nome}</h1>
+        <LoginButton />
         <h2>Boas-vindas à Gotham Play</h2>
       </div>
-     
+
+      {/* PLAYER */}
       <YouTubePlayer isAdmin={isAdmin} />
 
+{/* ABA DO ALUNO PARA VER GÊNEROS BLOQUEADOS */}
+<div>
+  <AlunosGenerosRestritos />
+</div>
+
+      {/* 🔎 BUSCAR MÚSICA */}
       <SearchMusic />
-      {/** fila de musicas */}
+
+      {/* FILA */}
       <QueueList
         queue={queueHook.queue}
         isAdmin={isAdmin}
         removeFromQueue={queueHook.removeFromQueue}
       />
 
-
-      {/**
-       *       <Player />
-
+      {/* 📜 HISTÓRICO — SEM BOTÃO, ABRE DIRETO */}
       <History />
-      <ProfileMenu />
-*/}
 
+      {/* MAIS TOCADAS (sempre visível) */}
+      <div>
+        <MaisTocadas />
+      </div>
+
+      {/* RELÓGIO */}
+      <Clock />
     </main>
-
   );
 }
+
+

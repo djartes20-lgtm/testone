@@ -11,6 +11,7 @@ import Dashboard from "@/app/components2/Dashboard";
 import Player from "@/app/components2/Player";
 import AlunoPage from "./aluno/page";
 
+
 interface User {
   nome: string;
   telefone: string;
@@ -92,6 +93,7 @@ export default function Home() {
       {user && (
   <AlunoPage />
 )}
+
     </>
   );
 }
