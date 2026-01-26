@@ -6,7 +6,6 @@ import QueueList from "@/app/components/QueueList";
 import SearchMusic from "@/app/components/SearchMusic";
 import Avisos from "@/app/components/avisos";
 import History from "@/app/components/History";
-import MaisTocadas from "@/app/components/MaisTocadas";
 import Clock from "@/app/components/RelogioeData";
 import AdminAlerts from "@/app/components/AdminAlerts";
 import EstatisticasDashboard from "@/app/components/EstatisticasDashboard";
@@ -17,63 +16,58 @@ import OnlineUsers from "./OnlineUsers";
 export default function DashboardPage() {
   const isAdmin = true;
   const queueHook = useQueue();
-  const [activeTab, setActiveTab] = useState<"player" | "queue" | "history" | "maisTocadas">("player");
+  const [activeTab, setActiveTab] = useState<"player" | "queue" | "history">("player");
 
   return (
-    <main className="min-h-screen p-6 space-y-6">
+    <main className="min-h-screen p-4 space-y-6">
       {/* HEADER */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-red-600 drop-shadow">
-          Gotham Play — Painel Admin
+      <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-2">
+        <h1 className="text-2xl font-bold text-red-600 drop-shadow text-center md:text-left">
+        Painel Admin
         </h1>
-        <Clock />
+        {/* Clock apenas no desktop */}
+        <div className="hidden md:block">
+          <Clock />
+        </div>
       </div>
 
       {/* MOBILE TABS */}
-      <div className="md:hidden mb-4 flex justify-around">
-        {["player", "queue", "history", "maisTocadas"].map((tab) => (
+      <div className="md:hidden mb-4 flex justify-around flex-wrap gap-2">
+        {["player", "queue", "history"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
-            className={`px-3 py-1 rounded ${
-              activeTab === tab ? "bg-red-600 text-white" : "bg-black text-red-600 border border-red-600"
+            className={`px-3 py-1 rounded min-w-[70px] text-sm ${
+              activeTab === tab
+                ? "bg-red-600 text-white"
+                : "bg-black text-red-600 border border-red-600"
             }`}
           >
             {tab === "player"
               ? "🎵 Player"
               : tab === "queue"
               ? "📜 Fila"
-              : tab === "history"
-              ? "🕒 Histórico"
-              : "🔥 Mais Tocadas"}
+              : "🕒 Histórico"}
           </button>
         ))}
       </div>
 
-      {/* PLAYER */}
+      {/* PLAYER (Mobile) */}
       <div className={`${activeTab === "player" ? "block" : "hidden"} md:block space-y-4`}>
-        <YouTubePlayer isAdmin={isAdmin} />
-        <SearchMusic />
-        <GeneroRestricao />
-        <div
-          style={{
-            border: "1px solid #ff0707",
-            borderRadius: 10,
-            padding: 10,
-            background: "#000",
-            maxHeight: 260,
-            boxShadow: `
-              0 0 6px rgba(255,7,7,0.6),
-              0 0 14px rgba(255,7,7,0.45),
-              0 0 24px rgba(255,7,7,0.25)
-            `,
-          }}
-        >
-          <Avisos />
+        <div className="w-full">
+          <YouTubePlayer isAdmin={isAdmin} />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <SearchMusic />
+          <GeneroRestricao />
+          <div className="border border-red-600 rounded-lg p-2 bg-black">
+            <Avisos />
+          </div>
         </div>
       </div>
 
-      {/* QUEUE */}
+      {/* QUEUE (Mobile) */}
       <div className={`${activeTab === "queue" ? "block" : "hidden"} md:block`}>
         <QueueList
           queue={queueHook.queue}
@@ -82,25 +76,21 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* HISTORY */}
+      {/* HISTORY (Mobile) */}
       <div className={`${activeTab === "history" ? "block" : "hidden"} md:block`}>
         <History />
       </div>
 
-      {/* MAIS TOCADAS 
-      <div className={`${activeTab === "maisTocadas" ? "block" : "hidden"} md:block`}>
-        <MaisTocadas />
-      </div>
-*/}
-      {/* DESKTOP EXTRAS */}
+      {/* DESKTOP EXTRAS (sem alterações) */}
       <div className="hidden md:block space-y-4">
         <EstatisticasDashboard />
         <AdminAlerts />
       </div>
-      
-<div>
-  <OnlineUsers />
-</div>
+
+      {/* ONLINE USERS */}
+      <div>
+        <OnlineUsers />
+      </div>
     </main>
   );
 }

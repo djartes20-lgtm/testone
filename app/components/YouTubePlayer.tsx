@@ -10,8 +10,38 @@ interface Props {
 }
 
 const AUTO_DJ_LIST = [
-  "ZDw_x_REei0", "B45UZFdxZG4", "T-nh8gpf6ZA", "VauVTmE6ka4",
-  "7fsHhApoaac","K3M0jlJfMuY","3QMTCcTgOsk","oC-GflRB0y4"
+  "ZDw_x_REei0",
+  "B45UZFdxZG4",
+  "T-nh8gpf6ZA",
+  "VauVTmE6ka4",
+  "7fsHhApoaac",
+  "3QMTCcTgOsk",
+  "oC-GflRB0y4",
+  "MPEdIqMDY_M",
+  "cb-swqOkK-Q",
+  "MTBmJO62zps",
+  "JO_Q-baM8r4",
+  "NX05KVFhg-k",
+  "ZbJ9uTJLgao",
+  "fSQd_-pTLHQ",
+  "pugItPBIs-U",
+  "YtZwtFujvd8",
+  "6z4WFqBjWe4",
+  "88_iSSp5kXM",
+  "FOU2Ss90WwQ",
+  "8miTn7zqlgI",
+  "ALZHF5UqnU4",
+  "lekfZs1jJH0",
+  "Vu_JGw3Ht90",
+  "XZsXvuhLsNE",
+  "mIUKGKwBRk8",
+  "Lxo7JGT-Ns8",
+  "ApXoWvfEYVU",
+  "fHI8X4OXluQ",
+  "OPf0YbXqDm0",
+  "2vMH8lITTCE",
+  "STr4Da8ghh4",
+  "6sICFXjd7tY",
   // Adicione o resto da lista aqui
 ];
 
@@ -79,8 +109,11 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     reportHandledRef.current = false;
     setReportsCount(0);
 
-    if (playerRef.current) playerRef.current.loadVideoById(videoId);
+    if (playerRef.current) {
+      playerRef.current.loadVideoById(videoId);
+    }
 
+    // Atualiza Firebase com tempo inicial
     await set(ref(db, "player"), {
       videoId,
       startedAt: Date.now(),
@@ -122,17 +155,24 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     });
   }, []);
 
-  // 🔄 Sincronização para novos usuários + reload
+  // 🔄 Sincronização + Continuidade real no reload
   useEffect(() => {
     const playerRefDB = ref(db, "player");
-    return onValue(playerRefDB, (snap) => {
+
+    // Atualiza startedAt a cada 5s para persistir tempo real
+    const interval = setInterval(async () => {
+      if (!playerRef.current || !currentVideoRef.current || syncingRef.current) return;
+      const currentTime = playerRef.current.getCurrentTime();
+      await set(ref(db, "player/startedAt"), Date.now() - currentTime * 1000);
+    }, 5000);
+
+    const unsub = onValue(playerRefDB, (snap) => {
       const data = snap.val();
       if (!data || !playerRef.current) return;
 
       const { videoId, startedAt, mode } = data;
       const elapsedSeconds = (Date.now() - startedAt) / 1000;
 
-      // Evita múltiplas execuções
       if (Date.now() - lastSyncRef.current < 1000) return;
       lastSyncRef.current = Date.now();
 
@@ -154,14 +194,32 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
         setTimeout(() => (syncingRef.current = false), 1000);
       }
     });
+
+    return () => {
+      clearInterval(interval);
+      unsub();
+    };
   }, []);
 
   const handleReady = (e: any) => {
     playerRef.current = e.target;
-    if (!isAdmin) {
-      e.target.mute();
-      e.target.playVideo();
-    }
+
+    // Carrega música existente (reload)
+    get(ref(db, "player")).then((snap) => {
+      const data = snap.val();
+      if (!data) return;
+
+      const elapsed = (Date.now() - data.startedAt) / 1000;
+      playerRef.current.loadVideoById({
+        videoId: data.videoId,
+        startSeconds: Math.max(elapsed, 0),
+      });
+
+      if (!isAdmin) {
+        playerRef.current.mute();
+        playerRef.current.playVideo();
+      }
+    });
   };
 
   const handleEnd = async () => {
