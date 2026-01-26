@@ -12,7 +12,9 @@ interface Video {
   channel: string;
   genre?: string;
 }
-
+interface Props {
+  isBlocked: boolean;
+}
 // 📌 Função que registra o pedido por dia da semana
 function registrarPedidoSemana() {
   const dias = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];

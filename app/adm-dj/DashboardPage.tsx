@@ -12,6 +12,7 @@ import AdminAlerts from "@/app/components/AdminAlerts";
 import EstatisticasDashboard from "@/app/components/EstatisticasDashboard";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
+import OnlineUsers from "./OnlineUsers";
 
 export default function DashboardPage() {
   const isAdmin = true;
@@ -96,6 +97,10 @@ export default function DashboardPage() {
         <EstatisticasDashboard />
         <AdminAlerts />
       </div>
+      
+<div>
+  <OnlineUsers />
+</div>
     </main>
   );
 }

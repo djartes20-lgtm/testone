@@ -1,8 +1,10 @@
 "use client";
 
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "@/app/lib/firebase";
 import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { ref, set, onDisconnect } from "firebase/database";
+import { auth, db } from "@/app/lib/firebase";
 
 interface GothamUser {
   nome: string;
@@ -36,6 +38,7 @@ export default function LoginButton() {
       alert("Não foi possível entrar. Tente novamente!");
     }
   };
+  
 
   return (
     <button

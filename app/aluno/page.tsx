@@ -10,6 +10,9 @@ import SearchMusic from "../components/SearchMusic";
 import Clock from "@/app/components/RelogioeData";
 import History from "@/app/components/AlunoHistory";
 import AlunosGenerosRestritos from "@/app/components/AlunosGenerosRestritos";
+import { onAuthStateChanged } from "firebase/auth";
+import { ref, set, onDisconnect, get } from "firebase/database";
+import { auth, db } from "@/app/lib/firebase";
 
 interface GothamUser {
   nome: string;
@@ -17,12 +20,61 @@ interface GothamUser {
   avatar: string;
 }
 
+
+
 export default function AlunoPage() {
   const [user, setUser] = useState<GothamUser | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const queueHook = useQueue();
   const isAdmin = false;
+
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+
+    const userRef = ref(db, `onlineUsers/${user.uid}`);
+
+    // Salva dados do usuário logado
+    set(userRef, {
+      nome: user.displayName,
+      email: user.email,
+      avatar: user.photoURL,
+      lastSeen: Date.now(),
+    });
+
+    // Remove usuário se desconectar
+    onDisconnect(userRef).remove();
+  });
+
+  return () => unsub();
+}, []);
+
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+
+    const blockedSnap = await get(ref(db, `blockedUsers/${user.uid}`));
+    if (blockedSnap.exists()) {
+      alert("Você foi bloqueado do sistema!");
+      auth.signOut(); // força logoff
+      return;
+    }
+
+    // salva usuário online normalmente
+    const userRef = ref(db, `onlineUsers/${user.uid}`);
+    set(userRef, {
+      nome: user.displayName,
+      email: user.email,
+      avatar: user.photoURL,
+      lastSeen: Date.now(),
+    });
+    onDisconnect(userRef).remove();
+  });
+
+  return () => unsub();
+}, []);
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -101,6 +153,7 @@ export default function AlunoPage() {
 
       {/* RELÓGIO */}
       <Clock />
+
     </main>
   );
 }
