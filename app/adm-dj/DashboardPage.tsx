@@ -86,11 +86,11 @@ export default function DashboardPage() {
         <History />
       </div>
 
-      {/* MAIS TOCADAS */}
+      {/* MAIS TOCADAS 
       <div className={`${activeTab === "maisTocadas" ? "block" : "hidden"} md:block`}>
         <MaisTocadas />
       </div>
-
+*/}
       {/* DESKTOP EXTRAS */}
       <div className="hidden md:block space-y-4">
         <EstatisticasDashboard />

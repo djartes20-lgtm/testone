@@ -1,6 +1,6 @@
 "use client";
 
-import LoginButton from "../components/LoginButton";
+import LoginAdm from "../components/loginAdm";
 
 export default function Login() {
 
@@ -8,7 +8,7 @@ export default function Login() {
   return (
     <div className="panel">
       <h2>Bem-vindo ao Gotham Play</h2>
-      <LoginButton/> 
+      <LoginAdm/> 
 
       <style jsx>{`
         .panel {

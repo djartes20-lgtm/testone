@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import LoginButton from "../components/LoginButton";
 
 interface User {
   nome: string;
@@ -33,20 +34,7 @@ export default function Login({ onLogin }: LoginProps) {
   return (
     <div className="panel">
       <h2>Bem-vindo ao Gotham Play</h2>
-
-      <input
-        placeholder="Digite seu nome"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-      />
-
-      <input
-        placeholder="Telefone"
-        value={telefone}
-        onChange={(e) => setTelefone(e.target.value)}
-      />
-
-      <button onClick={handleLogin}>Login</button>
+      <LoginButton/>
 
       <style jsx>{`
         .panel {

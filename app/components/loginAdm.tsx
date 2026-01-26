@@ -21,16 +21,16 @@ export default function LoginButton() {
       // Pega as informações do usuário logado
       const user = result.user;
       const loggedUser: GothamUser = {
-        nome: user.displayName || "Aluno",
+        nome: user.displayName || "adm",
         email: user.email || "",
         avatar: user.photoURL || "",
       };
 
       // Salva no localStorage para usar depois no painel
-      localStorage.setItem("gotham_user", JSON.stringify(loggedUser));
+      localStorage.setItem("gotham_adm_dj", JSON.stringify(loggedUser));
 
       // Redireciona para a página de aluno
-      router.push("/aluno");
+      router.push("/adm-dj");
     } catch (error) {
       console.error("Erro ao logar:", error);
       alert("Não foi possível entrar. Tente novamente!");
