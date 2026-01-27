@@ -8,7 +8,6 @@ import Avisos from "@/app/components/avisos";
 import History from "@/app/components/History";
 import Clock from "@/app/components/RelogioeData";
 import AdminAlerts from "@/app/components/AdminAlerts";
-import EstatisticasDashboard from "@/app/components/EstatisticasDashboard";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
 import OnlineUsers from "./OnlineUsers";
@@ -101,7 +100,6 @@ export default function DashboardPage() {
 
       {/* DESKTOP EXTRAS */}
       <div className="hidden md:block space-y-4">
-        <EstatisticasDashboard />
         <AdminAlerts />
       </div>
 
