@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { ref, push, runTransaction, onValue } from "firebase/database";
-import { db } from "@/app/lib/firebase";
+import { db, auth } from "@/app/lib/firebase";
 import Card from "../components2/Card";
+import { addToUserHistory } from "@/app/hooks/useFirebase";
 
 interface Video {
   videoId: string;
@@ -12,22 +13,22 @@ interface Video {
   channel: string;
   genre?: string;
 }
+
 interface Props {
-  isBlocked: boolean;
+  isAdmin?: boolean; // Indica se é admin
+  onAddMusic?: (video: Video) => Promise<void>; // função externa de adicionar música
 }
+
 // 📌 Função que registra o pedido por dia da semana
 function registrarPedidoSemana() {
   const dias = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
   const hoje = dias[new Date().getDay()];
-
   const refDia = ref(db, `estatisticas/pedidosSemana/${hoje}`);
 
-  runTransaction(refDia, (valorAtual) => {
-    return (valorAtual || 0) + 1;
-  });
+  runTransaction(refDia, (valorAtual) => (valorAtual || 0) + 1);
 }
 
-export default function SearchMusic() {
+export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   const [query, setQuery] = useState("");
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,13 +55,9 @@ export default function SearchMusic() {
         `/api/youtube/search?q=${encodeURIComponent(query)}`
       );
 
-      if (!res.ok) {
-        throw new Error("Erro ao buscar no YouTube");
-      }
+      if (!res.ok) throw new Error("Erro ao buscar no YouTube");
 
       const data = await res.json();
-
-      // Garante que o campo genre exista
       const videosComGenero: Video[] = data.map((v: any) => ({
         videoId: v.videoId,
         title: v.title,
@@ -78,29 +75,41 @@ export default function SearchMusic() {
     }
   };
 
-  const addToQueue = async (video: Video) => {
+  const handleAdd = async (video: Video) => {
     // 🔒 Bloquear se gênero estiver na restrição
     if (video.genre && restricoes.includes(video.genre)) {
       alert(`🚫 Músicas de ${video.genre} estão restritas!`);
       return;
     }
 
-    // 🎵 Adiciona na fila
-    await push(ref(db, "queue"), {
-      videoId: video.videoId,
-      title: video.title,
-      channel: video.channel,
-      genre: video.genre || "Desconhecido",
-      createdAt: Date.now(),
-    });
+    if (isAdmin && onAddMusic) {
+      // 🔥 Se for admin e passou função externa
+      await onAddMusic(video);
+    } else {
+      // 🔹 Aluno normal
+      const user = auth.currentUser;
+      if (!user) return;
 
-    // 📊 Registra estatística
+      const alunoNome = user.displayName || `Aluno-${user.uid}`;
+
+      await push(ref(db, "queue"), {
+        videoId: video.videoId,
+        title: video.title,
+        channel: video.channel,
+        genre: video.genre || "Desconhecido",
+        createdAt: Date.now(),
+        requestedBy: alunoNome,
+      });
+
+      await addToUserHistory(alunoNome, video.videoId, video.title);
+    }
+
     registrarPedidoSemana();
   };
 
   return (
     <Card
-      title="🔎 Buscar música"
+      title="🔎 Buscar música 🔎"
       style={{
         border: "2px solid #ff0707",
         borderRadius: 10,
@@ -144,9 +153,8 @@ export default function SearchMusic() {
             <p>{video.title}</p>
             <small>{video.channel}</small>
             <br />
-
             <button
-              onClick={() => addToQueue(video)}
+              onClick={() => handleAdd(video)}
               style={{
                 background: "transparent",
                 color: "#fff",
@@ -164,3 +172,6 @@ export default function SearchMusic() {
     </Card>
   );
 }
+
+
+

@@ -10,9 +10,9 @@ import YouTubePlayer from "@/app/components/YouTubePlayer";
 import QueueList from "@/app/components/QueueList";
 import SearchMusic from "@/app/components/SearchMusic";
 import Clock from "@/app/components/RelogioeData";
-import History from "@/app/components/AlunoHistory";
 import AlunosGenerosRestritos from "@/app/components/AlunosGenerosRestritos";
 import { useQueue } from "@/app/hooks/useQueue";
+import UserHistory from "@/app/components/UserHistory"; // ✅ Import do histórico do aluno
 
 interface GothamUser {
   nome: string;
@@ -74,6 +74,9 @@ export default function AlunoPage() {
 
   if (!user) return null;
 
+  // ✅ Nome do aluno logado para histórico
+  const alunoNome = user.nome;
+
   return (
     <main className="flex flex-col gap-3 p-6 min-h-screen">
       {/* HEADER */}
@@ -87,12 +90,8 @@ export default function AlunoPage() {
             className="rounded-full"
           />
           <div>
-            <h2 className="text-red-500 font-bold">
-              Olá, {user.nome}
-            </h2>
-            <span className="text-red-500 text-sm">
-              Gotham Play
-            </span>
+            <h2 className="text-red-500 font-bold">Olá, {user.nome}</h2>
+            <span className="text-red-500 text-sm">Gotham Play</span>
           </div>
         </div>
 
@@ -120,11 +119,12 @@ export default function AlunoPage() {
         removeFromQueue={queueHook.removeFromQueue}
       />
 
-      {/* HISTÓRICO */}
-      <History />
+      {/* HISTÓRICO INDIVIDUAL DO ALUNO */}
+      <UserHistory userName={alunoNome} />
 
       {/* RELÓGIO */}
       <Clock />
     </main>
   );
 }
+

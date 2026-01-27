@@ -151,3 +151,19 @@ export function useFirebase(isAdmin = false) {
     removerDaFila
   };
 }
+
+export const addToUserHistory = async (
+  userName: string,
+  videoId: string,
+  title: string
+) => {
+  if (!userName || userName === "Auto DJ") return;
+
+  await push(ref(db, `userHistory/${userName}`), {
+    videoId,
+    title,
+    requestedAt: Date.now(),
+  });
+};
+
+

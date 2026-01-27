@@ -14,6 +14,7 @@ interface UserData {
 export default function OnlineUsersADM() {
   const [online, setOnline] = useState<UserData[]>([]);
   const [blockedIds, setBlockedIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState(""); // 🔹 Nova barra de pesquisa
 
   useEffect(() => {
     return onValue(ref(db, "onlineUsers"), (snap) => {
@@ -46,6 +47,11 @@ export default function OnlineUsersADM() {
     await remove(ref(db, `blockedUsers/${uid}`));
   };
 
+  // 🔹 Filtra usuários pelo searchQuery
+  const filteredUsers = online.filter((u) =>
+    u.nome.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div
       className="
@@ -68,13 +74,27 @@ export default function OnlineUsersADM() {
         👥 USUÁRIOS ONLINE 👥
       </h2>
 
-      {online.length === 0 && (
+      {/* 🔹 Barra de busca */}
+      <input
+        type="text"
+        placeholder="Buscar usuário..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="
+          w-full mb-4 p-2 rounded-lg
+          bg-black text-red-500 border border-red-500
+          shadow-[0_0_10px_rgba(255,0,0,0.7)]
+          placeholder:text-red-600
+        "
+      />
+
+      {filteredUsers.length === 0 && (
         <p className="text-center text-red-400 opacity-80">
-          Nenhum usuário online
+          Nenhum usuário encontrado
         </p>
       )}
 
-      {online.map((u) => {
+      {filteredUsers.map((u) => {
         const isBlocked = blockedIds.includes(u.uid);
 
         return (
@@ -154,3 +174,4 @@ export default function OnlineUsersADM() {
     </div>
   );
 }
+

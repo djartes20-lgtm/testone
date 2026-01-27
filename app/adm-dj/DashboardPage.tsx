@@ -12,18 +12,25 @@ import EstatisticasDashboard from "@/app/components/EstatisticasDashboard";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
 import OnlineUsers from "./OnlineUsers";
+import { useFirebase } from "@/app/hooks/useFirebase";
 
 export default function DashboardPage() {
   const isAdmin = true;
   const queueHook = useQueue();
-  const [activeTab, setActiveTab] = useState<"player" | "queue" | "history">("player");
+
+  // 🔹 Hook do Firebase com admin = true
+  const { adicionarMusica } = useFirebase(true);
+
+  const [activeTab, setActiveTab] = useState<"player" | "queue" | "history">(
+    "player"
+  );
 
   return (
     <main className="min-h-screen p-4 space-y-6">
       {/* HEADER */}
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-2">
         <h1 className="text-2xl font-bold text-red-600 drop-shadow text-center md:text-left">
-        Painel Admin
+          Painel Admin
         </h1>
         {/* Clock apenas no desktop */}
         <div className="hidden md:block">
@@ -53,13 +60,24 @@ export default function DashboardPage() {
       </div>
 
       {/* PLAYER (Mobile) */}
-      <div className={`${activeTab === "player" ? "block" : "hidden"} md:block space-y-4`}>
+      <div
+        className={`${activeTab === "player" ? "block" : "hidden"} md:block space-y-4`}
+      >
         <div className="w-full">
           <YouTubePlayer isAdmin={isAdmin} />
         </div>
 
         <div className="flex flex-col gap-2">
-          <SearchMusic />
+          {/* 🔹 Barra de pesquisa do Admin escondida */}
+          {false && (
+            <SearchMusic
+              isAdmin={isAdmin}
+              onAddMusic={async (video) => {
+                await adicionarMusica(video.videoId, video.title, true);
+              }}
+            />
+          )}
+
           <GeneroRestricao />
           <div className="border border-red-600 rounded-lg p-2 bg-black">
             <Avisos />
@@ -81,7 +99,7 @@ export default function DashboardPage() {
         <History />
       </div>
 
-      {/* DESKTOP EXTRAS (sem alterações) */}
+      {/* DESKTOP EXTRAS */}
       <div className="hidden md:block space-y-4">
         <EstatisticasDashboard />
         <AdminAlerts />
