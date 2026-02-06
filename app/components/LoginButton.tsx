@@ -53,7 +53,7 @@ export default function LoginButton() {
         fontSize: 16,
       }}
     >
-      🔐 Entrar com Google
+      🔐 Entrar com Google v2
     </button>
   );
 }
