@@ -113,3 +113,14 @@ html, body {
 
 
 
+@keyframes searchMusicSpin {
+  to { transform: rotate(360deg); }
+}
+.search-music-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 7, 7, 0.3);
+  border-top-color: #ff0707;
+  border-radius: 50%;
+  animation: searchMusicSpin 0.8s linear infinite;
+}

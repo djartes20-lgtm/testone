@@ -120,56 +120,151 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
         padding: 20,
       }}
     >
-      <input
-        placeholder="Nome da música"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+      <style>{`
+        .search-music-thumb {
+          max-width: 100%;
+          height: auto;
+          flex-shrink: 0;
+          border-radius: 4px;
+        }
+        .search-music-add-btn {
+          max-width: 220px;
+        }
+        .search-music-card-content {
+          gap: 10px;
+        }
+        @media (max-width: 768px) {
+          .search-music-card {
+            flex-direction: column;
+          }
+          .search-music-thumb {
+            width: 100%;
+            max-width: 100%;
+          }
+          .search-music-card-content {
+            width: 100%;
+            flex: 1;
+          }
+          .search-music-add-btn {
+            width: 100%;
+            max-width: none;
+          }
+        }
+      `}</style>
+      <div
         style={{
-          border: "2px solid #ff0707",
-          padding: "10px 12px",
-          width: "13%",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 8,
+          alignItems: "center",
+          justifyContent: loading ? "center" : undefined,
           marginTop: 8,
-          background: "#000",
-          color: "#ff0707",
-        }}
-      />
-
-      <button
-        onClick={search}
-        disabled={loading}
-        style={{
-          border: "2px solid red",
-          background: "transparent",
-          color: "red",
-          padding: "10px 16px",
-          marginLeft: 6,
+          width: "100%",
+          minHeight: 42,
         }}
       >
-        {loading ? "Buscando..." : "Pesquisar"}
-      </button>
+        {loading ? (
+          <div className="search-music-spinner" />
+        ) : (
+          <>
+            <input
+              placeholder="Nome da música"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              style={{
+                border: "2px solid #ff0707",
+                padding: "10px 12px",
+                flex: "1 1 180px",
+                minWidth: 0,
+                maxWidth: "100%",
+                background: "#000",
+                color: "#ff0707",
+                boxSizing: "border-box",
+              }}
+            />
+            <button
+              onClick={search}
+              disabled={loading}
+              style={{
+                border: "2px solid red",
+                background: "transparent",
+                color: "red",
+                padding: "10px 16px",
+                flex: "0 0 auto",
+              }}
+            >
+              Pesquisar
+            </button>
+          </>
+        )}
+      </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <ul>
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: 0,
+          paddingTop: '20px',
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}
+      >
         {videos.map((video) => (
-          <li key={video.videoId} style={{ marginTop: 12 }}>
-            <img src={video.thumbnail} width={160} />
-            <p>{video.title}</p>
-            <small>{video.channel}</small>
-            <br />
-            <button
-              onClick={() => handleAdd(video)}
+          <li
+            key={video.videoId}
+            className="search-music-card"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              alignItems: "flex-start",
+              padding: 12,
+              borderRadius: 8,
+              border: "1px solid rgba(255, 7, 7, 0.3)",
+            }}
+          >
+            <img
+              src={video.thumbnail}
+              alt=""
+              className="search-music-thumb"
+            />
+            <div
+              className="search-music-card-content"
               style={{
-                background: "transparent",
-                color: "#fff",
-                padding: "12px 16px",
-                border: "2px solid #ff0707",
-                cursor: "pointer",
-                boxShadow: "0 0 10px #ff0707, 0 0 20px #ff0707",
+                minWidth: 0,
               }}
             >
-              ➕ Adicionar à fila
-            </button>
+              <p
+                style={{
+                  margin: "0 0 4px",
+                  wordBreak: "break-word",
+                  lineHeight: 1.3,
+                }}
+              >
+                {video.title}
+              </p>
+              <small style={{ display: "block", marginBottom: 8, opacity: 0.9 }}>
+                {video.channel}
+              </small>
+              <button
+                onClick={() => handleAdd(video)}
+                className="search-music-add-btn"
+                style={{
+                  background: "transparent",
+                  color: "#fff",
+                  padding: "12px 16px",
+                  border: "2px solid #ff0707",
+                  cursor: "pointer",
+                  boxShadow: "0 0 5px #ff0707, 0 0 10px #ff0707",
+                  width: "100%",
+                }}
+              >
+                ➕ Adicionar à fila
+              </button>
+            </div>
           </li>
         ))}
       </ul>
