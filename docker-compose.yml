@@ -1,6 +1,6 @@
 services:
   play-music-gym:
-    image: ghcr.io/davidclp/play-music-gym:latest
+    image: ghcr.io/djartes20-lgtm/play-music-gym:latest
     container_name: play-music-gym
     restart: always
     networks:
