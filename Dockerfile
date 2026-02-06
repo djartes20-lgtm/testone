@@ -20,5 +20,5 @@ WORKDIR /app
 COPY --from=build /app ./
 
 EXPOSE 3020
-
+ENV PORT=3020
 CMD ["npm", "run", "start"]
