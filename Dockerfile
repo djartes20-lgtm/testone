@@ -2,7 +2,7 @@ FROM node:20 AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 COPY . .
 ARG NEXT_PUBLIC_FIREBASE_API_KEY
