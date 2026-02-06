@@ -15,11 +15,20 @@ export async function GET(req: Request) {
   const response = await fetch(url);
   const data = await response.json();
 
+  if (!response.ok || !data?.items || !Array.isArray(data.items)) {
+    const message =
+      data?.error?.message || "YouTube API indisponível ou chave inválida.";
+    return NextResponse.json(
+      { error: message },
+      { status: response.ok ? 502 : response.status }
+    );
+  }
+
   const videos = data.items.map((item: any) => ({
-    videoId: item.id.videoId,
-    title: item.snippet.title,
-    thumbnail: item.snippet.thumbnails.medium.url,
-    channel: item.snippet.channelTitle
+    videoId: item.id?.videoId,
+    title: item.snippet?.title,
+    thumbnail: item.snippet?.thumbnails?.medium?.url,
+    channel: item.snippet?.channelTitle,
   }));
 
   return NextResponse.json(videos);

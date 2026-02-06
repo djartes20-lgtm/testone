@@ -55,10 +55,14 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
         `/api/youtube/search?q=${encodeURIComponent(query)}`
       );
 
-      if (!res.ok) throw new Error("Erro ao buscar no YouTube");
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody?.error || "Erro ao buscar no YouTube");
+      }
 
       const data = await res.json();
-      const videosComGenero: Video[] = data.map((v: any) => ({
+      const list = Array.isArray(data) ? data : [];
+      const videosComGenero: Video[] = list.map((v: any) => ({
         videoId: v.videoId,
         title: v.title,
         thumbnail: v.thumbnail,
