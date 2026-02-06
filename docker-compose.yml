@@ -16,8 +16,8 @@ services:
     restart: always
     networks:
       - proxy
-    ports:
-      - "3020:3020" 
+    expose:
+      - "3020" 
     environment:
       NEXT_PUBLIC_GERENCIANET_ACCOUNT_ID: ${NEXT_PUBLIC_GERENCIANET_ACCOUNT_ID}
       NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
