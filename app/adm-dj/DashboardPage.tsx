@@ -72,7 +72,7 @@ export default function DashboardPage() {
             <SearchMusic
               isAdmin={isAdmin}
               onAddMusic={async (video) => {
-                await adicionarMusica(video.videoId, video.title, true);
+                await adicionarMusica(video.videoId);
               }}
             />
           )}
