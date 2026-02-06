@@ -13,6 +13,7 @@ export default function PedidoMusica() {
 
   const pedirMusica = () => {
     const videoId = extrairVideoId(link);
+    
     if (!videoId) return alert("Link inválido do YouTube");
     adicionarMusica(videoId);
     setLink("");
