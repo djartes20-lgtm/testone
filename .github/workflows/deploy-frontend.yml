@@ -33,7 +33,7 @@ jobs:
               git reset --hard origin/main
             fi
 
-            cd /root/biko-frontend
+            cd /root/testone
 
             # Cria o .env
             echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" > .env
