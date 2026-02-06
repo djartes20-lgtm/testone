@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Gotham Play",
   description: "App de gerenciamento musical do CT Gotham",
+  icons: {
+    icon: "/android-icon-192x192",
+  },
 };
 
 export default function RootLayout({
