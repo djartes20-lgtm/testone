@@ -19,18 +19,6 @@ interface Props {
   onAddMusic?: (video: Video) => Promise<void>; // função externa de adicionar música
 }
 
-// 🔒 BLOQUEIO DE CONTEÚDO
-let BLOCKED_ARTISTS = ["Artista Ruim", "Outro Artista"];
-let BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
-let BLOCKED_VIDEO_IDS = ["abcd1234", "efgh5678"];
-
-function isBlocked(videoId: string, title: string, artist?: string) {
-  if (BLOCKED_VIDEO_IDS.includes(videoId)) return true;
-  if (artist && BLOCKED_ARTISTS.includes(artist)) return true;
-  const titleLower = title.toLowerCase();
-  return BLOCKED_KEYWORDS.some(word => titleLower.includes(word.toLowerCase()));
-}
-
 // 📌 Função que registra o pedido por dia da semana
 function registrarPedidoSemana() {
   const dias = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
@@ -58,6 +46,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
 
   const search = async () => {
     if (!query) return;
+    
 
     try {
       setLoading(true);
@@ -73,6 +62,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
       }
 
       const data = await res.json();
+      const list = Array.isArray(data) ? data : [];
       const videosComGenero: Video[] = list.map((v: any) => ({
         videoId: v.videoId,
         title: v.title,
@@ -81,12 +71,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
         genre: v.genre || "Desconhecido",
       }));
 
-      // 🔒 FILTRAR RESULTADOS BLOQUEADOS
-      const filteredVideos = videosComGenero.filter(
-        (video) => !isBlocked(video.videoId, video.title, video.channel)
-      );
-
-      setVideos(filteredVideos);
+      setVideos(videosComGenero);
     } catch {
       setError("Não foi possível buscar as músicas 😢");
       setVideos([]);
@@ -102,15 +87,11 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
       return;
     }
 
-    // 🔒 BLOQUEIO DE CONTEÚDO
-    if (isBlocked(video.videoId, video.title, video.channel)) {
-      alert(`🚫 Esta música está bloqueada!`);
-      return;
-    }
-
     if (isAdmin && onAddMusic) {
+      // 🔥 Se for admin e passou função externa
       await onAddMusic(video);
     } else {
+      // 🔹 Aluno normal
       const user = auth.currentUser;
       if (!user) return;
 
@@ -291,7 +272,6 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
     </Card>
   );
 }
-
 
 
 
