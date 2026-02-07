@@ -26,6 +26,8 @@ export default function DashboardPage() {
     "player"
   );
 
+const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
+
   return (
     <main className="min-h-screen p-4 space-y-6">
       {/* HEADER */}
@@ -114,7 +116,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 🔹 MINI PLAYER FLUTUANTE */}
-      <MiniPlayer /> 
+<MiniPlayer isAdmin={true} skipMusic={skipMusicFunc} />
     </main>
   );
 }
