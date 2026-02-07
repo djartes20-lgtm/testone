@@ -68,6 +68,19 @@ const AUTO_DJ_LIST = [
   // Adicione o resto da lista aqui
 ];
 
+// Lista de bloqueio
+let BLOCKED_ARTISTS = ["Artista Ruim", "Outro Artista"];
+let BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
+let BLOCKED_VIDEO_IDS = ["abcd1234", "efgh5678"];
+
+// Função que verifica se o vídeo é bloqueado
+function isBlocked(videoId: string, title: string, artist?: string) {
+  if (BLOCKED_VIDEO_IDS.includes(videoId)) return true;
+  if (artist && BLOCKED_ARTISTS.includes(artist)) return true;
+  const titleLower = title.toLowerCase();
+  return BLOCKED_KEYWORDS.some(word => titleLower.includes(word.toLowerCase()));
+}
+
 let autoDjIndex = 0;
 const getNextAutoDj = () => {
   const id = AUTO_DJ_LIST[autoDjIndex];
