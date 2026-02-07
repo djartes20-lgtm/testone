@@ -121,12 +121,11 @@ export default function AlunoPage() {
         removeFromQueue={queueHook.removeFromQueue}
       />
 
+      {/* CHAT GLOBAL */}
+      <ChatGotham userName={alunoNome} />
+
       {/* HISTÓRICO INDIVIDUAL DO ALUNO */}
       <UserHistory userName={alunoNome} />
-
-    {/* CHAT GLOBAL */}
-    <ChatGotham userName={alunoNome} />
-
 
       {/* RELÓGIO */}
       <Clock />
