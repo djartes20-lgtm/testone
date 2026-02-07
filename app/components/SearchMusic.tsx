@@ -19,6 +19,18 @@ interface Props {
   onAddMusic?: (video: Video) => Promise<void>; // função externa de adicionar música
 }
 
+// 🔒 BLOQUEIO DE CONTEÚDO
+let BLOCKED_ARTISTS = ["Artista Ruim", "Outro Artista"];
+let BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
+let BLOCKED_VIDEO_IDS = ["abcd1234", "efgh5678"];
+
+function isBlocked(videoId: string, title: string, artist?: string) {
+  if (BLOCKED_VIDEO_IDS.includes(videoId)) return true;
+  if (artist && BLOCKED_ARTISTS.includes(artist)) return true;
+  const titleLower = title.toLowerCase();
+  return BLOCKED_KEYWORDS.some(word => titleLower.includes(word.toLowerCase()));
+}
+
 // 📌 Função que registra o pedido por dia da semana
 function registrarPedidoSemana() {
   const dias = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
