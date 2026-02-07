@@ -336,17 +336,6 @@ useEffect(() => {
         }}
       />
 
-      {!isAdmin && (
-        <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-          <button onClick={toggleMute} style={btnStyle}>
-            {muted ? "🔊 Ativar som" : "🔇 Silenciar"}
-          </button>
-          <button onClick={reportMusic} style={btnStyle}>
-            🚨 Reportar música
-          </button>
-        </div>
-      )}
-
       {isAdmin && (
         <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
           <button onClick={skipMusic} style={adminBtn}>
