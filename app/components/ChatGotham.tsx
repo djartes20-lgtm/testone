@@ -55,7 +55,7 @@ export default function ChatGotham({
     });
   }, []);
 
-  /* 🔽 Scroll */
+  /* 🔽 Scroll automático */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -96,7 +96,7 @@ export default function ChatGotham({
     set(ref(db, `typing/${userName}`), false);
   };
 
-  /* 😀 Reagir */
+  /* 😀 Reações */
   const toggleReaction = async (
     messageId: string,
     emoji: string,
@@ -111,100 +111,98 @@ export default function ChatGotham({
   };
 
   return (
-    <div className="history-container">
-      <div className="history-header">
-        <h2>💬 Chat da Academia</h2>
-      </div>
-
-      <div className="day-block">
-        <ul>
-          {messages.map((msg) => (
-            <li key={msg.id} style={{ marginBottom: "14px" }}>
-              <div
-                style={{
-                  color: msg.user === "ADM" ? "#ff0707" : "#fff",
-                  fontSize: "0.9rem",
-                }}
-              >
-                <strong>{msg.user}:</strong> {msg.text}
-              </div>
-
-              {/* Reações */}
-              <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
-                {EMOJIS.map((emoji) => {
-                  const reacted =
-                    msg.reactions?.[emoji]?.[userName] === true;
-                  const count = msg.reactions?.[emoji]
-                    ? Object.keys(msg.reactions[emoji]).length
-                    : 0;
-
-                  if (count === 0 && !reacted) return null;
-
-                  return (
-                    <button
-                      key={emoji}
-                      onClick={() =>
-                        toggleReaction(msg.id!, emoji, reacted)
-                      }
-                      style={{
-                        background: reacted ? "#ff0707" : "transparent",
-                        color: reacted ? "#000" : "#ff0707",
-                        border: "1px solid #ff0707",
-                        borderRadius: "14px",
-                        padding: "2px 8px",
-                        fontSize: "0.75rem",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {emoji} {count}
-                    </button>
-                  );
-                })}
-
-                {/* Adicionar reação */}
-                <div>
-                  {EMOJIS.map((emoji) => (
-                    <button
-                      key={emoji}
-                      onClick={() =>
-                        toggleReaction(
-                          msg.id!,
-                          emoji,
-                          msg.reactions?.[emoji]?.[userName] === true
-                        )
-                      }
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        fontSize: "0.9rem",
-                      }}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div ref={messagesEndRef} />
-      </div>
-
-      {typingUser && (
-        <div
-          style={{
-            padding: "0 16px 6px",
-            fontSize: "0.75rem",
-            color: "rgba(255,7,7,0.8)",
-          }}
-        >
-          ✍️ {typingUser} está digitando...
+    <>
+      <div className="history-container">
+        {/* HEADER FIXO */}
+        <div className="history-header">
+          <h2>💬 Chat da Academia</h2>
         </div>
-      )}
 
-      <div style={{ padding: "12px", borderTop: "1px solid rgba(255,7,7,0.3)" }}>
-        <div style={{ display: "flex", gap: "8px" }}>
+        {/* MENSAGENS */}
+        <div className="day-block">
+          <ul>
+            {messages.map((msg) => (
+              <li key={msg.id}>
+                <div
+                  style={{
+                    color: msg.user === "ADM" ? "#ff0707" : "#fff",
+                    fontSize: "0.9rem",
+                  }}
+                >
+                  <strong>{msg.user}:</strong> {msg.text}
+                </div>
+
+                {/* Reações */}
+                <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                  {EMOJIS.map((emoji) => {
+                    const reacted =
+                      msg.reactions?.[emoji]?.[userName] === true;
+                    const count = msg.reactions?.[emoji]
+                      ? Object.keys(msg.reactions[emoji]).length
+                      : 0;
+
+                    if (count === 0 && !reacted) return null;
+
+                    return (
+                      <button
+                        key={emoji}
+                        onClick={() =>
+                          toggleReaction(msg.id!, emoji, reacted)
+                        }
+                        style={{
+                          background: reacted ? "#ff0707" : "transparent",
+                          color: reacted ? "#000" : "#ff0707",
+                          border: "1px solid #ff0707",
+                          borderRadius: "14px",
+                          padding: "2px 8px",
+                          fontSize: "0.75rem",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {emoji} {count}
+                      </button>
+                    );
+                  })}
+
+                  {/* Adicionar reação */}
+                  <div>
+                    {EMOJIS.map((emoji) => (
+                      <button
+                        key={emoji}
+                        onClick={() =>
+                          toggleReaction(
+                            msg.id!,
+                            emoji,
+                            msg.reactions?.[emoji]?.[userName] === true
+                          )
+                        }
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "0.9rem",
+                        }}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* DIGITANDO */}
+        {typingUser && (
+          <div className="typing">
+            ✍️ {typingUser} está digitando...
+          </div>
+        )}
+
+        {/* INPUT */}
+        <div className="input-area">
           <input
             value={text}
             onChange={(e) => handleTyping(e.target.value)}
@@ -212,21 +210,93 @@ export default function ChatGotham({
             placeholder="Digite sua mensagem..."
             className="search-input"
           />
-          <button
-            onClick={sendMessage}
-            style={{
-              background: "#ff0707",
-              color: "#000",
-              padding: "6px 14px",
-              borderRadius: "6px",
-              fontWeight: "bold",
-            }}
-          >
-            Enviar
-          </button>
+          <button onClick={sendMessage}>Enviar</button>
         </div>
       </div>
-    </div>
+
+      {/* 🎨 ESTILO GOTHAM */}
+      <style jsx>{`
+        .history-container {
+          border: 2px solid #ff0707;
+          border-radius: 10px;
+          background: #000;
+          color: #ff0707;
+          max-height: 420px;
+          overflow-y: auto;
+          box-shadow:
+            0 0 6px rgba(255, 7, 7, 0.6),
+            0 0 14px rgba(255, 7, 7, 0.45),
+            0 0 24px rgba(255, 7, 7, 0.25),
+            0 0 40px rgba(255, 7, 7, 0.15);
+        }
+
+        .history-header {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: #000;
+          padding: 12px 16px;
+          border-bottom: 1px solid rgba(255, 7, 7, 0.4);
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 6px 10px;
+          background: #000;
+          border: 1px solid #ff0707;
+          color: #ff0707;
+          border-radius: 6px;
+        }
+
+        .search-input::placeholder {
+          color: rgba(255, 7, 7, 0.6);
+        }
+
+        .day-block {
+          padding: 16px;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+        }
+
+        li {
+          margin-bottom: 14px;
+        }
+
+        .typing {
+          padding: 0 16px 6px;
+          font-size: 0.75rem;
+          color: rgba(255, 7, 7, 0.8);
+        }
+
+        .input-area {
+          padding: 12px;
+          border-top: 1px solid rgba(255, 7, 7, 0.3);
+          display: flex;
+          gap: 8px;
+        }
+
+        .input-area button {
+          background: #ff0707;
+          color: #000;
+          padding: 6px 14px;
+          border-radius: 6px;
+          font-weight: bold;
+        }
+
+        /* 🔥 Scrollbar neon */
+        .history-container::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+          background: #ff0707;
+          border-radius: 10px;
+          box-shadow: 0 0 6px #ff0707;
+        }
+      `}</style>
+    </>
   );
 }
-
