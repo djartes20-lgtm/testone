@@ -38,6 +38,7 @@ export default function ChatGotham({
   const [text, setText] = useState("");
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const firstLoadRef = useRef(true); // ✅ Para controlar primeiro carregamento
 
   /* 🔥 Mensagens */
   useEffect(() => {
@@ -55,8 +56,14 @@ export default function ChatGotham({
     });
   }, []);
 
-  /* 🔽 Scroll automático */
+  /* 🔽 Scroll automático apenas para novas mensagens */
   useEffect(() => {
+    if (firstLoadRef.current) {
+      // Não scrolla no primeiro carregamento
+      firstLoadRef.current = false;
+      return;
+    }
+
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -132,10 +139,16 @@ export default function ChatGotham({
               </div>
 
               {/* Reações */}
-              <div style={{ display: "flex", gap: "6px", marginTop: "6px", flexWrap: "wrap" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "6px",
+                  marginTop: "6px",
+                  flexWrap: "wrap",
+                }}
+              >
                 {EMOJIS.map((emoji) => {
-                  const reacted =
-                    msg.reactions?.[emoji]?.[userName] === true;
+                  const reacted = msg.reactions?.[emoji]?.[userName] === true;
                   const count = msg.reactions?.[emoji]
                     ? Object.keys(msg.reactions[emoji]).length
                     : 0;
@@ -145,9 +158,7 @@ export default function ChatGotham({
                   return (
                     <button
                       key={emoji}
-                      onClick={() =>
-                        toggleReaction(msg.id!, emoji, reacted)
-                      }
+                      onClick={() => toggleReaction(msg.id!, emoji, reacted)}
                       className={`reaction ${reacted ? "active" : ""}`}
                     >
                       {emoji} {count}
@@ -205,8 +216,7 @@ export default function ChatGotham({
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          box-shadow:
-            0 0 6px rgba(255, 7, 7, 0.6),
+          box-shadow: 0 0 6px rgba(255, 7, 7, 0.6),
             0 0 14px rgba(255, 7, 7, 0.45),
             0 0 24px rgba(255, 7, 7, 0.25),
             0 0 40px rgba(255, 7, 7, 0.15);
@@ -299,8 +309,7 @@ export default function ChatGotham({
         .day-block::-webkit-scrollbar-thumb {
           background: linear-gradient(180deg, #ff0707, #ff3b3b, #ff0707);
           border-radius: 10px;
-          box-shadow:
-            0 0 6px rgba(255, 7, 7, 0.9),
+          box-shadow: 0 0 6px rgba(255, 7, 7, 0.9),
             0 0 16px rgba(255, 7, 7, 0.7),
             0 0 30px rgba(255, 7, 7, 0.5);
           animation: neonScroll 2s infinite alternate;
@@ -308,13 +317,11 @@ export default function ChatGotham({
 
         @keyframes neonScroll {
           from {
-            box-shadow:
-              0 0 6px rgba(255, 7, 7, 0.6),
+            box-shadow: 0 0 6px rgba(255, 7, 7, 0.6),
               0 0 14px rgba(255, 7, 7, 0.4);
           }
           to {
-            box-shadow:
-              0 0 14px rgba(255, 7, 7, 1),
+            box-shadow: 0 0 14px rgba(255, 7, 7, 1),
               0 0 30px rgba(255, 7, 7, 0.8);
           }
         }
