@@ -13,6 +13,8 @@ import Clock from "@/app/components/RelogioeData";
 import AlunosGenerosRestritos from "@/app/components/AlunosGenerosRestritos";
 import { useQueue } from "@/app/hooks/useQueue";
 import UserHistory from "@/app/components/UserHistory"; // ✅ Import do histórico do aluno
+import ChatGotham from "@/app/components/ChatGotham";
+
 
 interface GothamUser {
   nome: string;
@@ -121,6 +123,10 @@ export default function AlunoPage() {
 
       {/* HISTÓRICO INDIVIDUAL DO ALUNO */}
       <UserHistory userName={alunoNome} />
+
+    {/* CHAT GLOBAL */}
+    <ChatGotham userName={alunoNome} />
+
 
       {/* RELÓGIO */}
       <Clock />

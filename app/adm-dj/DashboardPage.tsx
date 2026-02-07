@@ -11,6 +11,7 @@ import AdminAlerts from "@/app/components/AdminAlerts";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
 import OnlineUsers from "./OnlineUsers";
+import ChatGotham from "@/app/components/ChatGotham";
 import { useFirebase } from "@/app/hooks/useFirebase";
 
 export default function DashboardPage() {
@@ -83,6 +84,10 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* CHAT GLOBAL (ADM) */}
+      <ChatGotham userName="ADM" isAdmin />
+
 
       {/* QUEUE (Mobile) */}
       <div className={`${activeTab === "queue" ? "block" : "hidden"} md:block`}>
