@@ -12,9 +12,8 @@ import SearchMusic from "@/app/components/SearchMusic";
 import Clock from "@/app/components/RelogioeData";
 import AlunosGenerosRestritos from "@/app/components/AlunosGenerosRestritos";
 import { useQueue } from "@/app/hooks/useQueue";
-import UserHistory from "@/app/components/UserHistory"; // ✅ Import do histórico do aluno
+import UserHistory from "@/app/components/UserHistory";
 import ChatGotham from "@/app/components/ChatGotham";
-
 
 interface GothamUser {
   nome: string;
@@ -22,8 +21,14 @@ interface GothamUser {
   avatar: string;
 }
 
+interface Notificacao {
+  title: string;
+  requestedBy: string;
+}
+
 export default function AlunoPage() {
   const [user, setUser] = useState<GothamUser | null>(null);
+  const [notificacao, setNotificacao] = useState<Notificacao | null>(null); // ✅ Notificação
   const router = useRouter();
   const queueHook = useQueue();
 
@@ -46,13 +51,10 @@ export default function AlunoPage() {
 
       // 🔹 Marca usuário como online
       const userRef = ref(db, `onlineUsers/${firebaseUser.uid}`);
-      set(userRef, {
-        ...userData,
-        lastSeen: Date.now(),
-      });
+      set(userRef, { ...userData, lastSeen: Date.now() });
       onDisconnect(userRef).remove();
 
-      // 🔥 LISTENER EM TEMPO REAL DE BLOQUEIO
+      // 🔥 Listener de bloqueio
       const blockedRef = ref(db, `blockedUsers/${firebaseUser.uid}`);
       unsubscribeBlocked = onValue(blockedRef, async (snap) => {
         if (snap.exists()) {
@@ -69,6 +71,22 @@ export default function AlunoPage() {
     };
   }, [router]);
 
+  // 🔔 Notificação: escuta alertas do admin para a música atual
+  useEffect(() => {
+    const alertRef = ref(db, "adminAlerts");
+    return onValue(alertRef, (snap) => {
+      const data = snap.val();
+      if (!data) return;
+
+      const alerts = Object.values(data) as any[];
+      const latest = alerts[alerts.length - 1];
+      if (latest && latest.type === "PLAY") {
+        setNotificacao({ title: latest.title, requestedBy: latest.requestedBy });
+        setTimeout(() => setNotificacao(null), 4000); // esconde após 4s
+      }
+    });
+  }, []);
+
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/login");
@@ -76,7 +94,6 @@ export default function AlunoPage() {
 
   if (!user) return null;
 
-  // ✅ Nome do aluno logado para histórico
   const alunoNome = user.nome;
 
   return (
@@ -84,13 +101,7 @@ export default function AlunoPage() {
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <img
-            src={user.avatar}
-            alt={user.nome}
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <img src={user.avatar} alt={user.nome} width={40} height={40} className="rounded-full" />
           <div>
             <h2 className="text-red-500 font-bold">Olá, {user.nome}</h2>
             <span className="text-red-500 text-sm">Gotham Play</span>
@@ -108,6 +119,23 @@ export default function AlunoPage() {
       {/* PLAYER */}
       <YouTubePlayer isAdmin={false} />
 
+      {/* 🔔 Notificação de música */}
+      {notificacao && (
+        <div style={{
+          position: "fixed",
+          top: 20,
+          right: 20,
+          background: "#ff0707",
+          color: "#000",
+          padding: "10px 16px",
+          borderRadius: 8,
+          boxShadow: "0 0 10px #ff0707, 0 0 20px #ff0707",
+          zIndex: 1000,
+        }}>
+          🎵 Agora tocando: {notificacao.title} (pedido de {notificacao.requestedBy})
+        </div>
+      )}
+
       {/* GÊNEROS BLOQUEADOS */}
       <AlunosGenerosRestritos />
 
@@ -115,11 +143,7 @@ export default function AlunoPage() {
       <SearchMusic />
 
       {/* FILA */}
-      <QueueList
-        queue={queueHook.queue}
-        isAdmin={false}
-        removeFromQueue={queueHook.removeFromQueue}
-      />
+      <QueueList queue={queueHook.queue} isAdmin={false} removeFromQueue={queueHook.removeFromQueue} />
 
       {/* CHAT GLOBAL */}
       <ChatGotham userName={alunoNome} />
@@ -132,4 +156,3 @@ export default function AlunoPage() {
     </main>
   );
 }
-

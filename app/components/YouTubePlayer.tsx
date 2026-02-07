@@ -10,62 +10,16 @@ interface Props {
 }
 
 const AUTO_DJ_LIST = [
-  "ZDw_x_REei0",
-  "B45UZFdxZG4",
-  "T-nh8gpf6ZA",
-  "VauVTmE6ka4",
-  "7fsHhApoaac",
-  "3QMTCcTgOsk",
-  "oC-GflRB0y4",
-  "MPEdIqMDY_M",
-  "cb-swqOkK-Q",
-  "MTBmJO62zps",
-  "JO_Q-baM8r4",
-  "NX05KVFhg-k",
-  "ZbJ9uTJLgao",
-  "fSQd_-pTLHQ",
-  "pugItPBIs-U",
-  "YtZwtFujvd8",
-  "6z4WFqBjWe4",
-  "88_iSSp5kXM",
-  "FOU2Ss90WwQ",
-  "8miTn7zqlgI",
-  "ALZHF5UqnU4",
-  "lekfZs1jJH0",
-  "Vu_JGw3Ht90",
-  "XZsXvuhLsNE",
-  "mIUKGKwBRk8",
-  "Lxo7JGT-Ns8",
-  "ApXoWvfEYVU",
-  "fHI8X4OXluQ",
-  "OPf0YbXqDm0",
-  "2vMH8lITTCE",
-  "STr4Da8ghh4",
-  "6sICFXjd7tY",
-  "t0AsQIBFo8k",
-  "36tRma71YUo",
-  "rdlaeq_NsC4",
-  "RG-D4bcg54s",
-  "nMO7E4TywR4",
-  "tliJePo6vYs",
-  "yWKWXppp7VU",
-  "5-xhpcgBMe4",
-  "h_7qgzR1EXQ",
-  "qh6cB0aYGHo",
-  "Ez-fApyAY6g",
-  "VmB9QdeY1ac",
-  "bALuHd2EVe8",
-  "K6H2wB8DHsI",
-  "_Uohu8iJrqw",
-  "KjyJW-MM7RY",
-  "gEy7VIURmwM",
-  "xOIjSUEmS-c",
-  "RJao7K__jDw",
-  "AngEjsqKN0I",
-  "0OC1vmlmpd0",
-  "fpTAZmA-Ycw",
-  "SZLYHWmYcPQ",
-  // Adicione o resto da lista aqui
+  "ZDw_x_REei0","B45UZFdxZG4","T-nh8gpf6ZA","VauVTmE6ka4","7fsHhApoaac","3QMTCcTgOsk",
+  "oC-GflRB0y4","MPEdIqMDY_M","cb-swqOkK-Q","MTBmJO62zps","JO_Q-baM8r4","NX05KVFhg-k",
+  "ZbJ9uTJLgao","fSQd_-pTLHQ","pugItPBIs-U","YtZwtFujvd8","6z4WFqBjWe4","88_iSSp5kXM",
+  "FOU2Ss90WwQ","8miTn7zqlgI","ALZHF5UqnU4","lekfZs1jJH0","Vu_JGw3Ht90","XZsXvuhLsNE",
+  "mIUKGKwBRk8","Lxo7JGT-Ns8","ApXoWvfEYVU","fHI8X4OXluQ","OPf0YbXqDm0","2vMH8lITTCE",
+  "STr4Da8ghh4","6sICFXjd7tY","t0AsQIBFo8k","36tRma71YUo","rdlaeq_NsC4","RG-D4bcg54s",
+  "nMO7E4TywR4","tliJePo6vYs","yWKWXppp7VU","5-xhpcgBMe4","h_7qgzR1EXQ","qh6cB0aYGHo",
+  "Ez-fApyAY6g","VmB9QdeY1ac","bALuHd2EVe8","K6H2wB8DHsI","_Uohu8iJrqw","KjyJW-MM7RY",
+  "gEy7VIURmwM","xOIjSUEmS-c","RJao7K__jDw","AngEjsqKN0I","0OC1vmlmpd0","fpTAZmA-Ycw",
+  "SZLYHWmYcPQ"
 ];
 
 let autoDjIndex = 0;
@@ -80,71 +34,36 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   const currentVideoRef = useRef<string | null>(null);
   const currentModeRef = useRef<"queue" | "autodj" | null>(null);
   const syncingRef = useRef(false);
-  const reportHandledRef = useRef(false);
-  const lastSyncRef = useRef<number>(0);
 
   const [muted, setMuted] = useState(!isAdmin);
-  const [reportsCount, setReportsCount] = useState(0);
+  const [currentTitle, setCurrentTitle] = useState(""); // ✅ Para notificação
+  const [showNotification, setShowNotification] = useState(false);
 
   const getTodayKey = () => new Date().toISOString().split("T")[0];
 
   const addToHistory = async (videoId: string, title: string, requestedBy: string) => {
     const dayKey = getTodayKey();
-    const formattedDate = dayKey.split("-").reverse().join("/");
-    await set(ref(db, `history/${dayKey}/__title`), `Histórico do dia ${formattedDate}`);
-    await push(ref(db, `history/${dayKey}`), {
-      videoId,
-      title,
-      requestedBy,
-      startedAt: Date.now(),
-    });
+    await set(ref(db, `history/${dayKey}/__title`), `Histórico do dia`);
+    await push(ref(db, `history/${dayKey}`), { videoId, title, requestedBy, startedAt: Date.now() });
   };
 
-  // Reports (ADMIN)
-  useEffect(() => {
-    if (!isAdmin) return;
-    const reportsRef = ref(db, "reports");
-    return onValue(reportsRef, (snapshot) => {
-      const data = snapshot.val();
-      const totalReports = data ? Object.keys(data).length : 0;
-      setReportsCount(totalReports);
-
-      if (!data || !currentVideoRef.current) return;
-      const reports = Object.values(data) as any[];
-      const currentReports = reports.filter(r => r.videoId === currentVideoRef.current);
-
-      if (currentReports.length >= 10 && !reportHandledRef.current) {
-        reportHandledRef.current = true;
-        push(ref(db, "adminAlerts"), {
-          videoId: currentVideoRef.current,
-          message: "🚨 Música atingiu 10 reports!",
-          at: Date.now(),
-        });
-        remove(ref(db, "reports"));
-      }
-    });
-  }, [isAdmin]);
-
-  // Play video
-  const playVideo = async (videoId: string, mode: "queue" | "autodj", requestedBy = "AutoDJ", title = "Desconhecida") => {
+  const playVideo = async (
+    videoId: string,
+    mode: "queue" | "autodj",
+    requestedBy = "AutoDJ",
+    title = "Desconhecida"
+  ) => {
     currentVideoRef.current = videoId;
     currentModeRef.current = mode;
-    reportHandledRef.current = false;
-    setReportsCount(0);
 
-    if (playerRef.current) {
-      playerRef.current.loadVideoById(videoId);
-    }
+    if (playerRef.current) playerRef.current.loadVideoById(videoId);
 
-    // Atualiza Firebase com tempo inicial
-    await set(ref(db, "player"), {
-      videoId,
-      startedAt: Date.now(),
-      mode,
-      requestedBy,
-      title,
-    });
+    // 🔹 Notificação visual
+    setCurrentTitle(title);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 4000);
 
+    await set(ref(db, "player"), { videoId, startedAt: Date.now(), mode, requestedBy, title });
     if (mode === "queue") await addToHistory(videoId, title, requestedBy);
   };
 
@@ -158,12 +77,9 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       const next = queue[firstKey];
       await playVideo(next.videoId, "queue", next.requestedBy, next.title);
       await remove(ref(db, `queue/${firstKey}`));
-    } else {
-      startAutoDJ();
-    }
+    } else startAutoDJ();
   };
 
-  // AutoDJ quando entra pedido
   useEffect(() => {
     const queueRef = ref(db, "queue");
     return onValue(queueRef, async (snap) => {
@@ -178,153 +94,86 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     });
   }, []);
 
-  // 🔄 Sincronização + Continuidade real no reload
   useEffect(() => {
     const playerRefDB = ref(db, "player");
-
-    // Atualiza startedAt a cada 5s para persistir tempo real
-    const interval = setInterval(async () => {
-      if (!playerRef.current || !currentVideoRef.current || syncingRef.current) return;
-      const currentTime = playerRef.current.getCurrentTime();
-      await set(ref(db, "player/startedAt"), Date.now() - currentTime * 1000);
-    }, 5000);
-
     const unsub = onValue(playerRefDB, (snap) => {
       const data = snap.val();
       if (!data || !playerRef.current) return;
 
-      const { videoId, startedAt, mode } = data;
-      const elapsedSeconds = (Date.now() - startedAt) / 1000;
-
-      if (Date.now() - lastSyncRef.current < 1000) return;
-      lastSyncRef.current = Date.now();
-
-      if (videoId !== currentVideoRef.current) {
-        currentVideoRef.current = videoId;
-        currentModeRef.current = mode;
+      if (data.videoId !== currentVideoRef.current) {
+        currentVideoRef.current = data.videoId;
+        currentModeRef.current = data.mode;
         syncingRef.current = true;
 
-        playerRef.current.loadVideoById({
-          videoId,
-          startSeconds: Math.max(elapsedSeconds, 0),
-        });
-
-        if (!isAdmin) {
-          playerRef.current.mute();
-          playerRef.current.playVideo();
-        }
+        playerRef.current.loadVideoById({ videoId: data.videoId });
+        if (!isAdmin) playerRef.current.mute();
+        setCurrentTitle(data.title || "Desconhecida"); // 🔹 Atualiza notificação
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 4000);
 
         setTimeout(() => (syncingRef.current = false), 1000);
       }
     });
-
-    return () => {
-      clearInterval(interval);
-      unsub();
-    };
-  }, []);
+    return () => unsub();
+  }, [isAdmin]);
 
   const handleReady = (e: any) => {
     playerRef.current = e.target;
-
-    // Carrega música existente (reload)
     get(ref(db, "player")).then((snap) => {
       const data = snap.val();
       if (!data) return;
-
-      const elapsed = (Date.now() - data.startedAt) / 1000;
-      playerRef.current.loadVideoById({
-        videoId: data.videoId,
-        startSeconds: Math.max(elapsed, 0),
-      });
-
-      if (!isAdmin) {
-        playerRef.current.mute();
-        playerRef.current.playVideo();
-      }
+      playerRef.current.loadVideoById({ videoId: data.videoId });
+      if (!isAdmin) playerRef.current.mute();
+      setCurrentTitle(data.title || "Desconhecida");
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 4000);
     });
   };
 
-  const handleEnd = async () => {
-    const snap = await get(ref(db, "queue"));
-    if (snap.exists()) {
-      const queue = snap.val();
-      const firstKey = Object.keys(queue)[0];
-      const next = queue[firstKey];
-      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
-      await remove(ref(db, `queue/${firstKey}`));
-    } else {
-      startAutoDJ();
-    }
-  };
+  const handleEnd = async () => skipMusic();
 
   const toggleMute = () => {
     if (!playerRef.current) return;
-    muted
-      ? (playerRef.current.unMute(), playerRef.current.setVolume(40))
-      : playerRef.current.mute();
+    muted ? (playerRef.current.unMute(), playerRef.current.setVolume(40)) : playerRef.current.mute();
     setMuted(!muted);
   };
 
-  const reportMusic = async () => {
-    if (!currentVideoRef.current) return;
-
-    await push(ref(db, "reports"), {
-      videoId: currentVideoRef.current,
-      reportedAt: Date.now(),
-    });
-
-    await push(ref(db, "adminAlerts"), {
-      type: "REPORT",
-      videoId: currentVideoRef.current,
-      message: "🚨 Música foi reportada por um aluno",
-      at: Date.now(),
-    });
-
-    alert("🚨 Música reportada!");
-  };
-
   return (
-    <div>
-      <YouTube
-        onReady={handleReady}
-        onEnd={handleEnd}
-        opts={{
-          width: "100%",
-          height: "390",
-          playerVars: {
-            autoplay: 1,
-            controls: isAdmin ? 1 : 0,
-            mute: isAdmin ? 0 : 1,
-            modestbranding: 1,
-          },
-        }}
-      />
+    <div style={{ position: "relative" }}>
+      <YouTube onReady={handleReady} onEnd={handleEnd} opts={{ width: "100%", height: "390", playerVars: { autoplay: 1, controls: isAdmin ? 1 : 0, modestbranding: 1 } }} />
 
       {!isAdmin && (
         <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-          <button onClick={toggleMute} style={btnStyle}>
-            {muted ? "🔊 Ativar som" : "🔇 Silenciar"}
-          </button>
-          <button onClick={reportMusic} style={btnStyle}>
-            🚨 Reportar música
-          </button>
+          <button onClick={toggleMute} style={btnStyle}>{muted ? "🔊 Ativar som" : "🔇 Silenciar"}</button>
         </div>
       )}
 
-      {isAdmin && (
-        <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
-          <button onClick={skipMusic} style={adminBtn}>
-            ⏭️ Pular música ⏭️
-          </button>
-          <button onClick={startAutoDJ} style={adminBtn}>
-            🎛️ Iniciar AutoDJ 🎛️
-          </button>
-          <button style={adminBtn}>
-            🚨 Números de Reporte: {reportsCount} 🚨
-          </button>
+      {/* 🔔 Notificação visual */}
+      {showNotification && (
+        <div style={{
+          position: "absolute",
+          top: 20,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#ff0707",
+          color: "#000",
+          padding: "12px 20px",
+          borderRadius: 8,
+          fontWeight: "bold",
+          boxShadow: "0 0 10px #ff0707, 0 0 20px #ff0707",
+          zIndex: 999,
+          animation: "slideDown 0.5s ease"
+        }}>
+          🎵 {currentTitle}
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes slideDown {
+          0% { opacity: 0; transform: translate(-50%, -20px); }
+          100% { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -337,14 +186,4 @@ const btnStyle = {
   color: "#ff0707",
   cursor: "pointer",
   fontSize: 14,
-};
-
-const adminBtn = {
-  padding: "10px 16px",
-  borderRadius: 8,
-  border: "none",
-  background: "#ff1a1a",
-  color: "#fff",
-  fontWeight: 600,
-  cursor: "pointer",
 };
