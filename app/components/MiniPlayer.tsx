@@ -1,57 +1,84 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ref, onValue } from "firebase/database";
+import { db } from "@/app/lib/firebase";
 
 interface MiniPlayerProps {
   isAdmin?: boolean;
-  skipMusic?: () => void;
-  currentVideo?: { title: string; requestedBy: string };
+  skipMusic?: () => void; // Função de pular música do admin
 }
 
-export default function MiniPlayer({ isAdmin, skipMusic, currentVideo }: MiniPlayerProps) {
-  const [visible, setVisible] = useState(true);
+interface PlayerData {
+  videoId: string;
+  title: string;
+  requestedBy: string;
+  startedAt: number;
+  mode: "queue" | "autodj";
+}
 
-  if (!visible) return null;
+export default function MiniPlayer({ isAdmin = false, skipMusic }: MiniPlayerProps) {
+  const [player, setPlayer] = useState<PlayerData | null>(null);
+
+  useEffect(() => {
+    const playerRef = ref(db, "player");
+    const unsub = onValue(playerRef, (snap) => {
+      const data = snap.val();
+      if (!data) return setPlayer(null);
+      setPlayer(data);
+    });
+
+    return () => unsub();
+  }, []);
+
+  if (!player) return null;
+
+  const thumbnailUrl = `https://img.youtube.com/vi/${player.videoId}/default.jpg`;
 
   return (
     <div style={{
       position: "fixed",
       bottom: 20,
       right: 20,
+      width: 250,
       background: "#000",
-      color: "#ff0707",
-      padding: "12px 18px",
+      border: "2px solid #ff0707",
       borderRadius: 10,
+      padding: "10px 12px",
       boxShadow: "0 0 10px #ff0707, 0 0 20px #ff0707",
-      zIndex: 9999,
-      minWidth: 250,
+      color: "#fff",
       display: "flex",
-      flexDirection: "column",
-      gap: 6,
+      gap: 10,
+      alignItems: "center",
+      zIndex: 999,
     }}>
-      {currentVideo && (
-        <div style={{ fontWeight: "bold" }}>
-          🎵 {currentVideo.title} <br />
-          Pedido: {currentVideo.requestedBy}
+      <img src={thumbnailUrl} alt={player.title} width={60} height={45} style={{ borderRadius: 6 }} />
+
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: "bold", color: "#ff0707", fontSize: 14 }}>
+          {player.title}
         </div>
-      )}
+        <div style={{ fontSize: 12, color: "#fff" }}>
+          Pedido por: {player.requestedBy}
+        </div>
+      </div>
+
       {isAdmin && skipMusic && (
         <button
           onClick={skipMusic}
           style={{
-            marginTop: 6,
-            padding: "6px 10px",
-            borderRadius: 6,
             background: "#ff0707",
             color: "#000",
             border: "none",
+            padding: "6px 10px",
+            borderRadius: 6,
             cursor: "pointer",
+            fontWeight: "bold",
           }}
         >
-          ⏭️ Pular música
+          ⏭️
         </button>
       )}
     </div>
   );
 }
-
