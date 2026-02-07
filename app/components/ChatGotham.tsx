@@ -217,7 +217,14 @@ export default function ChatGotham({
         .day-block {
           flex: 1;
           padding: 16px;
-          overflow-y: auto; /* mantém rolagem, mas não força scroll automático */
+          overflow-y: auto; /* rolagem funcional */
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE 10+ */
+        }
+
+        .day-block::-webkit-scrollbar {
+          width: 0px; /* Chrome, Safari, Edge */
+          background: transparent;
         }
 
         ul {
@@ -286,5 +293,6 @@ export default function ChatGotham({
     </div>
   );
 }
+
 
 
