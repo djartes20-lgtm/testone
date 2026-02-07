@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   ref,
   push,
@@ -37,10 +37,6 @@ export default function ChatGotham({
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState("");
   const [typingUser, setTypingUser] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  // Guarda quantidade anterior de mensagens para scroll condicional
-  const prevMessagesCount = useRef(0);
 
   /* 🔥 Mensagens */
   useEffect(() => {
@@ -58,19 +54,11 @@ export default function ChatGotham({
     });
   }, []);
 
-  /* 🔽 Scroll automático SOMENTE para novas mensagens */
-  useEffect(() => {
-    if (messages.length > prevMessagesCount.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-    prevMessagesCount.current = messages.length;
-  }, [messages]);
-
   /* ✍️ Digitando */
   useEffect(() => {
     const typingRef = ref(db, "typing");
 
-    const unsub = onValue(typingRef, (snap) => {
+    onValue(typingRef, (snap) => {
       const data = snap.val();
       if (!data) return setTypingUser(null);
 
@@ -82,8 +70,6 @@ export default function ChatGotham({
     });
 
     onDisconnect(ref(db, `typing/${userName}`)).remove();
-
-    return () => unsub();
   }, [userName]);
 
   const handleTyping = (value: string) => {
@@ -149,8 +135,7 @@ export default function ChatGotham({
                 }}
               >
                 {EMOJIS.map((emoji) => {
-                  const reacted =
-                    msg.reactions?.[emoji]?.[userName] === true;
+                  const reacted = msg.reactions?.[emoji]?.[userName] === true;
                   const count = msg.reactions?.[emoji]
                     ? Object.keys(msg.reactions[emoji]).length
                     : 0;
@@ -160,9 +145,7 @@ export default function ChatGotham({
                   return (
                     <button
                       key={emoji}
-                      onClick={() =>
-                        toggleReaction(msg.id!, emoji, reacted)
-                      }
+                      onClick={() => toggleReaction(msg.id!, emoji, reacted)}
                       className={`reaction ${reacted ? "active" : ""}`}
                     >
                       {emoji} {count}
@@ -189,7 +172,6 @@ export default function ChatGotham({
             </li>
           ))}
         </ul>
-        <div ref={messagesEndRef} />
       </div>
 
       {/* DIGITANDO */}
@@ -209,7 +191,7 @@ export default function ChatGotham({
         <button onClick={sendMessage}>Enviar</button>
       </div>
 
-      {/* 🎨 ESTILO GOTHAM + SCROLL NEON */}
+      {/* 🎨 ESTILO GOTHAM */}
       <style jsx>{`
         .history-container {
           border: 2px solid #ff0707;
@@ -235,7 +217,7 @@ export default function ChatGotham({
         .day-block {
           flex: 1;
           padding: 16px;
-          overflow-y: auto;
+          overflow-y: auto; /* mantém rolagem, mas não força scroll automático */
         }
 
         ul {
@@ -300,41 +282,9 @@ export default function ChatGotham({
           font-weight: bold;
           padding: 6px 14px;
         }
-
-        /* 🔥 SCROLLBAR NEON */
-        .day-block::-webkit-scrollbar {
-          width: 12px;
-        }
-
-        .day-block::-webkit-scrollbar-track {
-          background: #000;
-          box-shadow: inset 0 0 6px rgba(255, 7, 7, 0.3);
-        }
-
-        .day-block::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #ff0707, #ff3b3b, #ff0707);
-          border-radius: 10px;
-          box-shadow:
-            0 0 6px rgba(255, 7, 7, 0.9),
-            0 0 16px rgba(255, 7, 7, 0.7),
-            0 0 30px rgba(255, 7, 7, 0.5);
-          animation: neonScroll 2s infinite alternate;
-        }
-
-        @keyframes neonScroll {
-          from {
-            box-shadow:
-              0 0 6px rgba(255, 7, 7, 0.6),
-              0 0 14px rgba(255, 7, 7, 0.4);
-          }
-          to {
-            box-shadow:
-              0 0 14px rgba(255, 7, 7, 1),
-              0 0 30px rgba(255, 7, 7, 0.8);
-          }
-        }
       `}</style>
     </div>
   );
 }
+
 
