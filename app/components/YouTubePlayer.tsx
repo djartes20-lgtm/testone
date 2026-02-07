@@ -11,6 +11,7 @@ interface Props {
 
 const AUTO_DJ_LIST = [
   "ZDw_x_REei0",
+  "FFxsTiFGWT8",
   "B45UZFdxZG4",
   "T-nh8gpf6ZA",
   "VauVTmE6ka4",
@@ -65,6 +66,14 @@ const AUTO_DJ_LIST = [
   "0OC1vmlmpd0",
   "fpTAZmA-Ycw",
   "SZLYHWmYcPQ",
+  "NGOcn_DYiAw",
+  "_PBlykN4KIY",
+  "tgIqecROs5M",
+  "ele2DMU49Jk",
+  "GtEvysh1654",
+  "w-sQRS-Lc9k",
+  "oLeROuCMwj8",
+  "dfk6i41GCNo",
   // Adicione o resto da lista aqui
 ];
 
