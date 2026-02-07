@@ -20,7 +20,7 @@ interface Props {
 }
 
 // 🔒 BLOQUEIO DE CONTEÚDO
-let BLOCKED_ARTISTS = ["Artista Ruim", "Outro Artista"];
+let BLOCKED_ARTISTS = ["UCcmQ_nZrgwV8JDIDV21xjYA", "Outro Artista"];
 let BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
 let BLOCKED_VIDEO_IDS = ["abcd1234", "efgh5678"];
 
