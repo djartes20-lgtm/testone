@@ -116,7 +116,10 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
       </div>
 
       {/* 🔹 MINI PLAYER FLUTUANTE */}
-<MiniPlayer isAdmin={true} skipMusic={skipMusicFunc} />
+<MiniPlayer
+  isAdmin={true}
+  skipMusic={skipMusicFunc} // Função passada do YouTubePlayer
+/>
     </main>
   );
 }
