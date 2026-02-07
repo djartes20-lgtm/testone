@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import YouTubePlayer from "@/app/components/YouTubePlayer";
-import MiniPlayer from "@/app/components/MiniPlayer"; // ✅ Import do MiniPlayer
 import QueueList from "@/app/components/QueueList";
 import SearchMusic from "@/app/components/SearchMusic";
 import Avisos from "@/app/components/avisos";
@@ -114,12 +113,6 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
       <div>
         <OnlineUsers />
       </div>
-
-      {/* 🔹 MINI PLAYER FLUTUANTE */}
-<MiniPlayer
-  isAdmin={true}
-  skipMusic={skipMusicFunc} // Função passada do YouTubePlayer
-/>
     </main>
   );
 }
