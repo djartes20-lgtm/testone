@@ -26,6 +26,18 @@ export default function DashboardPage() {
     "player"
   );
 
+  // 🔹 Estado para passar ao MiniPlayer
+  const [currentVideo, setCurrentVideo] = useState({
+    title: "Nenhuma música tocando",
+    requestedBy: "",
+  });
+
+  // Função para pular música (pode ser passada do YouTubePlayer)
+  const skipMusic = () => {
+    // Aqui você pode chamar a função real do YouTubePlayer
+    console.log("Pular música!");
+  };
+
   return (
     <main className="min-h-screen p-4 space-y-6">
       {/* HEADER */}
@@ -86,6 +98,13 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Mini Player flutuante */}
+      <MiniPlayer
+        isAdmin={true}
+        skipMusic={skipMusic}
+        currentVideo={currentVideo}
+      />
+
       {/* CHAT GLOBAL (ADM) */}
       <ChatGotham userName="ADM" isAdmin />
 
@@ -112,11 +131,6 @@ export default function DashboardPage() {
       <div>
         <OnlineUsers />
       </div>
-
-      {/* 🔹 MINI PLAYER FLUTUANTE */}
-      <MiniPlayer /> 
     </main>
   );
 }
-
-
