@@ -22,7 +22,7 @@ interface Props {
 // 🔒 BLOQUEIO DE CONTEÚDO
 let BLOCKED_ARTISTS = ["UCcmQ_nZrgwV8JDIDV21xjYA", "Outro Artista"];
 let BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
-let BLOCKED_VIDEO_IDS = ["abcd1234", "efgh5678"];
+let BLOCKED_VIDEO_IDS = ["IwDrW0YTYWI", "efgh5678"];
 
 function isBlocked(videoId: string, title: string, artist?: string) {
   if (BLOCKED_VIDEO_IDS.includes(videoId)) return true;
