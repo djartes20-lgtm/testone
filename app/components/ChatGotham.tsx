@@ -7,18 +7,24 @@ import {
   onValue,
   query,
   limitToLast,
-  update,
   set,
+  remove,
   onDisconnect,
 } from "firebase/database";
 import { db } from "@/app/lib/firebase";
+
+const EMOJIS = ["👍", "❤️", "😂", "🔥", "😡"];
 
 interface Message {
   id?: string;
   user: string;
   text: string;
   createdAt: number;
-  likes?: number;
+  reactions?: {
+    [emoji: string]: {
+      [user: string]: boolean;
+    };
+  };
 }
 
 export default function ChatGotham({
@@ -49,7 +55,7 @@ export default function ChatGotham({
     });
   }, []);
 
-  /* 🔽 Scroll automático */
+  /* 🔽 Scroll */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -69,8 +75,7 @@ export default function ChatGotham({
       setTypingUser(usersTyping[0] || null);
     });
 
-    const myTypingRef = ref(db, `typing/${userName}`);
-    onDisconnect(myTypingRef).remove();
+    onDisconnect(ref(db, `typing/${userName}`)).remove();
   }, [userName]);
 
   const handleTyping = (value: string) => {
@@ -85,65 +90,118 @@ export default function ChatGotham({
       user: isAdmin ? "ADM" : userName,
       text,
       createdAt: Date.now(),
-      likes: 0,
     });
 
     setText("");
     set(ref(db, `typing/${userName}`), false);
   };
 
-  /* 👍 Curtir */
-  const likeMessage = async (id: string, likes = 0) => {
-    await update(ref(db, `chat/${id}`), {
-      likes: likes + 1,
-    });
+  /* 😀 Reagir */
+  const toggleReaction = async (
+    messageId: string,
+    emoji: string,
+    reacted: boolean
+  ) => {
+    const reactionRef = ref(
+      db,
+      `chat/${messageId}/reactions/${emoji}/${userName}`
+    );
+
+    reacted ? await remove(reactionRef) : await set(reactionRef, true);
   };
 
   return (
     <div className="history-container">
       <div className="history-header">
         <h2>💬 Chat da Academia</h2>
-        {typingUser && (
-          <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>
-            ✍️ {typingUser} está digitando...
-          </span>
-        )}
       </div>
 
       <div className="day-block">
         <ul>
           {messages.map((msg) => (
-            <li
-              key={msg.id}
-              style={{
-                color: msg.user === "ADM" ? "#ff0707" : "#fff",
-                fontSize: "0.9rem",
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "8px",
-              }}
-            >
-              <span>
-                <strong>{msg.user}:</strong> {msg.text}
-              </span>
-
-              <button
-                onClick={() => likeMessage(msg.id!, msg.likes)}
+            <li key={msg.id} style={{ marginBottom: "14px" }}>
+              <div
                 style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#ff0707",
-                  cursor: "pointer",
-                  fontSize: "0.8rem",
+                  color: msg.user === "ADM" ? "#ff0707" : "#fff",
+                  fontSize: "0.9rem",
                 }}
               >
-                👍 {msg.likes || 0}
-              </button>
+                <strong>{msg.user}:</strong> {msg.text}
+              </div>
+
+              {/* Reações */}
+              <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+                {EMOJIS.map((emoji) => {
+                  const reacted =
+                    msg.reactions?.[emoji]?.[userName] === true;
+                  const count = msg.reactions?.[emoji]
+                    ? Object.keys(msg.reactions[emoji]).length
+                    : 0;
+
+                  if (count === 0 && !reacted) return null;
+
+                  return (
+                    <button
+                      key={emoji}
+                      onClick={() =>
+                        toggleReaction(msg.id!, emoji, reacted)
+                      }
+                      style={{
+                        background: reacted ? "#ff0707" : "transparent",
+                        color: reacted ? "#000" : "#ff0707",
+                        border: "1px solid #ff0707",
+                        borderRadius: "14px",
+                        padding: "2px 8px",
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {emoji} {count}
+                    </button>
+                  );
+                })}
+
+                {/* Adicionar reação */}
+                <div>
+                  {EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() =>
+                        toggleReaction(
+                          msg.id!,
+                          emoji,
+                          msg.reactions?.[emoji]?.[userName] === true
+                        )
+                      }
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </li>
           ))}
         </ul>
         <div ref={messagesEndRef} />
       </div>
+
+      {typingUser && (
+        <div
+          style={{
+            padding: "0 16px 6px",
+            fontSize: "0.75rem",
+            color: "rgba(255,7,7,0.8)",
+          }}
+        >
+          ✍️ {typingUser} está digitando...
+        </div>
+      )}
 
       <div style={{ padding: "12px", borderTop: "1px solid rgba(255,7,7,0.3)" }}>
         <div style={{ display: "flex", gap: "8px" }}>
@@ -171,3 +229,4 @@ export default function ChatGotham({
     </div>
   );
 }
+
