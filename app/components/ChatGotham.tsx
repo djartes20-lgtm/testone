@@ -49,38 +49,138 @@ export default function ChatGotham({
   };
 
   return (
-    <div className="bg-zinc-900 rounded-xl p-4 flex flex-col h-[400px]">
-      <h2 className="text-white font-bold mb-2">💬 Chat da Academia</h2>
+    <div className="history-container">
+      {/* 🔒 Header fixo */}
+      <div className="history-header">
+        <h2>💬 Chat da Academia</h2>
+      </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2 pr-2">
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`text-sm ${
-              msg.user === "ADM" ? "text-red-400" : "text-white"
-            }`}
-          >
-            <strong>{msg.user}:</strong> {msg.text}
-          </div>
-        ))}
+      {/* Mensagens */}
+      <div className="day-block">
+        <ul>
+          {messages.map((msg, i) => (
+            <li
+              key={i}
+              style={{
+                color: msg.user === "ADM" ? "#ff0707" : "#fff",
+                fontSize: "0.9rem",
+              }}
+            >
+              <strong>{msg.user}:</strong> {msg.text}
+            </li>
+          ))}
+        </ul>
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex gap-2 mt-2">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Digite sua mensagem..."
-          className="flex-1 rounded-md px-3 py-2 text-black"
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-red-600 text-white px-4 rounded-md font-bold"
-        >
-          Enviar
-        </button>
+      {/* Input */}
+      <div style={{ padding: "12px", borderTop: "1px solid rgba(255,7,7,0.3)" }}>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Digite sua mensagem..."
+            className="search-input"
+          />
+          <button
+            onClick={sendMessage}
+            style={{
+              background: "#ff0707",
+              color: "#000",
+              padding: "6px 14px",
+              borderRadius: "6px",
+              fontWeight: "bold",
+            }}
+          >
+            Enviar
+          </button>
+        </div>
       </div>
+
+      <style jsx>{`
+        .history-container {
+          border: 2px solid #ff0707;
+          border-radius: 10px;
+          background: #000;
+          color: #ff0707;
+          max-height: 420px;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+
+          box-shadow: 
+            0 0 6px rgba(255, 7, 7, 0.6),
+            0 0 14px rgba(255, 7, 7, 0.45),
+            0 0 24px rgba(255, 7, 7, 0.25),
+            0 0 40px rgba(255, 7, 7, 0.15);
+        }
+
+        .history-header {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: #000;
+          padding: 12px 16px;
+          border-bottom: 1px solid rgba(255, 7, 7, 0.4);
+        }
+
+        .search-input {
+          flex: 1;
+          padding: 6px 10px;
+          background: #000;
+          border: 1px solid #ff0707;
+          color: #ff0707;
+          border-radius: 6px;
+          font-size: 0.9rem;
+        }
+
+        .search-input::placeholder {
+          color: rgba(255, 7, 7, 0.6);
+        }
+
+        .day-block {
+          padding: 16px;
+          flex: 1;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        li {
+          margin-bottom: 10px;
+        }
+
+        .history-container::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+          background: #000;
+          border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+          background: #ff0707;
+          border-radius: 10px;
+          box-shadow:
+            0 0 4px #ff0707,
+            0 0 8px #ff0707,
+            0 0 12px #ff0707;
+        }
+
+        .history-container::-webkit-scrollbar-thumb:hover {
+          background: #ff0000;
+          box-shadow:
+            0 0 6px #ff0707,
+            0 0 12px #ff0707,
+            0 0 18px #ff0707;
+        }
+      `}</style>
     </div>
   );
 }
+
