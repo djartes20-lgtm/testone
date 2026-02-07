@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import YouTubePlayer from "@/app/components/YouTubePlayer";
+import MiniPlayer from "@/app/components/MiniPlayer"; // ✅ Import do MiniPlayer
 import QueueList from "@/app/components/QueueList";
 import SearchMusic from "@/app/components/SearchMusic";
 import Avisos from "@/app/components/avisos";
@@ -59,7 +60,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* PLAYER (Mobile) */}
+      {/* PLAYER (Mobile + Desktop) */}
       <div
         className={`${activeTab === "player" ? "block" : "hidden"} md:block space-y-4`}
       >
@@ -88,8 +89,7 @@ export default function DashboardPage() {
       {/* CHAT GLOBAL (ADM) */}
       <ChatGotham userName="ADM" isAdmin />
 
-
-      {/* QUEUE (Mobile) */}
+      {/* QUEUE (Mobile + Desktop) */}
       <div className={`${activeTab === "queue" ? "block" : "hidden"} md:block`}>
         <QueueList
           queue={queueHook.queue}
@@ -98,7 +98,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* HISTORY (Mobile) */}
+      {/* HISTORY (Mobile + Desktop) */}
       <div className={`${activeTab === "history" ? "block" : "hidden"} md:block`}>
         <History />
       </div>
@@ -108,13 +108,15 @@ export default function DashboardPage() {
         <AdminAlerts />
       </div>
 
-      
-
       {/* ONLINE USERS */}
       <div>
         <OnlineUsers />
       </div>
+
+      {/* 🔹 MINI PLAYER FLUTUANTE */}
+      <MiniPlayer /> 
     </main>
   );
 }
+
 
