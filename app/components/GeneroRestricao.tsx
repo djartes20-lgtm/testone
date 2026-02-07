@@ -6,7 +6,7 @@ import { ref, set, onValue } from "firebase/database";
 
 const GenerosRestritosADM = () => {
   const [allGenres, setAllGenres] = useState<string[]>([
-    "Funk", "Sertanejo", "Samba", "Pagode", "Hip Hop", "Pop", "Eletrônica", "Gospel"
+    "Funk", "Sertanejo", "Samba", "Pagode", "Hip Hop", "Pop", "Eletrônica", "Gospel",
   ]);
   const [restrictedGenres, setRestrictedGenres] = useState<string[]>([]);
 
