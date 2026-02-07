@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import YouTubePlayer from "@/app/components/YouTubePlayer";
-import MiniPlayer from "@/app/components/MiniPlayer"; // ✅ Import do MiniPlayer
+import MiniPlayer from "@/app/components/MiniPlayer"; // ✅ Mini Player flutuante
 import QueueList from "@/app/components/QueueList";
 import SearchMusic from "@/app/components/SearchMusic";
 import Avisos from "@/app/components/avisos";
@@ -18,13 +18,14 @@ import { useFirebase } from "@/app/hooks/useFirebase";
 export default function DashboardPage() {
   const isAdmin = true;
   const queueHook = useQueue();
-
-  // 🔹 Hook do Firebase com admin = true
   const { adicionarMusica } = useFirebase(true);
 
   const [activeTab, setActiveTab] = useState<"player" | "queue" | "history">(
     "player"
   );
+
+  // ⚡ Ref para expor função skipMusic do YouTubePlayer
+  const skipRef = useRef<() => void>(() => {});
 
   return (
     <main className="min-h-screen p-4 space-y-6">
@@ -65,8 +66,23 @@ export default function DashboardPage() {
         className={`${activeTab === "player" ? "block" : "hidden"} md:block space-y-4`}
       >
         <div className="w-full">
-          <YouTubePlayer isAdmin={isAdmin} />
+          <YouTubePlayer
+            isAdmin={isAdmin}
+            onSkip={(fn) => {
+              // ⚡ Atualiza a referência para o MiniPlayer
+              skipRef.current = fn;
+            }}
+          />
         </div>
+
+        {/* Mini Player flutuante */}
+        <MiniPlayer
+          isAdmin={true}
+          skipMusic={() => {
+            // ⚡ Chama a função de pular música via ref
+            skipRef.current && skipRef.current();
+          }}
+        />
 
         <div className="flex flex-col gap-2">
           {/* 🔹 Barra de pesquisa do Admin escondida */}
@@ -112,11 +128,9 @@ export default function DashboardPage() {
       <div>
         <OnlineUsers />
       </div>
-
-      {/* 🔹 MINI PLAYER FLUTUANTE */}
-      <MiniPlayer /> 
     </main>
   );
 }
+
 
 
