@@ -61,7 +61,6 @@ const AUTO_DJ_LIST = [
   "KjyJW-MM7RY",
   "gEy7VIURmwM",
   "xOIjSUEmS-c",
-  "RJao7K__jDw",
   "AngEjsqKN0I",
   "0OC1vmlmpd0",
   "fpTAZmA-Ycw",
