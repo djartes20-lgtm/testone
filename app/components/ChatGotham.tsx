@@ -96,7 +96,7 @@ export default function ChatGotham({
     set(ref(db, `typing/${userName}`), false);
   };
 
-  /* 😀 Reações */
+  /* 😀 Reações estilo WhatsApp */
   const toggleReaction = async (
     messageId: string,
     emoji: string,
@@ -132,7 +132,7 @@ export default function ChatGotham({
               </div>
 
               {/* Reações */}
-              <div style={{ display: "flex", gap: "6px", marginTop: "4px" }}>
+              <div style={{ display: "flex", gap: "6px", marginTop: "6px", flexWrap: "wrap" }}>
                 {EMOJIS.map((emoji) => {
                   const reacted =
                     msg.reactions?.[emoji]?.[userName] === true;
@@ -148,7 +148,7 @@ export default function ChatGotham({
                       onClick={() =>
                         toggleReaction(msg.id!, emoji, reacted)
                       }
-                      className="reaction"
+                      className={`reaction ${reacted ? "active" : ""}`}
                     >
                       {emoji} {count}
                     </button>
@@ -179,12 +179,10 @@ export default function ChatGotham({
 
       {/* DIGITANDO */}
       {typingUser && (
-        <div className="typing">
-          ✍️ {typingUser} está digitando...
-        </div>
+        <div className="typing">✍️ {typingUser} está digitando...</div>
       )}
 
-      {/* INPUT FIXO */}
+      {/* INPUT */}
       <div className="input-area">
         <input
           value={text}
@@ -196,7 +194,7 @@ export default function ChatGotham({
         <button onClick={sendMessage}>Enviar</button>
       </div>
 
-      {/* 🎨 ESTILO NOVO (EXATAMENTE O QUE VOCÊ PEDIU) */}
+      {/* 🎨 ESTILO GOTHAM + SCROLL NEON */}
       <style jsx>{`
         .history-container {
           border: 2px solid #ff0707;
@@ -207,8 +205,7 @@ export default function ChatGotham({
           display: flex;
           flex-direction: column;
           overflow: hidden;
-
-          box-shadow: 
+          box-shadow:
             0 0 6px rgba(255, 7, 7, 0.6),
             0 0 14px rgba(255, 7, 7, 0.45),
             0 0 24px rgba(255, 7, 7, 0.25),
@@ -216,10 +213,6 @@ export default function ChatGotham({
         }
 
         .history-header {
-          position: sticky;
-          top: 0;
-          z-index: 10;
-          background: #000;
           padding: 12px 16px;
           border-bottom: 1px solid rgba(255, 7, 7, 0.4);
         }
@@ -228,7 +221,6 @@ export default function ChatGotham({
           flex: 1;
           padding: 16px;
           overflow-y: auto;
-          border-bottom: 1px solid rgba(255, 7, 7, 0.3);
         }
 
         ul {
@@ -238,7 +230,7 @@ export default function ChatGotham({
         }
 
         li {
-          margin-bottom: 10px;
+          margin-bottom: 14px;
         }
 
         .typing {
@@ -248,12 +240,9 @@ export default function ChatGotham({
         }
 
         .input-area {
-          position: sticky;
-          bottom: 0;
           display: flex;
           gap: 8px;
           padding: 12px;
-          background: #000;
           border-top: 1px solid rgba(255, 7, 7, 0.3);
         }
 
@@ -264,21 +253,22 @@ export default function ChatGotham({
           border: 1px solid #ff0707;
           color: #ff0707;
           border-radius: 6px;
-          font-size: 0.9rem;
-        }
-
-        .search-input::placeholder {
-          color: rgba(255, 7, 7, 0.6);
         }
 
         .reaction {
-          background: transparent;
           border: 1px solid #ff0707;
+          background: transparent;
+          color: #ff0707;
           border-radius: 14px;
           padding: 2px 8px;
           font-size: 0.75rem;
-          color: #ff0707;
           cursor: pointer;
+        }
+
+        .reaction.active {
+          background: #ff0707;
+          color: #000;
+          box-shadow: 0 0 10px rgba(255, 7, 7, 0.8);
         }
 
         .emoji-add {
@@ -291,34 +281,44 @@ export default function ChatGotham({
         .input-area button {
           background: #ff0707;
           color: #000;
-          padding: 6px 14px;
           border-radius: 6px;
           font-weight: bold;
+          padding: 6px 14px;
         }
 
-        .history-container::-webkit-scrollbar {
-          width: 10px;
+        /* 🔥 SCROLLBAR NEON */
+        .day-block::-webkit-scrollbar {
+          width: 12px;
         }
 
-        .history-container::-webkit-scrollbar-track {
+        .day-block::-webkit-scrollbar-track {
           background: #000;
+          box-shadow: inset 0 0 6px rgba(255, 7, 7, 0.3);
         }
 
-        .history-container::-webkit-scrollbar-thumb {
-          background: #ff0707;
+        .day-block::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #ff0707, #ff3b3b, #ff0707);
           border-radius: 10px;
           box-shadow:
-            0 0 4px #ff0707,
-            0 0 8px #ff0707,
-            0 0 12px #ff0707;
+            0 0 6px rgba(255, 7, 7, 0.9),
+            0 0 16px rgba(255, 7, 7, 0.7),
+            0 0 30px rgba(255, 7, 7, 0.5);
+          animation: neonScroll 2s infinite alternate;
         }
 
-        .history-container::-webkit-scrollbar-thumb:hover {
-          background: #ff0000;
+        @keyframes neonScroll {
+          from {
+            box-shadow:
+              0 0 6px rgba(255, 7, 7, 0.6),
+              0 0 14px rgba(255, 7, 7, 0.4);
+          }
+          to {
+            box-shadow:
+              0 0 14px rgba(255, 7, 7, 1),
+              0 0 30px rgba(255, 7, 7, 0.8);
+          }
         }
       `}</style>
     </div>
   );
 }
-
-
