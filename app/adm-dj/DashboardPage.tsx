@@ -11,7 +11,6 @@ import AdminAlerts from "@/app/components/AdminAlerts";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
 import OnlineUsers from "./OnlineUsers";
-import AdminTabs from "@/app/components/AdminTabs";
 import ChatGotham from "@/app/components/ChatGotham";
 import { useFirebase } from "@/app/hooks/useFirebase";
 
@@ -109,22 +108,7 @@ export default function DashboardPage() {
         <AdminAlerts />
       </div>
 
-      return (
-    <main className="p-6">
-      <h1 className="text-red-500 font-bold text-xl mb-4">Painel do ADM</h1>
-
-      {/* 🔀 Componente de reorganização de abas */}
-      <AdminTabs />
-
-      {/* Aqui você continua renderizando o resto das abas */}
-      {/* Exemplo: */}
-      {/* <QueueList /> */}
-      {/* <Reports /> */}
-      {/* <History /> */}
-      {/* <ChatGotham /> */}
-    </main>
-  );
-
+      
 
       {/* ONLINE USERS */}
       <div>
