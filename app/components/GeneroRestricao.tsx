@@ -75,7 +75,7 @@ const GenerosRestritosADM = () => {
       {restrictedGenres.length > 0 && (
         <p
           style={{
-            color: "#ff0707",
+            color: "#00ff00",
             fontWeight: "600",
             marginTop: "12px",
             textShadow: "0 0 4px #FF0707",
