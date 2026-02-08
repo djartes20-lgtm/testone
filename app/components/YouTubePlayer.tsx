@@ -76,10 +76,14 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       title,
     });
 
-    if (mode === "queue") await addToHistory(videoId, title, requestedBy);
+    if (mode === "queue") {
+      await addToHistory(videoId, title, requestedBy);
+    }
   };
 
-  const startAutoDJ = async () => playVideo(getNextAutoDj(), "autodj");
+  const startAutoDJ = async () => {
+    await playVideo(getNextAutoDj(), "autodj");
+  };
 
   const skipMusic = async () => {
     if (!isAdmin) return;
@@ -89,6 +93,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       const queue = snap.val();
       const firstKey = Object.keys(queue)[0];
       const next = queue[firstKey];
+
       await playVideo(next.videoId, "queue", next.requestedBy, next.title);
       await remove(ref(db, `queue/${firstKey}`));
     } else {
@@ -96,6 +101,35 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     }
   };
 
+  // 🔥 AQUI ESTÁ A CORREÇÃO PRINCIPAL
+  // ADMIN reage à entrada de pedidos e interrompe o Auto DJ
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const queueRef = ref(db, "queue");
+
+    return onValue(queueRef, async (snap) => {
+      if (!snap.exists()) return;
+      if (currentModeRef.current !== "autodj") return;
+
+      const queue = snap.val();
+      const firstKey = Object.keys(queue)[0];
+      if (!firstKey) return;
+
+      const next = queue[firstKey];
+
+      await playVideo(
+        next.videoId,
+        "queue",
+        next.requestedBy,
+        next.title
+      );
+
+      await remove(ref(db, `queue/${firstKey}`));
+    });
+  }, [isAdmin]);
+
+  // 🔄 Sincronização global
   useEffect(() => {
     const playerDB = ref(db, "player");
 
@@ -157,6 +191,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       const queue = snap.val();
       const firstKey = Object.keys(queue)[0];
       const next = queue[firstKey];
+
       await playVideo(next.videoId, "queue", next.requestedBy, next.title);
       await remove(ref(db, `queue/${firstKey}`));
     } else {
