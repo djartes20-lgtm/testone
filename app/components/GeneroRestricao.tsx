@@ -56,7 +56,7 @@ const GenerosRestritosADM = () => {
               background: "transparent",
               color: "#ff0707",
               border: restrictedGenres.includes(genre)
-                ? "2px solid #ffffff" // 🔹 borda branca quando ativo
+                ? "2px solid #00ff00" // 🔹 borda verde quando ativo
                 : "2px solid #ff0707", // 🔹 borda vermelha quando inativo
               padding: "8px 0",
               borderRadius: "6px",
