@@ -136,7 +136,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
       style={{
         border: "2px solid #ff0707",
         borderRadius: 10,
-        padding: 10,
+        padding: 20,
       }}
     >
       <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
@@ -226,6 +226,11 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
     </Card>
   );
 }
+
+
+
+
+
 
 
 
