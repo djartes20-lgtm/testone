@@ -226,17 +226,3 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
     </Card>
   );
 }
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
