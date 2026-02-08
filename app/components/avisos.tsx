@@ -7,7 +7,7 @@ const todosAvisos = [
 
   { id: "hidratacao", texto: " Lembre-se de se hidratar, pois isso e muito importante para o seu corpo e treino.", arquivo: "/ttsmaker-file-2026-2-8-1-42-31.mp3" },
   { id: "limpeza", texto: " Mantenha os aparelhos limpos após o uso, para assim sempre termos um ambiente limpo e agradavel.", arquivo: "/ttsmaker-file-2026-2-8-1-43-15.mp3" },
-  { id: "horarios", texto: " Passando para lembrar a todos que a academia está prestes a fechar!.", arquivo: "/ttsmaker-file-2026-2-8-1-44-0.mp3" },
+  { id: "horarios", texto: " Passando para lembrar a todos que a academia está prestes a fechar.", arquivo: "/ttsmaker-file-2026-2-8-1-44-0.mp3" },
 ];
 
 export default function Avisos() {

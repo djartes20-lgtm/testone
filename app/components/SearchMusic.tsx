@@ -15,8 +15,8 @@ interface Video {
 }
 
 interface Props {
-  isAdmin?: boolean; // Indica se é admin
-  onAddMusic?: (video: Video) => Promise<void>; // função externa de adicionar música
+  isAdmin?: boolean;
+  onAddMusic?: (video: Video) => Promise<void>;
 }
 
 // 🔒 BLOQUEIO DE CONTEÚDO
@@ -28,7 +28,9 @@ function isBlocked(videoId: string, title: string, artist?: string) {
   if (BLOCKED_VIDEO_IDS.includes(videoId)) return true;
   if (artist && BLOCKED_ARTISTS.includes(artist)) return true;
   const titleLower = title.toLowerCase();
-  return BLOCKED_KEYWORDS.some(word => titleLower.includes(word.toLowerCase()));
+  return BLOCKED_KEYWORDS.some(word =>
+    titleLower.includes(word.toLowerCase())
+  );
 }
 
 // 📌 Função que registra o pedido por dia da semana
@@ -46,6 +48,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [restricoes, setRestricoes] = useState<string[]>([]);
+  const [addedVideos, setAddedVideos] = useState<string[]>([]); // ✅ CONTROLE DO BOTÃO
 
   // 🔒 Puxar restrições de gênero do Firebase
   useEffect(() => {
@@ -58,7 +61,6 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
 
   const search = async () => {
     if (!query) return;
-    
 
     try {
       setLoading(true);
@@ -75,15 +77,16 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
 
       const data = await res.json();
       const list = Array.isArray(data) ? data : [];
-      const videosComGenero: Video[] = list.map((v: any) => ({
-        videoId: v.videoId,
-        title: v.title,
-        thumbnail: v.thumbnail,
-        channel: v.channel,
-        genre: v.genre || "Desconhecido",
-      }));
 
-      setVideos(videosComGenero);
+      setVideos(
+        list.map((v: any) => ({
+          videoId: v.videoId,
+          title: v.title,
+          thumbnail: v.thumbnail,
+          channel: v.channel,
+          genre: v.genre || "Desconhecido",
+        }))
+      );
     } catch {
       setError("Não foi possível buscar as músicas 😢");
       setVideos([]);
@@ -93,17 +96,17 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   };
 
   const handleAdd = async (video: Video) => {
-    // 🔒 Bloquear se gênero estiver na restrição
+    if (addedVideos.includes(video.videoId)) return;
+
+    // 🔒 Bloquear se gênero estiver restrito
     if (video.genre && restricoes.includes(video.genre)) {
       alert(`🚫 Músicas de ${video.genre} estão restritas!`);
       return;
     }
 
     if (isAdmin && onAddMusic) {
-      // 🔥 Se for admin e passou função externa
       await onAddMusic(video);
     } else {
-      // 🔹 Aluno normal
       const user = auth.currentUser;
       if (!user) return;
 
@@ -122,6 +125,9 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
     }
 
     registrarPedidoSemana();
+
+    // ✅ MARCA COMO ADICIONADO (BOTÃO FICA VERDE)
+    setAddedVideos((prev) => [...prev, video.videoId]);
   };
 
   return (
@@ -133,157 +139,94 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
         padding: 20,
       }}
     >
-      <style>{`
-        .search-music-thumb {
-          max-width: 100%;
-          height: auto;
-          flex-shrink: 0;
-          border-radius: 4px;
-        }
-        .search-music-add-btn {
-          max-width: 220px;
-        }
-        .search-music-card-content {
-          gap: 10px;
-        }
-        @media (max-width: 768px) {
-          .search-music-card {
-            flex-direction: column;
-          }
-          .search-music-thumb {
-            width: 100%;
-            max-width: 100%;
-          }
-          .search-music-card-content {
-            width: 100%;
-            flex: 1;
-          }
-          .search-music-add-btn {
-            width: 100%;
-            max-width: none;
-          }
-        }
-      `}</style>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 8,
-          alignItems: "center",
-          justifyContent: loading ? "center" : undefined,
-          marginTop: 8,
-          width: "100%",
-          minHeight: 42,
-        }}
-      >
-        {loading ? (
-          <div className="search-music-spinner" />
-        ) : (
-          <>
-            <input
-              placeholder="Nome da música"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              style={{
-                border: "2px solid #ff0707",
-                padding: "10px 12px",
-                flex: "1 1 180px",
-                minWidth: 0,
-                maxWidth: "100%",
-                background: "#000",
-                color: "#ff0707",
-                boxSizing: "border-box",
-              }}
-            />
-            <button
-              onClick={search}
-              disabled={loading}
-              style={{
-                border: "2px solid red",
-                background: "transparent",
-                color: "red",
-                padding: "10px 16px",
-                flex: "0 0 auto",
-              }}
-            >
-              Pesquisar
-            </button>
-          </>
-        )}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <input
+          placeholder="Nome da música"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{
+            border: "2px solid #ff0707",
+            padding: "10px 12px",
+            flex: 1,
+            background: "#000",
+            color: "#ff0707",
+          }}
+        />
+        <button
+          onClick={search}
+          disabled={loading}
+          style={{
+            border: "2px solid red",
+            background: "transparent",
+            color: "red",
+            padding: "10px 16px",
+          }}
+        >
+          Pesquisar
+        </button>
       </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <ul
-        style={{
-          listStyle: "none",
-          padding: 0,
-          margin: 0,
-          paddingTop: '20px',
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-        }}
-      >
-        {videos.map((video) => (
-          <li
-            key={video.videoId}
-            className="search-music-card"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 12,
-              alignItems: "flex-start",
-              padding: 12,
-              borderRadius: 8,
-              border: "1px solid rgba(255, 7, 7, 0.3)",
-            }}
-          >
-            <img
-              src={video.thumbnail}
-              alt=""
-              className="search-music-thumb"
-            />
-            <div
-              className="search-music-card-content"
+      <ul style={{ listStyle: "none", padding: 0, marginTop: 20 }}>
+        {videos.map((video) => {
+          const jaAdicionado = addedVideos.includes(video.videoId);
+
+          return (
+            <li
+              key={video.videoId}
               style={{
-                minWidth: 0,
+                display: "flex",
+                gap: 12,
+                padding: 12,
+                borderRadius: 8,
+                border: "1px solid rgba(255,7,7,0.3)",
+                marginBottom: 16,
               }}
             >
-              <p
-                style={{
-                  margin: "0 0 4px",
-                  wordBreak: "break-word",
-                  lineHeight: 1.3,
-                }}
-              >
-                {video.title}
-              </p>
-              <small style={{ display: "block", marginBottom: 8, opacity: 0.9 }}>
-                {video.channel}
-              </small>
-              <button
-                onClick={() => handleAdd(video)}
-                className="search-music-add-btn"
-                style={{
-                  background: "transparent",
-                  color: "#fff",
-                  padding: "12px 16px",
-                  border: "2px solid #ff0707",
-                  cursor: "pointer",
-                  boxShadow: "0 0 5px #ff0707, 0 0 10px #ff0707",
-                  width: "100%",
-                }}
-              >
-                ➕ Adicionar à fila
-              </button>
-            </div>
-          </li>
-        ))}
+              <img
+                src={video.thumbnail}
+                alt=""
+                style={{ width: 120, borderRadius: 4 }}
+              />
+
+              <div style={{ flex: 1 }}>
+                <p style={{ margin: "0 0 4px" }}>{video.title}</p>
+                <small style={{ display: "block", marginBottom: 10 }}>
+                  {video.channel}
+                </small>
+
+                <button
+                  onClick={() => handleAdd(video)}
+                  disabled={jaAdicionado}
+                  style={{
+                    background: "transparent",
+                    color: jaAdicionado ? "#00e676" : "#fff",
+                    padding: "12px 16px",
+                    border: jaAdicionado
+                      ? "2px solid #00e676"
+                      : "2px solid #ff0707",
+                    cursor: jaAdicionado ? "default" : "pointer",
+                    boxShadow: jaAdicionado
+                      ? "0 0 6px #00e676, 0 0 12px #00e676"
+                      : "0 0 5px #ff0707, 0 0 10px #ff0707",
+                    width: "100%",
+                    opacity: jaAdicionado ? 0.85 : 1,
+                  }}
+                >
+                  {jaAdicionado
+                    ? "✓ Adicionado à fila"
+                    : "➕ Adicionar à fila"}
+                </button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </Card>
   );
 }
+
 
 
 
