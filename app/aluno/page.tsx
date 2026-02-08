@@ -136,7 +136,7 @@ export default function AlunoPage() {
         </div>
       )}
 
-      {/* GÊNEROS BLOQUEADOS */}
+      {/* GÊNEROS Liberados */}
       <AlunosGenerosRestritos />
 
       {/* BUSCA */}
