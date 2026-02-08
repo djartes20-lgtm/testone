@@ -43,7 +43,7 @@ const GenerosRestritosADM = () => {
         className="text-center font-bold text-xl mb-4"
         style={{ color: "#ff0707", textShadow: "0 0 4px #FF0707" }}
       >
-        🚫 Definir Gêneros Restritos 🚫
+        🚫 Definir Gêneros Liberados 🚫
       </h2>
 
       <div className="grid grid-cols-2 gap-3">
@@ -81,7 +81,7 @@ const GenerosRestritosADM = () => {
             textShadow: "0 0 4px #FF0707",
           }}
         >
-          Gêneros restritos: {restrictedGenres.join(", ")}
+          Gêneros Liberados: {restrictedGenres.join(", ")}
         </p>
       )}
     </div>
