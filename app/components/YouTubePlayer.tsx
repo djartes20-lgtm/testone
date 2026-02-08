@@ -40,7 +40,6 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   const lastSyncRef = useRef(0);
 
   const [reportsCount, setReportsCount] = useState(0);
-  const [reportMsg, setReportMsg] = useState<string | null>(null);
 
   const getTodayKey = () => new Date().toISOString().split("T")[0];
 
@@ -106,6 +105,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     if (!isAdmin) return;
 
     const queueRef = ref(db, "queue");
+
     return onValue(queueRef, async (snap) => {
       if (!snap.exists()) return;
       if (currentModeRef.current !== "autodj") return;
@@ -175,10 +175,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
 
     get(ref(db, "player")).then((snap) => {
       const data = snap.val();
-      if (!data) {
-        if (isAdmin) startAutoDJ();
-        return;
-      }
+      if (!data) return;
 
       const elapsed = (Date.now() - data.startedAt) / 1000;
       playerRef.current.loadVideoById({
@@ -213,17 +210,12 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   const reportMusic = async () => {
     if (!currentVideoRef.current) return;
 
-    const reporterName =
-      localStorage.getItem("userName") || "Aluno";
-
     await push(ref(db, "reports"), {
       videoId: currentVideoRef.current,
-      reportedBy: reporterName,
       reportedAt: Date.now(),
     });
 
-    setReportMsg(`Música reportada por ${reporterName}`);
-    setTimeout(() => setReportMsg(null), 4000);
+    alert("🚨 Música reportada!");
   };
 
   return (
@@ -244,19 +236,11 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       />
 
       {!isAdmin && (
-        <>
-          <div style={{ marginTop: 14 }}>
-            <button onClick={reportMusic} style={reportBtn}>
-              🚨 Reportar música
-            </button>
-          </div>
-
-          {reportMsg && (
-            <div style={reportBox}>
-              🚨 {reportMsg}
-            </div>
-          )}
-        </>
+        <div style={{ marginTop: 14 }}>
+          <button onClick={reportMusic} style={reportBtn}>
+            🚨 Reportar música
+          </button>
+        </div>
       )}
 
       {isAdmin && (
@@ -289,14 +273,3 @@ const reportBtn = {
   fontWeight: 600,
   cursor: "pointer",
 };
-
-const reportBox = {
-  marginTop: 12,
-  padding: "14px 16px",
-  background: "#ff0000",
-  color: "#fff",
-  borderRadius: 8,
-  fontWeight: 700,
-  textAlign: "center" as const,
-};
-
