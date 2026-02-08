@@ -33,7 +33,7 @@ const GenerosRestritosAluno: React.FC<GenerosRestritosProps> = () => {
         className="text-center font-bold text-xl mb-3"
         style={{ color: "#ff0707", textShadow: "0 0 4px #FF0707" }}
       >
-        🎵Gêneros Liberados🎵
+        🎵 Gêneros Liberados 🎵
       </h2>
 
       {restrictedGenres.length > 0 ? (

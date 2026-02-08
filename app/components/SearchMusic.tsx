@@ -215,7 +215,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
                   }}
                 >
                   {jaAdicionado
-                    ? "✓ Adicionado à fila"
+                    ? "✔️ Adicionado à fila"
                     : "➕ Adicionar à fila"}
                 </button>
               </div>
