@@ -5,9 +5,9 @@ import { useState, useRef } from "react";
 const todosAvisos = [
   { id: "todos", texto: " Tocar todos os avisos" },
 
-  { id: "hidratacao", texto: " Lembre-se de se hidratar.", arquivo: "/Aviso01.mp3" },
-  { id: "limpeza", texto: " Mantenha os aparelhos limpos.", arquivo: "/Aviso02.mp3" },
-  { id: "horarios", texto: " Academia prestes a fechar.", arquivo: "/Avisos03.mp3" },
+  { id: "hidratacao", texto: " Lembre-se de se hidratar, pois isso e muito importante para o seu corpo e treino.", arquivo: "/Aviso01.mp3" },
+  { id: "limpeza", texto: " Mantenha os aparelhos limpos após o uso, para assim sempre termos um ambiente limpo e agradavel.", arquivo: "/Aviso02.mp3" },
+  { id: "horarios", texto: " Passando para lembrar a todos que a academia está prestes a fechar!.", arquivo: "/Avisos03.mp3" },
 ];
 
 export default function Avisos() {
