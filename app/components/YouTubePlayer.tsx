@@ -39,7 +39,6 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   const syncingRef = useRef(false);
   const lastSyncRef = useRef(0);
 
-  const [muted, setMuted] = useState(!isAdmin);
   const [reportsCount, setReportsCount] = useState(0);
 
   const getTodayKey = () => new Date().toISOString().split("T")[0];
@@ -101,8 +100,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     }
   };
 
-  // 🔥 AQUI ESTÁ A CORREÇÃO PRINCIPAL
-  // ADMIN reage à entrada de pedidos e interrompe o Auto DJ
+  // 🔥 Admin interrompe Auto DJ quando entra pedido
   useEffect(() => {
     if (!isAdmin) return;
 
@@ -114,26 +112,18 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
 
       const queue = snap.val();
       const firstKey = Object.keys(queue)[0];
-      if (!firstKey) return;
-
       const next = queue[firstKey];
 
-      await playVideo(
-        next.videoId,
-        "queue",
-        next.requestedBy,
-        next.title
-      );
-
+      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
       await remove(ref(db, `queue/${firstKey}`));
     });
   }, [isAdmin]);
 
-  // 🔄 Sincronização global
+  // 🔄 Sincronização total
   useEffect(() => {
     const playerDB = ref(db, "player");
 
-    const unsub = onValue(playerDB, (snap) => {
+    return onValue(playerDB, (snap) => {
       const data = snap.val();
       if (!data || !playerRef.current) return;
 
@@ -159,8 +149,25 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
         setTimeout(() => (syncingRef.current = false), 800);
       }
     });
+  }, [isAdmin]);
 
-    return () => unsub();
+  // 📊 Admin escuta reports
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const reportsRef = ref(db, "reports");
+    return onValue(reportsRef, (snap) => {
+      if (!snap.exists()) {
+        setReportsCount(0);
+        return;
+      }
+
+      const reports = Object.values(snap.val()).filter(
+        (r: any) => r.videoId === currentVideoRef.current
+      );
+
+      setReportsCount(reports.length);
+    });
   }, [isAdmin]);
 
   const handleReady = (e: any) => {
@@ -199,6 +206,18 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     }
   };
 
+  // 🚨 REPORT DO ALUNO
+  const reportMusic = async () => {
+    if (!currentVideoRef.current) return;
+
+    await push(ref(db, "reports"), {
+      videoId: currentVideoRef.current,
+      reportedAt: Date.now(),
+    });
+
+    alert("🚨 Música reportada!");
+  };
+
   return (
     <div>
       <YouTube
@@ -215,6 +234,14 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
           },
         }}
       />
+
+      {!isAdmin && (
+        <div style={{ marginTop: 14 }}>
+          <button onClick={reportMusic} style={reportBtn}>
+            🚨 Reportar música
+          </button>
+        </div>
+      )}
 
       {isAdmin && (
         <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
@@ -233,6 +260,16 @@ const adminBtn = {
   border: "none",
   background: "#ff1a1a",
   color: "#fff",
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+const reportBtn = {
+  padding: "10px 16px",
+  borderRadius: 8,
+  border: "2px solid #ff0707",
+  background: "#000",
+  color: "#ff0707",
   fontWeight: 600,
   cursor: "pointer",
 };
