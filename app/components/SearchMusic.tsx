@@ -76,7 +76,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
       }
 
       const data = await res.json();
-      const list = Array.isArray(data) ? data : [];
+      const list = Array.isArray(data?.items) ? data.items : [];
 
       setVideos(
         list.map((v: any) => ({
