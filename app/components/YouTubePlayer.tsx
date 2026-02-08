@@ -65,6 +65,9 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     currentModeRef.current = mode;
     setReportsCount(0);
 
+    // 🔥 limpa reports da música anterior
+    await remove(ref(db, `reports/${videoId}`));
+
     playerRef.current?.loadVideoById(videoId);
 
     await set(ref(db, "player"), {
@@ -151,22 +154,14 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     });
   }, [isAdmin]);
 
-  // 📊 Admin escuta reports
+  // 📊 Admin escuta reports (CORRETO)
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin || !currentVideoRef.current) return;
 
-    const reportsRef = ref(db, "reports");
+    const reportsRef = ref(db, `reports/${currentVideoRef.current}`);
+
     return onValue(reportsRef, (snap) => {
-      if (!snap.exists()) {
-        setReportsCount(0);
-        return;
-      }
-
-      const reports = Object.values(snap.val()).filter(
-        (r: any) => r.videoId === currentVideoRef.current
-      );
-
-      setReportsCount(reports.length);
+      setReportsCount(snap.exists() ? Object.keys(snap.val()).length : 0);
     });
   }, [isAdmin]);
 
@@ -206,16 +201,24 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     }
   };
 
-  // 🚨 REPORT DO ALUNO
+  // 🚨 REPORT DO ALUNO (CORRIGIDO)
   const reportMusic = async () => {
     if (!currentVideoRef.current) return;
 
-    await push(ref(db, "reports"), {
-      videoId: currentVideoRef.current,
-      reportedAt: Date.now(),
-    });
+    const userId =
+      localStorage.getItem("gotham_user_id") ||
+      (() => {
+        const id = crypto.randomUUID();
+        localStorage.setItem("gotham_user_id", id);
+        return id;
+      })();
 
-    alert("🚨 Música reportada!");
+    await set(
+      ref(db, `reports/${currentVideoRef.current}/${userId}`),
+      true
+    );
+
+    alert("🚨 Música reportada com sucesso!");
   };
 
   return (
