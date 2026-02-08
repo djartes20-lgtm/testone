@@ -153,17 +153,26 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
           }}
         />
         <button
-          onClick={search}
-          disabled={loading}
-          style={{
-            border: "2px solid red",
-            background: "transparent",
-            color: "red",
-            padding: "10px 16px",
-          }}
-        >
-          Pesquisar
-        </button>
+  onClick={search}
+  disabled={loading}
+  style={{
+    border: "2px solid #ff0707",
+    background: "transparent",
+    color: "#ff0707",
+    padding: "10px 16px",
+
+    /* 🔧 AJUSTE MOBILE */
+    maxWidth: "100%",
+    width: "100%",
+    boxSizing: "border-box",
+
+    /* 💻 Desktop continua normal */
+    flex: "0 0 auto",
+  }}
+>
+  Pesquisar
+</button>
+
       </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
