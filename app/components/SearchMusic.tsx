@@ -19,27 +19,25 @@ interface Props {
   onAddMusic?: (video: Video) => Promise<void>;
 }
 
-// 🔒 BLOQUEIO DE CONTEÚDO
-let BLOCKED_ARTISTS = ["UCcmQ_nZrgwV8JDIDV21xjYA", "Outro Artista"];
-let BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
-let BLOCKED_VIDEO_IDS = ["IwDrW0YTYWI", "efgh5678"];
+// 🔒 BLOQUEIOS
+const BLOCKED_ARTISTS = ["UCcmQ_nZrgwV8JDIDV21xjYA"];
+const BLOCKED_KEYWORDS = ["palavrão1", "palavrão2"];
+const BLOCKED_VIDEO_IDS = ["IwDrW0YTYWI"];
 
 function isBlocked(videoId: string, title: string, artist?: string) {
   if (BLOCKED_VIDEO_IDS.includes(videoId)) return true;
   if (artist && BLOCKED_ARTISTS.includes(artist)) return true;
-  const titleLower = title.toLowerCase();
-  return BLOCKED_KEYWORDS.some(word =>
-    titleLower.includes(word.toLowerCase())
-  );
+
+  const lower = title.toLowerCase();
+  return BLOCKED_KEYWORDS.some(word => lower.includes(word.toLowerCase()));
 }
 
-// 📌 Função que registra o pedido por dia da semana
+// 📊 Estatística por dia
 function registrarPedidoSemana() {
   const dias = ["dom", "seg", "ter", "qua", "qui", "sex", "sab"];
   const hoje = dias[new Date().getDay()];
   const refDia = ref(db, `estatisticas/pedidosSemana/${hoje}`);
-
-  runTransaction(refDia, (valorAtual) => (valorAtual || 0) + 1);
+  runTransaction(refDia, (v) => (v || 0) + 1);
 }
 
 export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
@@ -48,48 +46,57 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [restricoes, setRestricoes] = useState<string[]>([]);
-  const [addedVideos, setAddedVideos] = useState<string[]>([]); // ✅ CONTROLE DO BOTÃO
+  const [addedVideos, setAddedVideos] = useState<string[]>([]);
 
-  // 🔒 Puxar restrições de gênero do Firebase
+  // 🔒 Puxa restrições do Firebase
   useEffect(() => {
-    const restricoesRef = ref(db, "restricoesGenero");
-    return onValue(restricoesRef, (snapshot) => {
-      const data = snapshot.val() || {};
+    const r = ref(db, "restricoesGenero");
+    return onValue(r, (snap) => {
+      const data = snap.val() || {};
       setRestricoes(Object.values(data));
     });
   }, []);
 
+  // 🔍 BUSCA (CORRIGIDA)
   const search = async () => {
-    if (!query) return;
+    if (!query.trim()) {
+      setError("Digite algo para pesquisar");
+      return;
+    }
 
     try {
       setLoading(true);
       setError("");
+      setVideos([]);
+
+      console.log("🔎 Buscando:", query);
 
       const res = await fetch(
         `/api/youtube/search?q=${encodeURIComponent(query)}`
       );
 
       if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody?.error || "Erro ao buscar no YouTube");
+        throw new Error("Erro na API");
       }
 
       const data = await res.json();
-      const list = Array.isArray(data) ? data : [];
 
-      setVideos(
-        list.map((v: any) => ({
-          videoId: v.videoId,
-          title: v.title,
-          thumbnail: v.thumbnail,
-          channel: v.channel,
-          genre: v.genre || "Desconhecido",
-        }))
-      );
-    } catch {
-      setError("Não foi possível buscar as músicas 😢");
-      setVideos([]);
+      if (!Array.isArray(data)) {
+        throw new Error("Formato inválido");
+      }
+
+      const lista: Video[] = data.map((v: any) => ({
+        videoId: v.videoId,
+        title: v.title,
+        thumbnail: v.thumbnail,
+        channel: v.channel,
+        genre: v.genre || "Desconhecido",
+      }));
+
+      setVideos(lista);
+    } catch (err) {
+      console.error("❌ ERRO REAL:", err);
+      setError("Não foi possível buscar as músicas 😳");
     } finally {
       setLoading(false);
     }
@@ -98,9 +105,13 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   const handleAdd = async (video: Video) => {
     if (addedVideos.includes(video.videoId)) return;
 
-    // 🔒 Bloquear se gênero estiver restrito
     if (video.genre && restricoes.includes(video.genre)) {
-      alert(`🚫 Músicas de ${video.genre} estão restritas!`);
+      alert(`🚫 Músicas de ${video.genre} estão restritas`);
+      return;
+    }
+
+    if (isBlocked(video.videoId, video.title, video.channel)) {
+      alert("🚫 Conteúdo bloqueado");
       return;
     }
 
@@ -110,7 +121,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
       const user = auth.currentUser;
       if (!user) return;
 
-      const alunoNome = user.displayName || `Aluno-${user.uid}`;
+      const nome = user.displayName || `Aluno-${user.uid}`;
 
       await push(ref(db, "queue"), {
         videoId: video.videoId,
@@ -118,57 +129,58 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
         channel: video.channel,
         genre: video.genre || "Desconhecido",
         createdAt: Date.now(),
-        requestedBy: alunoNome,
+        requestedBy: nome,
       });
 
-      await addToUserHistory(alunoNome, video.videoId, video.title);
+      await addToUserHistory(nome, video.videoId, video.title);
     }
 
     registrarPedidoSemana();
-
-    // ✅ MARCA COMO ADICIONADO (BOTÃO FICA VERDE)
-    setAddedVideos((prev) => [...prev, video.videoId]);
+    setAddedVideos(prev => [...prev, video.videoId]);
   };
 
   return (
-    <Card
-      title="🔎 Buscar música 🔎"
-      style={{
-        border: "2px solid #ff0707",
-        borderRadius: 10,
-        padding: 20,
-      }}
-    >
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+    <Card title="🔎 Buscar música 🔎">
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          marginBottom: 12,
+          flexWrap: "wrap",
+        }}
+      >
         <input
           placeholder="Nome da música"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           style={{
-            border: "2px solid #ff0707",
-            padding: "10px 12px",
             flex: 1,
+            minWidth: 200,
+            border: "2px solid #ff0707",
+            padding: "10px",
             background: "#000",
             color: "#ff0707",
           }}
         />
+
         <button
           onClick={search}
           disabled={loading}
           style={{
+            padding: "10px 14px",
             border: "2px solid red",
             background: "transparent",
             color: "red",
-            padding: "10px 16px",
+            whiteSpace: "nowrap",
           }}
         >
-          Pesquisar
+          {loading ? "Buscando..." : "Pesquisar"}
         </button>
       </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <ul style={{ listStyle: "none", padding: 0, marginTop: 20 }}>
+      <ul style={{ listStyle: "none", padding: 0 }}>
         {videos.map((video) => {
           const jaAdicionado = addedVideos.includes(video.videoId);
 
@@ -178,44 +190,38 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
               style={{
                 display: "flex",
                 gap: 12,
+                marginBottom: 16,
+                border: "1px solid rgba(255,7,7,.3)",
                 padding: 12,
                 borderRadius: 8,
-                border: "1px solid rgba(255,7,7,0.3)",
-                marginBottom: 16,
               }}
             >
               <img
                 src={video.thumbnail}
                 alt=""
-                style={{ width: 120, borderRadius: 4 }}
+                style={{ width: 110, borderRadius: 4 }}
               />
 
               <div style={{ flex: 1 }}>
-                <p style={{ margin: "0 0 4px" }}>{video.title}</p>
-                <small style={{ display: "block", marginBottom: 10 }}>
-                  {video.channel}
-                </small>
+                <p>{video.title}</p>
+                <small>{video.channel}</small>
 
                 <button
                   onClick={() => handleAdd(video)}
                   disabled={jaAdicionado}
                   style={{
-                    background: "transparent",
-                    color: jaAdicionado ? "#00e676" : "#fff",
-                    padding: "12px 16px",
+                    marginTop: 8,
+                    width: "100%",
+                    padding: "10px",
                     border: jaAdicionado
                       ? "2px solid #00e676"
                       : "2px solid #ff0707",
-                    cursor: jaAdicionado ? "default" : "pointer",
-                    boxShadow: jaAdicionado
-                      ? "0 0 6px #00e676, 0 0 12px #00e676"
-                      : "0 0 5px #ff0707, 0 0 10px #ff0707",
-                    width: "100%",
-                    opacity: jaAdicionado ? 0.85 : 1,
+                    background: "transparent",
+                    color: jaAdicionado ? "#00e676" : "#fff",
                   }}
                 >
                   {jaAdicionado
-                    ? "✔️ Adicionado à fila"
+                    ? "✔️ Adicionado"
                     : "➕ Adicionar à fila"}
                 </button>
               </div>
