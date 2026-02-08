@@ -73,17 +73,20 @@ const GenerosRestritosADM = () => {
       </div>
 
       {restrictedGenres.length > 0 && (
-        <p
-          style={{
-            color: "#00ff00",
-            fontWeight: "600",
-            marginTop: "12px",
-            textShadow: "0 0 4px #FF0707",
-          }}
-        >
-          Gêneros Liberados: {restrictedGenres.join(", ")}
-        </p>
-      )}
+  <p
+    style={{
+      color: "#00ff00",
+      fontWeight: "600",
+      marginTop: "12px",
+      textShadow: "0 0 4px #FF0707",
+    }}
+  >
+    <span style={{ color: "#ff0707" }}>
+      Gêneros Liberados:
+    </span>{" "}
+    {restrictedGenres.join(", ")}
+  </p>
+)}
     </div>
   );
 };
