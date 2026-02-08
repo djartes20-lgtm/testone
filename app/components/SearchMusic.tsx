@@ -48,7 +48,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [restricoes, setRestricoes] = useState<string[]>([]);
-  const [addedVideos, setAddedVideos] = useState<string[]>([]);
+  const [addedVideos, setAddedVideos] = useState<string[]>([]); // ✅ CONTROLE DO BOTÃO
 
   // 🔒 Puxar restrições de gênero do Firebase
   useEffect(() => {
@@ -70,7 +70,10 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
         `/api/youtube/search?q=${encodeURIComponent(query)}`
       );
 
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody?.error || "Erro ao buscar no YouTube");
+      }
 
       const data = await res.json();
       const list = Array.isArray(data) ? data : [];
@@ -95,6 +98,7 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
   const handleAdd = async (video: Video) => {
     if (addedVideos.includes(video.videoId)) return;
 
+    // 🔒 Bloquear se gênero estiver restrito
     if (video.genre && restricoes.includes(video.genre)) {
       alert(`🚫 Músicas de ${video.genre} estão restritas!`);
       return;
@@ -121,6 +125,8 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
     }
 
     registrarPedidoSemana();
+
+    // ✅ MARCA COMO ADICIONADO (BOTÃO FICA VERDE)
     setAddedVideos((prev) => [...prev, video.videoId]);
   };
 
@@ -130,10 +136,10 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
       style={{
         border: "2px solid #ff0707",
         borderRadius: 10,
-        padding: 20,
+        padding: 10,
       }}
     >
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
         <input
           placeholder="Nome da música"
           value={query}
@@ -141,14 +147,11 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
           style={{
             border: "2px solid #ff0707",
             padding: "10px 12px",
-            flex: "1 1 200px",
+            flex: 1,
             background: "#000",
             color: "#ff0707",
-            boxSizing: "border-box",
           }}
         />
-
-        {/* ✅ BOTÃO AJUSTADO PARA MOBILE */}
         <button
           onClick={search}
           disabled={loading}
@@ -157,12 +160,6 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
             background: "transparent",
             color: "red",
             padding: "10px 16px",
-
-            width: "100%",
-            maxWidth: "100%",
-            boxSizing: "border-box",
-
-            flex: "0 0 auto",
           }}
         >
           Pesquisar
@@ -229,6 +226,10 @@ export default function SearchMusic({ isAdmin = false, onAddMusic }: Props) {
     </Card>
   );
 }
+
+
+
+ 
 
 
 
