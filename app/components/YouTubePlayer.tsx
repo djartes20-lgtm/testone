@@ -7,7 +7,6 @@ import { db } from "@/app/lib/firebase";
 
 interface Props {
   isAdmin?: boolean;
-  userName?: string;
 }
 
 const AUTO_DJ_LIST = [
@@ -33,25 +32,38 @@ const getNextAutoDj = () => {
   return id;
 };
 
-export default function YouTubePlayer({ isAdmin = false, userName }: Props) {
+export default function YouTubePlayer({ isAdmin = false }: Props) {
   const playerRef = useRef<any>(null);
   const currentVideoRef = useRef<string | null>(null);
   const currentModeRef = useRef<"queue" | "autodj" | null>(null);
+  const syncingRef = useRef(false);
+  const lastSyncRef = useRef(0);
 
-  const [reports, setReports] = useState<string[]>([]);
+  const [reportsCount, setReportsCount] = useState(0);
+
+  const getTodayKey = () => new Date().toISOString().split("T")[0];
+
+  const addToHistory = async (videoId: string, title: string, requestedBy: string) => {
+    const dayKey = getTodayKey();
+    await push(ref(db, `history/${dayKey}`), {
+      videoId,
+      title,
+      requestedBy,
+      startedAt: Date.now(),
+    });
+  };
 
   const playVideo = async (
     videoId: string,
     mode: "queue" | "autodj",
-    requestedBy = "Auto DJ"
+    requestedBy = "AutoDJ",
+    title = "Desconhecida"
   ) => {
     if (!isAdmin) return;
 
     currentVideoRef.current = videoId;
     currentModeRef.current = mode;
-    setReports([]);
-
-    await remove(ref(db, "reports"));
+    setReportsCount(0);
 
     playerRef.current?.loadVideoById(videoId);
 
@@ -60,7 +72,12 @@ export default function YouTubePlayer({ isAdmin = false, userName }: Props) {
       startedAt: Date.now(),
       mode,
       requestedBy,
+      title,
     });
+
+    if (mode === "queue") {
+      await addToHistory(videoId, title, requestedBy);
+    }
   };
 
   const startAutoDJ = async () => {
@@ -76,24 +93,48 @@ export default function YouTubePlayer({ isAdmin = false, userName }: Props) {
       const firstKey = Object.keys(queue)[0];
       const next = queue[firstKey];
 
-      await playVideo(next.videoId, "queue", next.requestedBy);
+      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
       await remove(ref(db, `queue/${firstKey}`));
     } else {
       startAutoDJ();
     }
   };
 
-  // 🔄 Sincronização total (aluno só espelha)
+  // 🔥 Admin interrompe Auto DJ quando entra pedido
   useEffect(() => {
-    return onValue(ref(db, "player"), (snap) => {
+    if (!isAdmin) return;
+
+    const queueRef = ref(db, "queue");
+
+    return onValue(queueRef, async (snap) => {
+      if (!snap.exists()) return;
+      if (currentModeRef.current !== "autodj") return;
+
+      const queue = snap.val();
+      const firstKey = Object.keys(queue)[0];
+      const next = queue[firstKey];
+
+      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
+      await remove(ref(db, `queue/${firstKey}`));
+    });
+  }, [isAdmin]);
+
+  // 🔄 Sincronização total
+  useEffect(() => {
+    const playerDB = ref(db, "player");
+
+    return onValue(playerDB, (snap) => {
       const data = snap.val();
       if (!data || !playerRef.current) return;
 
+      const elapsed = (Date.now() - data.startedAt) / 1000;
+      if (Date.now() - lastSyncRef.current < 800) return;
+      lastSyncRef.current = Date.now();
+
       if (data.videoId !== currentVideoRef.current) {
+        syncingRef.current = true;
         currentVideoRef.current = data.videoId;
         currentModeRef.current = data.mode;
-
-        const elapsed = (Date.now() - data.startedAt) / 1000;
 
         playerRef.current.loadVideoById({
           videoId: data.videoId,
@@ -104,47 +145,77 @@ export default function YouTubePlayer({ isAdmin = false, userName }: Props) {
           playerRef.current.mute();
           playerRef.current.playVideo();
         }
+
+        setTimeout(() => (syncingRef.current = false), 800);
       }
     });
   }, [isAdmin]);
 
-  // 🚨 ADM escuta reports
+  // 📊 Admin escuta reports
   useEffect(() => {
     if (!isAdmin) return;
 
-    return onValue(ref(db, "reports"), (snap) => {
+    const reportsRef = ref(db, "reports");
+    return onValue(reportsRef, (snap) => {
       if (!snap.exists()) {
-        setReports([]);
+        setReportsCount(0);
         return;
       }
 
-      const list = Object.values(snap.val())
-        .filter((r: any) => r.videoId === currentVideoRef.current)
-        .map((r: any) => r.reportedBy);
+      const reports = Object.values(snap.val()).filter(
+        (r: any) => r.videoId === currentVideoRef.current
+      );
 
-      setReports(list);
+      setReportsCount(reports.length);
     });
   }, [isAdmin]);
 
   const handleReady = (e: any) => {
     playerRef.current = e.target;
-    if (isAdmin) startAutoDJ();
+
+    get(ref(db, "player")).then((snap) => {
+      const data = snap.val();
+      if (!data) return;
+
+      const elapsed = (Date.now() - data.startedAt) / 1000;
+      playerRef.current.loadVideoById({
+        videoId: data.videoId,
+        startSeconds: Math.max(elapsed, 0),
+      });
+
+      if (!isAdmin) {
+        playerRef.current.mute();
+        playerRef.current.playVideo();
+      }
+    });
   };
 
   const handleEnd = async () => {
     if (!isAdmin) return;
-    skipMusic();
+
+    const snap = await get(ref(db, "queue"));
+    if (snap.exists()) {
+      const queue = snap.val();
+      const firstKey = Object.keys(queue)[0];
+      const next = queue[firstKey];
+
+      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
+      await remove(ref(db, `queue/${firstKey}`));
+    } else {
+      startAutoDJ();
+    }
   };
 
-  // 🚨 Report do aluno
+  // 🚨 REPORT DO ALUNO
   const reportMusic = async () => {
-    if (!currentVideoRef.current || !userName) return;
+    if (!currentVideoRef.current) return;
 
     await push(ref(db, "reports"), {
       videoId: currentVideoRef.current,
-      reportedBy: userName,
       reportedAt: Date.now(),
     });
+
+    alert("🚨 Música reportada!");
   };
 
   return (
@@ -159,26 +230,24 @@ export default function YouTubePlayer({ isAdmin = false, userName }: Props) {
             autoplay: 1,
             controls: isAdmin ? 1 : 0,
             mute: isAdmin ? 0 : 1,
+            modestbranding: 1,
           },
         }}
       />
 
       {!isAdmin && (
-        <button onClick={reportMusic} style={reportBtn}>
-          🚨 Reportar música
-        </button>
-      )}
-
-      {isAdmin && reports.length > 0 && (
-        <div style={reportBox}>
-          ⚠️ Aviso de reporte: <b>{reports.join(", ")}</b> reportou esta música
+        <div style={{ marginTop: 14 }}>
+          <button onClick={reportMusic} style={reportBtn}>
+            🚨 Reportar música
+          </button>
         </div>
       )}
 
       {isAdmin && (
-        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-          <button onClick={skipMusic} style={adminBtn}>⏭️ Pular</button>
+        <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
+          <button onClick={skipMusic} style={adminBtn}>⏭️ Pular música</button>
           <button onClick={startAutoDJ} style={adminBtn}>🎛️ Auto DJ</button>
+          <button style={adminBtn}>🚨 Reports: {reportsCount}</button>
         </div>
       )}
     </div>
@@ -188,27 +257,19 @@ export default function YouTubePlayer({ isAdmin = false, userName }: Props) {
 const adminBtn = {
   padding: "10px 16px",
   borderRadius: 8,
+  border: "none",
   background: "#ff1a1a",
   color: "#fff",
-  border: "none",
+  fontWeight: 600,
   cursor: "pointer",
 };
 
 const reportBtn = {
-  marginTop: 14,
   padding: "10px 16px",
   borderRadius: 8,
+  border: "2px solid #ff0707",
   background: "#000",
   color: "#ff0707",
-  border: "2px solid #ff0707",
+  fontWeight: 600,
   cursor: "pointer",
-};
-
-const reportBox = {
-  marginTop: 14,
-  padding: 12,
-  borderRadius: 8,
-  background: "#ff0000",
-  color: "#fff",
-  fontWeight: 700,
 };
