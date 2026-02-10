@@ -48,7 +48,7 @@ export default function Home() {
               Olá, {user.nome}!
             </h2>
             <span style={{ color: "#ff0707", fontWeight: "bold" }}>
-              Boas-vindas à Gotham Play
+              Boas-vindas ao Vida Play
             </span>
           </div>
         </div>
