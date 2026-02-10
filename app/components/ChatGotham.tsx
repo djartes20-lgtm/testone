@@ -186,7 +186,7 @@ export default function ChatGotham({
         {/* 🧹 LIMPAR DEPOIS (SÓ ADM) */}
         {isAdmin && (
           <button onClick={clearChat} className="clear-chat">
-            🧹
+            Clear
           </button>
         )}
       </div>
