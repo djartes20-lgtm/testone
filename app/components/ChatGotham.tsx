@@ -266,9 +266,15 @@ export default function ChatGotham({
     padding: 10px;
   }
 
-  button {
-    padding: 10px 14px;
+   .buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .buttons button {
+    flex: 1;
     font-size: 0.85rem;
+    padding: 10px 0;
   }
 
   .reaction {
