@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gotham Play",
+  title: "Vida Play",
   description: "App de gerenciamento musical do CT Gotham",
   icons: {
-    icon: "/android-icon-192x192",
+    icon: "/android-Chrome-192x192.png",
   },
 };
 
