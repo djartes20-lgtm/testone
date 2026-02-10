@@ -195,7 +195,6 @@ export default function ChatGotham({
         .history-container {
           border: 2px solid #ff0707;
           border-radius: 10px;
-          font-size: 1.4rem;
           background: #000;
           color: #ff0707;
           height: 420px;
