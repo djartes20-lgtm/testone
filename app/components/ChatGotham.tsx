@@ -121,7 +121,15 @@ export default function ChatGotham({
     <div className="history-container">
       {/* HEADER */}
       <div className="history-header">
-        <h2>💬 Chat da Academia 💬</h2>
+        <h2
+  style={{
+    fontSize: "1.3rem",
+    fontWeight: "bold",
+    color: "#ff0707",
+  }}
+>
+  💬 Chat da Academia 💬
+</h2>
       </div>
 
       {/* MENSAGENS */}
