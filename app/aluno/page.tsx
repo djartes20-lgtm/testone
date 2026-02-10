@@ -103,8 +103,8 @@ export default function AlunoPage() {
         <div className="flex items-center gap-3">
           <img src={user.avatar} alt={user.nome} width={40} height={40} className="rounded-full" />
           <div>
-            <h2 className="text-red-500 font-bold">Olá, {user.nome}</h2>
-            <span className="text-red-500 text-sm">Boas Vindas ao Vida Play</span>
+            <h2 className="text-red-0707 font-bold">Olá, {user.nome}</h2>
+            <span className="text-red-0707 text-sm">Boas Vindas ao Vida Play</span>
           </div>
         </div>
 
