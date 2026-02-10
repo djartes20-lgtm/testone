@@ -90,9 +90,16 @@ export default function ChatGotham({
     set(ref(db, `typing/${userName}`), false);
   };
 
-  /* 🧹 LIMPAR CHAT (ADM) */
+  /* 🧹 LIMPAR CHAT (SÓ ADM) */
   const clearChat = async () => {
-    if (!confirm("Tem certeza que deseja apagar TODO o chat?")) return;
+    if (!isAdmin) return;
+
+    const confirmClear = confirm(
+      "⚠️ Tem certeza que deseja apagar TODAS as mensagens do chat?"
+    );
+
+    if (!confirmClear) return;
+
     await remove(ref(db, "chat"));
   };
 
@@ -114,7 +121,7 @@ export default function ChatGotham({
     <div className="history-container">
       {/* HEADER */}
       <div className="history-header">
-        <h2>💬 Chat da Academia</h2>
+        <h2>💬 Chat da Academia 💬</h2>
       </div>
 
       {/* MENSAGENS */}
@@ -131,10 +138,9 @@ export default function ChatGotham({
                 <strong>{msg.user}:</strong> {msg.text}
               </div>
 
-              {/* Reações */}
-              <div className="reactions">
+              <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                 {EMOJIS.map((emoji) => {
-                  const reacted = msg.reactions?.[emoji]?.[userName] === true;
+                  const reacted = msg.reactions?.[emoji]?.[userName];
                   const count = msg.reactions?.[emoji]
                     ? Object.keys(msg.reactions[emoji]).length
                     : 0;
@@ -144,29 +150,15 @@ export default function ChatGotham({
                   return (
                     <button
                       key={emoji}
-                      onClick={() => toggleReaction(msg.id!, emoji, reacted)}
+                      onClick={() =>
+                        toggleReaction(msg.id!, emoji, !!reacted)
+                      }
                       className={`reaction ${reacted ? "active" : ""}`}
                     >
                       {emoji} {count}
                     </button>
                   );
                 })}
-
-                {EMOJIS.map((emoji) => (
-                  <button
-                    key={emoji}
-                    onClick={() =>
-                      toggleReaction(
-                        msg.id!,
-                        emoji,
-                        msg.reactions?.[emoji]?.[userName] === true
-                      )
-                    }
-                    className="emoji-add"
-                  >
-                    {emoji}
-                  </button>
-                ))}
               </div>
             </li>
           ))}
@@ -188,16 +180,17 @@ export default function ChatGotham({
           className="search-input"
         />
 
+        {/* 📤 ENVIAR PRIMEIRO */}
+        <button onClick={sendMessage}>Enviar</button>
+
+        {/* 🧹 LIMPAR DEPOIS (SÓ ADM) */}
         {isAdmin && (
-          <button onClick={clearChat} className="clear-chat small">
+          <button onClick={clearChat} className="clear-chat">
             🧹
           </button>
         )}
-
-        <button onClick={sendMessage}>Enviar</button>
       </div>
 
-      {/* 🎨 ESTILO */}
       <style jsx>{`
         .history-container {
           border: 2px solid #ff0707;
@@ -207,99 +200,48 @@ export default function ChatGotham({
           height: 420px;
           display: flex;
           flex-direction: column;
-          overflow: hidden;
-        }
-
-        .history-header {
-          padding: 12px 16px;
-          border-bottom: 1px solid rgba(255, 7, 7, 0.4);
         }
 
         .day-block {
           flex: 1;
           padding: 16px;
           overflow-y: auto;
-          scrollbar-width: none;
-        }
-
-        .day-block::-webkit-scrollbar {
-          width: 0;
-        }
-
-        ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        li {
-          margin-bottom: 14px;
-        }
-
-        .reactions {
-          display: flex;
-          gap: 6px;
-          margin-top: 6px;
-          flex-wrap: wrap;
-        }
-
-        .reaction {
-          border: 1px solid #ff0707;
-          background: transparent;
-          color: #ff0707;
-          border-radius: 14px;
-          padding: 2px 8px;
-          font-size: 0.75rem;
-        }
-
-        .reaction.active {
-          background: #ff0707;
-          color: #000;
-        }
-
-        .emoji-add {
-          background: transparent;
-          border: none;
-          cursor: pointer;
-        }
-
-        .typing {
-          padding: 4px 16px;
-          font-size: 0.75rem;
         }
 
         .input-area {
           display: flex;
           gap: 8px;
           padding: 12px;
-          border-top: 1px solid rgba(255, 7, 7, 0.3);
         }
 
         .search-input {
           flex: 1;
-          padding: 6px 10px;
           background: #000;
           border: 1px solid #ff0707;
           color: #ff0707;
           border-radius: 6px;
+          padding: 6px;
         }
 
-        .input-area button {
+        button {
           background: #ff0707;
           color: #000;
           border-radius: 6px;
           font-weight: bold;
-          padding: 6px 14px;
+          padding: 6px 12px;
+          cursor: pointer;
         }
 
-        .clear-chat.small {
-          padding: 6px 10px;
-          font-size: 0.75rem;
+        .clear-chat {
+          background: transparent;
+          color: #ff0707;
+          border: 1px solid #ff0707;
         }
       `}</style>
     </div>
   );
 }
+
 
 
 
