@@ -90,46 +90,18 @@ export default function ChatGotham({
     set(ref(db, `typing/${userName}`), false);
   };
 
-  /* 🧹 LIMPAR CHAT (SÓ ADM) */
+  /* 🧹 LIMPAR CHAT (ADM) */
   const clearChat = async () => {
     if (!isAdmin) return;
-
-    const confirmClear = confirm(
-      "⚠️ Tem certeza que deseja apagar TODAS as mensagens do chat?"
-    );
-
-    if (!confirmClear) return;
-
+    if (!confirm("⚠️ Tem certeza que deseja apagar TODAS as mensagens?")) return;
     await remove(ref(db, "chat"));
-  };
-
-  /* 😀 Reações */
-  const toggleReaction = async (
-    messageId: string,
-    emoji: string,
-    reacted: boolean
-  ) => {
-    const reactionRef = ref(
-      db,
-      `chat/${messageId}/reactions/${emoji}/${userName}`
-    );
-
-    reacted ? await remove(reactionRef) : await set(reactionRef, true);
   };
 
   return (
     <div className="history-container">
       {/* HEADER */}
       <div className="history-header">
-        <h2
-  style={{
-    fontSize: "1.3rem",
-    fontWeight: "bold",
-    color: "#ff0707",
-  }}
->
-  💬 Chat da Academia 💬
-</h2>
+        <h2>💬 Chat da Academia 💬</h2>
       </div>
 
       {/* MENSAGENS */}
@@ -137,16 +109,11 @@ export default function ChatGotham({
         <ul>
           {messages.map((msg) => (
             <li key={msg.id}>
-              <div
-                style={{
-                  color: msg.user === "ADM" ? "#ff0707" : "#fff",
-                  fontSize: "0.9rem",
-                }}
-              >
+              <div className="message">
                 <strong>{msg.user}:</strong> {msg.text}
               </div>
 
-              <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+              <div className="reactions">
                 {EMOJIS.map((emoji) => {
                   const reacted = msg.reactions?.[emoji]?.[userName];
                   const count = msg.reactions?.[emoji]
@@ -173,7 +140,6 @@ export default function ChatGotham({
         </ul>
       </div>
 
-      {/* DIGITANDO */}
       {typingUser && (
         <div className="typing">✍️ {typingUser} está digitando...</div>
       )}
@@ -188,15 +154,15 @@ export default function ChatGotham({
           className="search-input"
         />
 
-        {/* 📤 ENVIAR PRIMEIRO */}
-        <button onClick={sendMessage}>Enviar</button>
+        <div className="buttons">
+          <button onClick={sendMessage}>Enviar</button>
 
-        {/* 🧹 LIMPAR DEPOIS (SÓ ADM) */}
-        {isAdmin && (
-          <button onClick={clearChat} className="clear-chat">
-            Clear
-          </button>
-        )}
+          {isAdmin && (
+            <button onClick={clearChat} className="clear-chat">
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
       <style jsx>{`
@@ -210,10 +176,22 @@ export default function ChatGotham({
           flex-direction: column;
         }
 
+        .history-header h2 {
+          font-size: 1.3rem;
+          font-weight: bold;
+          color: #ff0707;
+          padding: 10px;
+        }
+
         .day-block {
           flex: 1;
           padding: 16px;
           overflow-y: auto;
+        }
+
+        .message {
+          color: #fff;
+          font-size: 0.9rem;
         }
 
         .input-area {
@@ -228,7 +206,12 @@ export default function ChatGotham({
           border: 1px solid #ff0707;
           color: #ff0707;
           border-radius: 6px;
-          padding: 6px;
+          padding: 8px;
+        }
+
+        .buttons {
+          display: flex;
+          gap: 8px;
         }
 
         button {
@@ -236,65 +219,43 @@ export default function ChatGotham({
           color: #000;
           border-radius: 6px;
           font-weight: bold;
-          padding: 6px 12px;
+          padding: 8px 14px;
           cursor: pointer;
         }
 
-        .clear-chat {
-          background: #ff0707;
-          color: #000;
-          border: 1px solid #ff0707;
-        }
-        
+        /* 📱 MOBILE */
         @media (max-width: 768px) {
-  .history-container {
-    height: 75vh; /* ocupa bem a tela do celular */
-  }
+          .history-container {
+            height: 75vh;
+          }
 
-  .day-block {
-    padding: 10px;
-    font-size: 0.85rem;
-  }
+          .input-area {
+            flex-direction: column;
+          }
 
-  .input-area {
-    padding: 8px;
-    gap: 6px;
-  }
+          .buttons {
+            width: 100%;
+          }
 
-  .search-input {
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-
-   .buttons {
-    display: flex;
-    gap: 8px;
-  }
-
-  .buttons button {
-    flex: 1;
-    font-size: 0.85rem;
-    padding: 10px 0;
-  }
-
-  .reaction {
-    font-size: 0.8rem;
-    padding: 4px 6px;
-  }
-
-  .typing {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-  }
-}
-
+          .buttons button {
+            flex: 1;
+            padding: 12px 0;
+            font-size: 0.9rem;
+          }
+        }
       `}</style>
     </div>
   );
+
+  async function toggleReaction(
+    messageId: string,
+    emoji: string,
+    reacted: boolean
+  ) {
+    const reactionRef = ref(
+      db,
+      `chat/${messageId}/reactions/${emoji}/${userName}`
+    );
+    reacted ? await remove(reactionRef) : await set(reactionRef, true);
+  }
 }
-
-
-
-
-
-
