@@ -234,7 +234,7 @@ export default function ChatGotham({
 
         .clear-chat {
           background: #ff0707;
-          color: #ff0707;
+          color: #000;
           border: 1px solid #ff0707;
         }
       `}</style>
