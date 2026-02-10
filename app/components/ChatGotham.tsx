@@ -90,6 +90,12 @@ export default function ChatGotham({
     set(ref(db, `typing/${userName}`), false);
   };
 
+  /* 🧹 LIMPAR CHAT (ADM) */
+  const clearChat = async () => {
+    if (!confirm("Tem certeza que deseja apagar TODO o chat?")) return;
+    await remove(ref(db, "chat"));
+  };
+
   /* 😀 Reações */
   const toggleReaction = async (
     messageId: string,
@@ -104,31 +110,12 @@ export default function ChatGotham({
     reacted ? await remove(reactionRef) : await set(reactionRef, true);
   };
 
-  /* 🧹 LIMPAR CHAT (ADM) */
-  const clearChat = async () => {
-    const ok = confirm(
-      "⚠️ ATENÇÃO: Isso vai apagar TODAS as mensagens do chat. Continuar?"
-    );
-    if (!ok) return;
-
-    await remove(ref(db, "chat"));
-  };
-
   return (
     <div className="history-container">
       {/* HEADER */}
       <div className="history-header">
-        <h2>💬 Chat da Academia 💬</h2>
+        <h2>💬 Chat da Academia</h2>
       </div>
-
-      {/* BOTÃO LIMPAR CHAT – SOMENTE ADM */}
-      {isAdmin && (
-        <div className="clear-chat-container">
-          <button onClick={clearChat} className="clear-chat">
-            🧹 Limpar chat
-          </button>
-        </div>
-      )}
 
       {/* MENSAGENS */}
       <div className="day-block">
@@ -145,14 +132,7 @@ export default function ChatGotham({
               </div>
 
               {/* Reações */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: "6px",
-                  marginTop: "6px",
-                  flexWrap: "wrap",
-                }}
-              >
+              <div className="reactions">
                 {EMOJIS.map((emoji) => {
                   const reacted = msg.reactions?.[emoji]?.[userName] === true;
                   const count = msg.reactions?.[emoji]
@@ -207,10 +187,17 @@ export default function ChatGotham({
           placeholder="Digite sua mensagem..."
           className="search-input"
         />
+
+        {isAdmin && (
+          <button onClick={clearChat} className="clear-chat small">
+            🧹
+          </button>
+        )}
+
         <button onClick={sendMessage}>Enviar</button>
       </div>
 
-      {/* 🎨 ESTILO GOTHAM */}
+      {/* 🎨 ESTILO */}
       <style jsx>{`
         .history-container {
           border: 2px solid #ff0707;
@@ -221,11 +208,6 @@ export default function ChatGotham({
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          box-shadow:
-            0 0 6px rgba(255, 7, 7, 0.6),
-            0 0 14px rgba(255, 7, 7, 0.45),
-            0 0 24px rgba(255, 7, 7, 0.25),
-            0 0 40px rgba(255, 7, 7, 0.15);
         }
 
         .history-header {
@@ -233,40 +215,15 @@ export default function ChatGotham({
           border-bottom: 1px solid rgba(255, 7, 7, 0.4);
         }
 
-        .clear-chat-container {
-          padding: 6px 16px;
-          text-align: right;
-          border-bottom: 1px solid rgba(255, 7, 7, 0.25);
-        }
-
-        .clear-chat {
-          background: transparent;
-          border: 1px solid #ff0707;
-          color: #ff0707;
-          border-radius: 6px;
-          padding: 4px 10px;
-          font-size: 0.75rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .clear-chat:hover {
-          background: #ff0707;
-          color: #000;
-          box-shadow: 0 0 10px rgba(255, 7, 7, 0.8);
-        }
-
         .day-block {
           flex: 1;
           padding: 16px;
           overflow-y: auto;
           scrollbar-width: none;
-          -ms-overflow-style: none;
         }
 
         .day-block::-webkit-scrollbar {
           width: 0;
-          background: transparent;
         }
 
         ul {
@@ -279,10 +236,36 @@ export default function ChatGotham({
           margin-bottom: 14px;
         }
 
+        .reactions {
+          display: flex;
+          gap: 6px;
+          margin-top: 6px;
+          flex-wrap: wrap;
+        }
+
+        .reaction {
+          border: 1px solid #ff0707;
+          background: transparent;
+          color: #ff0707;
+          border-radius: 14px;
+          padding: 2px 8px;
+          font-size: 0.75rem;
+        }
+
+        .reaction.active {
+          background: #ff0707;
+          color: #000;
+        }
+
+        .emoji-add {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
         .typing {
           padding: 4px 16px;
           font-size: 0.75rem;
-          color: rgba(255, 7, 7, 0.8);
         }
 
         .input-area {
@@ -293,35 +276,12 @@ export default function ChatGotham({
         }
 
         .search-input {
-          width: 100%;
+          flex: 1;
           padding: 6px 10px;
           background: #000;
           border: 1px solid #ff0707;
           color: #ff0707;
           border-radius: 6px;
-        }
-
-        .reaction {
-          border: 1px solid #ff0707;
-          background: transparent;
-          color: #ff0707;
-          border-radius: 14px;
-          padding: 2px 8px;
-          font-size: 0.75rem;
-          cursor: pointer;
-        }
-
-        .reaction.active {
-          background: #ff0707;
-          color: #000;
-          box-shadow: 0 0 10px rgba(255, 7, 7, 0.8);
-        }
-
-        .emoji-add {
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          font-size: 0.9rem;
         }
 
         .input-area button {
@@ -331,10 +291,16 @@ export default function ChatGotham({
           font-weight: bold;
           padding: 6px 14px;
         }
+
+        .clear-chat.small {
+          padding: 6px 10px;
+          font-size: 0.75rem;
+        }
       `}</style>
     </div>
   );
 }
+
 
 
 
