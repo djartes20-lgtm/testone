@@ -93,8 +93,26 @@ export default function ChatGotham({
   /* 🧹 LIMPAR CHAT (ADM) */
   const clearChat = async () => {
     if (!isAdmin) return;
-    if (!confirm("⚠️ Tem certeza que deseja apagar TODAS as mensagens?")) return;
+
+    const confirmClear = confirm(
+      "⚠️ Tem certeza que deseja apagar TODAS as mensagens?"
+    );
+    if (!confirmClear) return;
+
     await remove(ref(db, "chat"));
+  };
+
+  /* 😀 Reações */
+  const toggleReaction = async (
+    messageId: string,
+    emoji: string,
+    reacted: boolean
+  ) => {
+    const reactionRef = ref(
+      db,
+      `chat/${messageId}/reactions/${emoji}/${userName}`
+    );
+    reacted ? await remove(reactionRef) : await set(reactionRef, true);
   };
 
   return (
@@ -109,7 +127,11 @@ export default function ChatGotham({
         <ul>
           {messages.map((msg) => (
             <li key={msg.id}>
-              <div className="message">
+              <div
+                className={`message ${
+                  msg.user === "ADM" ? "admin" : ""
+                }`}
+              >
                 <strong>{msg.user}:</strong> {msg.text}
               </div>
 
@@ -140,6 +162,7 @@ export default function ChatGotham({
         </ul>
       </div>
 
+      {/* DIGITANDO */}
       {typingUser && (
         <div className="typing">✍️ {typingUser} está digitando...</div>
       )}
@@ -176,11 +199,14 @@ export default function ChatGotham({
           flex-direction: column;
         }
 
+        .history-header {
+          padding: 10px;
+          text-align: center;
+        }
+
         .history-header h2 {
           font-size: 1.3rem;
           font-weight: bold;
-          color: #ff0707;
-          padding: 10px;
         }
 
         .day-block {
@@ -189,15 +215,65 @@ export default function ChatGotham({
           overflow-y: auto;
         }
 
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        li {
+          margin-bottom: 12px;
+        }
+
+        /* MENSAGENS */
         .message {
           color: #fff;
           font-size: 0.9rem;
+          padding: 6px 8px;
+          border-radius: 6px;
+        }
+
+        .message.admin {
+          background: rgba(255, 7, 7, 0.18);
+          border-left: 4px solid #ff0707;
+          font-weight: bold;
+        }
+
+        .message.admin strong {
+          color: #ff0707;
+        }
+
+        .reactions {
+          display: flex;
+          gap: 6px;
+          margin-top: 6px;
+          flex-wrap: wrap;
+        }
+
+        .reaction {
+          border: 1px solid #ff0707;
+          background: transparent;
+          color: #ff0707;
+          border-radius: 14px;
+          padding: 2px 8px;
+          font-size: 0.75rem;
+        }
+
+        .reaction.active {
+          background: #ff0707;
+          color: #000;
+        }
+
+        .typing {
+          padding: 4px 12px;
+          font-size: 0.8rem;
         }
 
         .input-area {
+          padding: 10px;
           display: flex;
           gap: 8px;
-          padding: 12px;
+          border-top: 1px solid rgba(255, 7, 7, 0.4);
         }
 
         .search-input {
@@ -211,7 +287,7 @@ export default function ChatGotham({
 
         .buttons {
           display: flex;
-          gap: 8px;
+          gap: 6px;
         }
 
         button {
@@ -229,33 +305,12 @@ export default function ChatGotham({
             height: 75vh;
           }
 
-          .input-area {
-            flex-direction: column;
-          }
-
-          .buttons {
-            width: 100%;
-          }
-
           .buttons button {
-            flex: 1;
-            padding: 12px 0;
-            font-size: 0.9rem;
+            padding: 10px 12px;
+            font-size: 0.85rem;
           }
         }
       `}</style>
     </div>
   );
-
-  async function toggleReaction(
-    messageId: string,
-    emoji: string,
-    reacted: boolean
-  ) {
-    const reactionRef = ref(
-      db,
-      `chat/${messageId}/reactions/${emoji}/${userName}`
-    );
-    reacted ? await remove(reactionRef) : await set(reactionRef, true);
-  }
 }
