@@ -104,7 +104,7 @@ export default function AlunoPage() {
           <img src={user.avatar} alt={user.nome} width={40} height={40} className="rounded-full" />
           <div>
             <h2 className="text-red-500 font-bold">Olá, {user.nome}</h2>
-            <span className="text-red-500 text-sm">Gotham Play</span>
+            <span className="text-red-500 text-sm">Boas Vindas ao Vida Play</span>
           </div>
         </div>
 
