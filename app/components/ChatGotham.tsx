@@ -245,6 +245,43 @@ export default function ChatGotham({
           color: #000;
           border: 1px solid #ff0707;
         }
+        
+        @media (max-width: 768px) {
+  .history-container {
+    height: 75vh; /* ocupa bem a tela do celular */
+  }
+
+  .day-block {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .input-area {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .search-input {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  button {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .reaction {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+
+  .typing {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+}
+
       `}</style>
     </div>
   );
