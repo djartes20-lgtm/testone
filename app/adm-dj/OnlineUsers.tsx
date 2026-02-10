@@ -56,7 +56,7 @@ export default function OnlineUsersADM() {
     <div
       className="
         bg-black p-5 rounded-2xl
-        border border-red-500
+        border border-red-600
         shadow-[0_0_25px_rgba(255,0,0,0.7)]
         relative
       "
@@ -67,7 +67,7 @@ export default function OnlineUsersADM() {
       <h2
         className="
           text-center text-xl font-extrabold mb-5
-          text-red-500 tracking-widest
+          text-red-600 tracking-widest
           drop-shadow-[0_0_10px_rgba(255,0,0,1)]
         "
       >
@@ -82,14 +82,14 @@ export default function OnlineUsersADM() {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="
           w-full mb-4 p-2 rounded-lg
-          bg-black text-red-500 border border-red-500
+          bg-black text-red-600 border border-red-600
           shadow-[0_0_10px_rgba(255,0,0,0.7)]
           placeholder:text-red-600
         "
       />
 
       {filteredUsers.length === 0 && (
-        <p className="text-center text-red-400 opacity-80">
+        <p className="text-center text-red-600 opacity-80">
           Nenhum usuário encontrado
         </p>
       )}
@@ -105,9 +105,9 @@ export default function OnlineUsersADM() {
               border transition-all duration-300
               ${
                 isBlocked
-                  ? "border-red-800 opacity-60"
+                  ? "border-red-600 opacity-60"
                   : `
-                    border-red-500
+                    border-red-600
                     shadow-[0_0_15px_rgba(255,0,0,0.6)]
                     hover:shadow-[0_0_30px_rgba(255,0,0,1)]
                   `
@@ -121,7 +121,7 @@ export default function OnlineUsersADM() {
                 alt={u.nome}
                 className="
                   w-10 h-10 rounded-full
-                  border border-red-500
+                  border border-red-600
                   shadow-[0_0_15px_rgba(255,0,0,0.9)]
                 "
               />
@@ -131,8 +131,8 @@ export default function OnlineUsersADM() {
                   font-bold tracking-wide
                   ${
                     isBlocked
-                      ? "text-red-700 line-through"
-                      : "text-red-400 drop-shadow-[0_0_8px_rgba(255,0,0,1)]"
+                      ? "text-red-600 line-through"
+                      : "text-red-600 drop-shadow-[0_0_8px_rgba(255,0,0,1)]"
                   }
                 `}
               >
@@ -146,7 +146,7 @@ export default function OnlineUsersADM() {
                 onClick={() => unblockUser(u.uid)}
                 className="
                   px-4 py-1 rounded-lg font-bold
-                  bg-red-500 text-black
+                  bg-red-600 text-black
                   shadow-[0_0_20px_rgba(255,0,0,1)]
                   hover:shadow-[0_0_35px_rgba(255,0,0,1)]
                   transition-all
@@ -159,7 +159,7 @@ export default function OnlineUsersADM() {
                 onClick={() => blockUser(u)}
                 className="
                   px-4 py-1 rounded-lg font-bold
-                  bg-red-500 text-black
+                  bg-red-600 text-black
                   shadow-[0_0_20px_rgba(255,0,0,1)]
                   hover:shadow-[0_0_35px_rgba(255,0,0,1)]
                   transition-all
