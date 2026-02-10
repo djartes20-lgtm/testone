@@ -90,7 +90,7 @@ export default function ChatGotham({
     set(ref(db, `typing/${userName}`), false);
   };
 
-  /* 😀 Reações estilo WhatsApp */
+  /* 😀 Reações */
   const toggleReaction = async (
     messageId: string,
     emoji: string,
@@ -104,12 +104,31 @@ export default function ChatGotham({
     reacted ? await remove(reactionRef) : await set(reactionRef, true);
   };
 
+  /* 🧹 LIMPAR CHAT (ADM) */
+  const clearChat = async () => {
+    const ok = confirm(
+      "⚠️ ATENÇÃO: Isso vai apagar TODAS as mensagens do chat. Continuar?"
+    );
+    if (!ok) return;
+
+    await remove(ref(db, "chat"));
+  };
+
   return (
     <div className="history-container">
       {/* HEADER */}
       <div className="history-header">
         <h2>💬 Chat da Academia 💬</h2>
       </div>
+
+      {/* BOTÃO LIMPAR CHAT – SOMENTE ADM */}
+      {isAdmin && (
+        <div className="clear-chat-container">
+          <button onClick={clearChat} className="clear-chat">
+            🧹 Limpar chat
+          </button>
+        </div>
+      )}
 
       {/* MENSAGENS */}
       <div className="day-block">
@@ -214,16 +233,39 @@ export default function ChatGotham({
           border-bottom: 1px solid rgba(255, 7, 7, 0.4);
         }
 
+        .clear-chat-container {
+          padding: 6px 16px;
+          text-align: right;
+          border-bottom: 1px solid rgba(255, 7, 7, 0.25);
+        }
+
+        .clear-chat {
+          background: transparent;
+          border: 1px solid #ff0707;
+          color: #ff0707;
+          border-radius: 6px;
+          padding: 4px 10px;
+          font-size: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .clear-chat:hover {
+          background: #ff0707;
+          color: #000;
+          box-shadow: 0 0 10px rgba(255, 7, 7, 0.8);
+        }
+
         .day-block {
           flex: 1;
           padding: 16px;
-          overflow-y: auto; /* rolagem funcional */
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* IE 10+ */
+          overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
         }
 
         .day-block::-webkit-scrollbar {
-          width: 0px; /* Chrome, Safari, Edge */
+          width: 0;
           background: transparent;
         }
 
@@ -293,6 +335,7 @@ export default function ChatGotham({
     </div>
   );
 }
+
 
 
 
