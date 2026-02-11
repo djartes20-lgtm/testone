@@ -10,6 +10,7 @@ import Clock from "@/app/components/RelogioeData";
 import AdminAlerts from "@/app/components/AdminAlerts";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
+import AdminCalendar from "@/app/components/AdminCalendar";
 import OnlineUsers from "./OnlineUsers";
 import ChatGotham from "@/app/components/ChatGotham";
 import { useFirebase } from "@/app/hooks/useFirebase";
@@ -108,6 +109,12 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
       <div className="hidden md:block space-y-4">
         <AdminAlerts />
       </div>
+
+      {/* CALENDÁRIO */}
+<div>
+  <AdminCalendar isAdmin={isAdmin} />
+</div>
+
 
       {/* ONLINE USERS */}
       <div>
