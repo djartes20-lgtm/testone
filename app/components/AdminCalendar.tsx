@@ -155,8 +155,8 @@ export default function AdminCalendar({ isAdmin }: Props) {
                 <option value="feriado">Feriado</option>
               </select>
               <button onClick={addEvent}>📝 Adicionar 📝</button>
-              </div>
-              <ul>
+            </div>
+            <ul>
               {(events[selectedDate] || []).map((event, index) => (
                 <li key={index}>
                   <span style={{ backgroundColor: typeColors[event.type] }} className="eventType">{event.type}</span>
@@ -171,7 +171,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
       {/* Bloco de anotações */}
       <div className="notesContainer">
-        <h3> Anotações </h3>
+        <h3>📝 Anotações 📝</h3>
         <textarea placeholder="Escreva suas notas aqui..."></textarea>
       </div>
 
@@ -181,7 +181,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
           gap: 20px;
           justify-content: center;
           align-items: flex-start;
-          flex-wrap: wrap; /* responsivo */
+          flex-wrap: wrap;
           padding: 20px;
         }
 
@@ -195,12 +195,12 @@ export default function AdminCalendar({ isAdmin }: Props) {
         }
 
         .calendarContainer {
-          flex: 2; /* ocupa mais espaço */
+          flex: 2;
           min-width: 300px;
         }
 
         .notesContainer {
-          flex: 1; /* ocupa menos espaço */
+          flex: 1;
           min-width: 200px;
         }
 
@@ -221,7 +221,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
           font-size: 14px;
         }
 
-        /* ---- restante do CSS do calendário ---- */
+        /* Calendário CSS */
         .title {
           text-align: center;
           margin-bottom: 15px;
@@ -349,6 +349,29 @@ export default function AdminCalendar({ isAdmin }: Props) {
           padding: 8px 0;
           cursor: pointer;
           width: 100%;
+        }
+
+        /* RESPONSIVO: CELULAR */
+        @media screen and (max-width: 768px) {
+          .mainContainer {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .calendarContainer, .notesContainer {
+            flex: unset;
+            width: 90%;
+            min-width: unset;
+          }
+
+          .notesContainer textarea {
+            height: 300px;
+          }
+
+          .navButton {
+            width: 80px;
+            font-size: 12px;
+          }
         }
       `}</style>
     </div>
