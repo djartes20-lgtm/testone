@@ -8,7 +8,7 @@ interface Props {
   isAdmin?: boolean;
 }
 
-type EventType = "treino" | "reunião" | "feriado" ;
+type EventType = "treino" | "reunião" | "feriado";
 
 interface EventItem {
   title: string;
@@ -100,218 +100,220 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
   return (
     <div className="container">
-  <h2 className="title">📅 Calendário Admin</h2>
+      <h2 className="title">📅 Calendário Admin</h2>
 
-  {/* Navegação */}
-  <div className="navigation">
-    <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
-    <span className="monthYear">
-      {currentDate.toLocaleString("pt-BR", {
-        month: "long",
-        year: "numeric",
-      })}
-    </span>
-    <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
-  </div>
-
-  {/* Grade do calendário */}
-  <div className="calendarGrid">
-    {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
-      <div key={day} className="dayHeader">{day}</div>
-    ))}
-
-    {daysArray.map((day, index) => {
-      const dateKey = day ? `${year}-${pad(month + 1)}-${pad(day)}` : null;
-      const dayEvents = dateKey ? events[dateKey] || [] : [];
-      return (
-        <div
-          key={index}
-          onClick={() => day && setSelectedDate(dateKey)}
-          className="dayCell"
-          style={{ background: getDayBackground(dateKey) }}
-        >
-          <div className="dayNumber">{day}</div>
-          <div className="miniEvents">
-            {dayEvents.slice(0, 2).map((e, i) => (
-              <span key={i} style={{ backgroundColor: typeColors[e.type] }} className="eventBadge">
-                {e.title}
-              </span>
-            ))}
-            {dayEvents.length > 2 && <span className="moreEvents">...</span>}
-          </div>
-        </div>
-      );
-    })}
-  </div>
-
-  {/* Modal de eventos */}
-  {selectedDate && (
-    <div className="eventModal">
-      <h3>Eventos em {selectedDate}</h3>
-      <div className="addEvent">
-        <input
-          value={newEventTitle}
-          onChange={(e) => setNewEventTitle(e.target.value)}
-          placeholder="Novo evento"
-        />
-        <select value={newEventType} onChange={(e) => setNewEventType(e.target.value as EventType)}>
-          <option value="treino">Treino</option>
-          <option value="reunião">Reunião</option>
-          <option value="feriado">Feriado</option>
-        </select>
-        <button onClick={addEvent}>Adicionar</button>
+      {/* Navegação */}
+      <div className="navigation">
+        <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
+        <span className="monthYear">
+          {currentDate.toLocaleString("pt-BR", {
+            month: "long",
+            year: "numeric",
+          })}
+        </span>
+        <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
       </div>
-      <ul>
-        {(events[selectedDate] || []).map((event, index) => (
-          <li key={index}>
-            <span style={{ backgroundColor: typeColors[event.type] }} className="eventType">{event.type}</span>
-            {event.title}
-            <button onClick={() => deleteEvent(selectedDate, index)}>❌</button>
-          </li>
+
+      {/* Grade do calendário */}
+      <div className="calendarGrid">
+        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
+          <div key={day} className="dayHeader">{day}</div>
         ))}
-      </ul>
+
+        {daysArray.map((day, index) => {
+          const dateKey = day ? `${year}-${pad(month + 1)}-${pad(day)}` : null;
+          const dayEvents = dateKey ? events[dateKey] || [] : [];
+          return (
+            <div
+              key={index}
+              onClick={() => day && setSelectedDate(dateKey)}
+              className="dayCell"
+              style={{ background: getDayBackground(dateKey) }}
+            >
+              <div className="dayNumber">{day}</div>
+              <div className="miniEvents">
+                {dayEvents.slice(0, 2).map((e, i) => (
+                  <span key={i} style={{ backgroundColor: typeColors[e.type] }} className="eventBadge">
+                    {e.title}
+                  </span>
+                ))}
+                {dayEvents.length > 2 && <span className="moreEvents">...</span>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Modal de eventos */}
+      {selectedDate && (
+        <div className="eventModal">
+          <h3>Eventos em {selectedDate}</h3>
+          <div className="addEvent">
+            <input
+              value={newEventTitle}
+              onChange={(e) => setNewEventTitle(e.target.value)}
+              placeholder="Novo evento"
+            />
+            <select value={newEventType} onChange={(e) => setNewEventType(e.target.value as EventType)}>
+              <option value="treino">Treino</option>
+              <option value="reunião">Reunião</option>
+              <option value="feriado">Feriado</option>
+            </select>
+            <button onClick={addEvent}>Adicionar</button>
+          </div>
+          <ul>
+            {(events[selectedDate] || []).map((event, index) => (
+              <li key={index}>
+                <span style={{ backgroundColor: typeColors[event.type] }} className="eventType">{event.type}</span>
+                {event.title}
+                <button onClick={() => deleteEvent(selectedDate, index)}>❌</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <style jsx>{`
+        .container {
+          color: #ff0707;
+          padding: 20px;
+          border: 4px solid #ff0707; /* Quadrado vermelho em volta de tudo */
+          border-radius: 12px;
+        }
+
+        .title {
+          text-align: center;
+          margin-bottom: 15px;
+          font-size: 20px;
+        }
+
+        .navigation {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .navButton {
+          padding: 10px 10px;
+          width: 30px;
+          font-size: 10px;
+          color: #ff0707;
+          background: #000;
+          border: 2px solid #ff0707;
+          border-radius: 8px;
+          cursor: pointer;
+          box-shadow: 0 0 10px #ff0707;
+        }
+
+        .monthYear {
+          font-size: 20px;
+          color: #ff0707;
+          font-weight: bold;
+        }
+
+        .calendarGrid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 10px;
+        }
+
+        .dayHeader {
+          font-weight: bold;
+          text-align: center;
+        }
+
+        .dayCell {
+          height: 80px;
+          border-radius: 10px;
+          padding: 5px;
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          border: 1px solid #333;
+        }
+
+        .dayNumber {
+          font-size: 14px;
+          color: #ff0707;
+        }
+
+        .miniEvents {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 2px;
+        }
+
+        .eventBadge {
+          color: #fff;
+          font-size: 10px;
+          padding: 1px 4px;
+          border-radius: 3px;
+          white-space: nowrap;
+        }
+
+        .moreEvents {
+          color: #fff;
+          font-size: 10px;
+        }
+
+        .eventModal {
+          margin-top: 30px;
+          background: #222;
+          padding: 20px;
+          border-radius: 10px;
+        }
+
+        .addEvent {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 10px;
+        }
+
+        input, select {
+          border-radius: 6px;
+          border: 2px solid #ff0707;
+          background: #000;
+          color: #ff0707;
+          padding: 6px;
+          flex: 1;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin-bottom: 10px;
+        }
+
+        li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 8px;
+        }
+
+        .eventType {
+          color: #fff;
+          padding: 2px 6px;
+          border-radius: 5px;
+          font-size: 12px;
+        }
+
+        button {
+          background: #000;
+          color: #ff0707;
+          border: 2px solid #ff0707;
+          border-radius: 6px;
+          padding: 8px 0;
+          cursor: pointer;
+          width: 100%;
+        }
+      `}</style>
     </div>
-  )}
-
-  <style jsx>{`
-    .container {
-      color: #ff0707;
-      padding: 20px;
-    }
-
-    .title {
-      text-align: center;
-      margin-bottom: 15px;
-      font-size: 20px; /* Maior tamanho do título */
-    }
-
-    .navigation {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .navButton {
-  padding: 10px 10px;
-  width: 30px; /* largura fixa */
-  font-size: 10px;
-  color: #ff0707;
-  background: #000;
-  border: 2px solid #ff0707;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 0 10px #ff0707;
-}
-
-
-    .monthYear {
-      font-size: 20px;
-      color: #ff0707;
-      font-weight: bold;
-    }
-
-    .calendarGrid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 10px;
-    }
-
-    .dayHeader {
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .dayCell {
-      height: 80px;
-      border-radius: 10px;
-      padding: 5px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border: 1px solid #333;
-    }
-
-    .dayNumber {
-      font-size: 14px;
-      color: #ff0707;
-    }
-
-    .miniEvents {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2px;
-    }
-
-    .eventBadge {
-      color: #fff;
-      font-size: 10px;
-      padding: 1px 4px;
-      border-radius: 3px;
-      white-space: nowrap;
-    }
-
-    .moreEvents {
-      color: #fff;
-      font-size: 10px;
-    }
-
-    .eventModal {
-      margin-top: 30px;
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    .addEvent {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    input, select {
-      border-radius: 6px;
-      border: 2px solid #ff0707;
-      background: #000;
-      color: #ff0707;
-      padding: 6px;
-      flex: 1;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 10px;
-    }
-
-    li {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .eventType {
-      color: #fff;
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-size: 12px;
-    }
-
-    button {
-      background: #000;
-      color: #ff0707;
-      border: 2px solid #ff0707;
-      border-radius: 6px;
-      padding: 8px 0;
-      cursor: pointer;
-      width: 100%;
-    }
-  `}</style>
-</div>
   );
 }
+
 
 
 
