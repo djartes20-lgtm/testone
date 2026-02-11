@@ -178,7 +178,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
       <style jsx>{`
         .container {
           color: #ff0707;
-          padding: 183px;
+          padding: 8px;
         }
 
         /* Borda neon ao redor de todo o calendário */
