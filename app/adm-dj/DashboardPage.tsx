@@ -11,6 +11,7 @@ import AdminAlerts from "@/app/components/AdminAlerts";
 import GeneroRestricao from "@/app/components/GeneroRestricao";
 import { useQueue } from "@/app/hooks/useQueue";
 import AdminCalendar from "@/app/components/AdminCalendar";
+import MotivationalMessage from "@/app/components/MotivationalMessage";
 import OnlineUsers from "./OnlineUsers";
 import ChatGotham from "@/app/components/ChatGotham";
 import { useFirebase } from "@/app/hooks/useFirebase";
@@ -119,6 +120,12 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
       <div>
         <OnlineUsers />
       </div>
+
+      {/* MENSAGEM MOTIVACIONAL */}
+   <div>
+   <MotivationalMessage />
+   </div>
+
 
     </main>
   );
