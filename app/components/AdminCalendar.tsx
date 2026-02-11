@@ -182,19 +182,19 @@ export default function AdminCalendar({ isAdmin }: Props) {
     .title {
       text-align: center;
       margin-bottom: 15px;
-      font-size: 32px; /* Maior tamanho do título */
+      font-size: 20px; /* Maior tamanho do título */
     }
 
     .navigation {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     .navButton {
       padding: 10px 10px;
-      font-size: 18px;
+      font-size: 10px;
       color: #ff0707;
       background: #000;
       border: 2px solid #ff0707;
