@@ -114,34 +114,36 @@ export default function AdminCalendar({ isAdmin }: Props) {
         <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
       </div>
 
-      {/* Grade do calendário */}
-      <div className="calendarGrid">
-        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
-          <div key={day} className="dayHeader">{day}</div>
-        ))}
+      {/* Grade do calendário com borda neon */}
+      <div className="calendarWrapper">
+        <div className="calendarGrid">
+          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
+            <div key={day} className="dayHeader">{day}</div>
+          ))}
 
-        {daysArray.map((day, index) => {
-          const dateKey = day ? `${year}-${pad(month + 1)}-${pad(day)}` : null;
-          const dayEvents = dateKey ? events[dateKey] || [] : [];
-          return (
-            <div
-              key={index}
-              onClick={() => day && setSelectedDate(dateKey)}
-              className="dayCell"
-              style={{ background: getDayBackground(dateKey) }}
-            >
-              <div className="dayNumber">{day}</div>
-              <div className="miniEvents">
-                {dayEvents.slice(0, 2).map((e, i) => (
-                  <span key={i} style={{ backgroundColor: typeColors[e.type] }} className="eventBadge">
-                    {e.title}
-                  </span>
-                ))}
-                {dayEvents.length > 2 && <span className="moreEvents">...</span>}
+          {daysArray.map((day, index) => {
+            const dateKey = day ? `${year}-${pad(month + 1)}-${pad(day)}` : null;
+            const dayEvents = dateKey ? events[dateKey] || [] : [];
+            return (
+              <div
+                key={index}
+                onClick={() => day && setSelectedDate(dateKey)}
+                className="dayCell"
+                style={{ background: getDayBackground(dateKey) }}
+              >
+                <div className="dayNumber">{day}</div>
+                <div className="miniEvents">
+                  {dayEvents.slice(0, 2).map((e, i) => (
+                    <span key={i} style={{ backgroundColor: typeColors[e.type] }} className="eventBadge">
+                      {e.title}
+                    </span>
+                  ))}
+                  {dayEvents.length > 2 && <span className="moreEvents">...</span>}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Modal de eventos */}
@@ -210,6 +212,15 @@ export default function AdminCalendar({ isAdmin }: Props) {
           font-weight: bold;
         }
 
+        /* Bordas neon ao redor de todo o calendário */
+        .calendarWrapper {
+          padding: 10px;
+          border-radius: 12px;
+          border: 2px solid #ff0707;
+          box-shadow: 0 0 10px #ff0707, 0 0 20px #ff0707, 0 0 40px #ff0707;
+          margin-bottom: 20px;
+        }
+
         .calendarGrid {
           display: grid;
           grid-template-columns: repeat(7, 1fr);
@@ -229,9 +240,9 @@ export default function AdminCalendar({ isAdmin }: Props) {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          border: 2px solid #ff0707; /* borda vermelha */
+          border: 2px solid #ff0707;
           background: #222;
-          box-shadow: 0 0 5px #ff0707, 0 0 10px #ff0707, 0 0 20px #ff0707; /* neon */
+          box-shadow: 0 0 5px #ff0707, 0 0 10px #ff0707, 0 0 20px #ff0707;
           transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -319,6 +330,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
     </div>
   );
 }
+
 
 
 
