@@ -286,7 +286,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
         /* Modal de eventos com neon */
         .eventModalNeon {
-          margin-top: 30px;
+          margin-top: 35px;
           background: #222;
           padding: 20px;
           border-radius: 12px;
