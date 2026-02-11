@@ -198,7 +198,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
       color: #ff0707;
       background: #000;
       border: 2px solid #ff0707;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       box-shadow: 0 0 10px #ff0707; /* Neon */
     }
