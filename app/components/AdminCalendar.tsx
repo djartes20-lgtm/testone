@@ -193,7 +193,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
     }
 
     .navButton {
-      padding: 10px 20px;
+      padding: 10px 10px;
       font-size: 18px;
       color: #ff0707;
       background: #000;
