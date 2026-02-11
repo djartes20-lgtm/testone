@@ -48,7 +48,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
   const todayKey = `${year}-${pad(month + 1)}-${pad(today.getDate())}`;
 
-  // Carrega eventos do Firebase
   useEffect(() => {
     const eventsRef = ref(db, "calendarEvents");
     onValue(eventsRef, (snapshot) => {
@@ -100,22 +99,23 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
   return (
     <div className="container">
-      <h2 className="title">📅 Calendário Admin</h2>
+      {/* CALENDÁRIO COMPLETO COM NEON */}
+      <div className="calendarNeonWrapper">
+        <h2 className="title">📅 Calendário Admin</h2>
 
-      {/* Navegação */}
-      <div className="navigation">
-        <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
-        <span className="monthYear">
-          {currentDate.toLocaleString("pt-BR", {
-            month: "long",
-            year: "numeric",
-          })}
-        </span>
-        <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
-      </div>
+        {/* Navegação */}
+        <div className="navigation">
+          <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
+          <span className="monthYear">
+            {currentDate.toLocaleString("pt-BR", {
+              month: "long",
+              year: "numeric",
+            })}
+          </span>
+          <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
+        </div>
 
-      {/* Grade do calendário com borda neon */}
-      <div className="calendarWrapper">
+        {/* Grade do calendário */}
         <div className="calendarGrid">
           {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
             <div key={day} className="dayHeader">{day}</div>
@@ -181,6 +181,20 @@ export default function AdminCalendar({ isAdmin }: Props) {
           padding: 20px;
         }
 
+        /* Borda neon ao redor de todo o calendário */
+        .calendarNeonWrapper {
+          padding: 20px;
+          border: 2px solid #ff0707;
+          border-radius: 12px;
+          box-shadow: 0 0 15px #ff0707, 0 0 30px #ff0707, 0 0 60px #ff0707;
+          margin-bottom: 20px;
+          transition: box-shadow 0.3s;
+        }
+
+        .calendarNeonWrapper:hover {
+          box-shadow: 0 0 25px #ff0707, 0 0 50px #ff0707, 0 0 100px #ff0707;
+        }
+
         .title {
           text-align: center;
           margin-bottom: 15px;
@@ -210,15 +224,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
           font-size: 20px;
           color: #ff0707;
           font-weight: bold;
-        }
-
-        /* Bordas neon ao redor de todo o calendário */
-        .calendarWrapper {
-          padding: 10px;
-          border-radius: 12px;
-          border: 2px solid #ff0707;
-          box-shadow: 0 0 10px #ff0707, 0 0 20px #ff0707, 0 0 40px #ff0707;
-          margin-bottom: 20px;
         }
 
         .calendarGrid {
@@ -330,6 +335,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
     </div>
   );
 }
+
 
 
 
