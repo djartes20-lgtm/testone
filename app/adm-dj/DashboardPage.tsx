@@ -115,7 +115,6 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
   <AdminCalendar isAdmin={isAdmin} />
 </div>
 
-
       {/* ONLINE USERS */}
       <div>
         <OnlineUsers />
