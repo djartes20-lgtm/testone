@@ -101,7 +101,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
     <div className="mainContainer">
       {/* Calendário */}
       <div className="calendarContainer">
-        <h2 className="title">📅 Calendário Admin</h2>
+        <h2 className="title">📅 Calendário Admin 📅</h2>
 
         <div className="navigation">
           <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
@@ -154,9 +154,9 @@ export default function AdminCalendar({ isAdmin }: Props) {
                 <option value="reunião">Reunião</option>
                 <option value="feriado">Feriado</option>
               </select>
-              <button onClick={addEvent}>Adicionar</button>
-            </div>
-            <ul>
+              <button onClick={addEvent}>📝 Adicionar 📝</button>
+              </div>
+              <ul>
               {(events[selectedDate] || []).map((event, index) => (
                 <li key={index}>
                   <span style={{ backgroundColor: typeColors[event.type] }} className="eventType">{event.type}</span>
@@ -171,7 +171,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
       {/* Bloco de anotações */}
       <div className="notesContainer">
-        <h3>Anotações</h3>
+        <h3> Anotações </h3>
         <textarea placeholder="Escreva suas notas aqui..."></textarea>
       </div>
 
