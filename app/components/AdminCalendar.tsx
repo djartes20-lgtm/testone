@@ -180,7 +180,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
         color: #ff0707;
         padding: 8px;
         display: flex;
-        justify-content: 10; /* centraliza horizontalmente */
+        justify-content: 100; /* centraliza horizontalmente */
         align-items: 100px;     /* centraliza verticalmente */
         background: #000;
         }
