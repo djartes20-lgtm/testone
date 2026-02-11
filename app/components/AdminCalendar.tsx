@@ -221,7 +221,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
         }
 
         .monthYear {
-          font-size: 20px;
+          font-size: 50px;
           color: #ff0707;
           font-weight: bold;
         }
