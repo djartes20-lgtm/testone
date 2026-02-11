@@ -44,7 +44,7 @@ export default function Splash({ onFinish }: SplashProps) {
         }}
       >
         <img
-  src="/Logo Gotham sem funo.png"
+  src="/Captura de tela 2026-02-11 090642.ico"
   alt="Logo"
   style={{
     width: 300,
