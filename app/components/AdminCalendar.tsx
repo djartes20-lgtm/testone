@@ -221,7 +221,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
         }
 
         .monthYear {
-          font-size: 50px;
+          font-size: 20px;
           color: #ff0707;
           font-weight: bold;
         }
@@ -229,7 +229,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
         .calendarGrid {
           display: grid;
           grid-template-columns: repeat(7, 1fr);
-          gap: 10px;
+          gap: 20px;
         }
 
         .dayHeader {
