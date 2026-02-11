@@ -181,7 +181,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
         border-radius: 12px;
         width: 90%;                  /* ocupa 90% da tela */
         max-width: 1200px;           /* largura máxima para telas grandes */
-        margin: 0 auto;              /* centraliza horizontalmente */
         box-sizing: border-box;      /* inclui padding na largura */
         }
         
