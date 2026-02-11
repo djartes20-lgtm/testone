@@ -177,8 +177,12 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
       <style jsx>{`
         .container {
-          color: #ff0707;
-          padding: 8px;
+        color: #ff0707;
+        padding: 8px;
+        display: flex;
+        justify-content: center; /* centraliza horizontalmente */
+        align-items: center;     /* centraliza verticalmente */
+        background: #000;
         }
 
         /* Borda neon ao redor de todo o calendário */
