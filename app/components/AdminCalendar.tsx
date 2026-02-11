@@ -146,9 +146,9 @@ export default function AdminCalendar({ isAdmin }: Props) {
         </div>
       </div>
 
-      {/* Modal de eventos */}
+      {/* Modal de eventos com neon */}
       {selectedDate && (
-        <div className="eventModal">
+        <div className="eventModalNeon">
           <h3>Eventos em {selectedDate}</h3>
           <div className="addEvent">
             <input
@@ -280,11 +280,19 @@ export default function AdminCalendar({ isAdmin }: Props) {
           font-size: 10px;
         }
 
-        .eventModal {
+        /* Modal de eventos com neon */
+        .eventModalNeon {
           margin-top: 30px;
           background: #222;
           padding: 20px;
-          border-radius: 10px;
+          border-radius: 12px;
+          border: 2px solid #ff0707;
+          box-shadow: 0 0 15px #ff0707, 0 0 30px #ff0707, 0 0 60px #ff0707;
+          transition: box-shadow 0.3s;
+        }
+
+        .eventModalNeon:hover {
+          box-shadow: 0 0 25px #ff0707, 0 0 50px #ff0707, 0 0 100px #ff0707;
         }
 
         .addEvent {
@@ -335,6 +343,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
     </div>
   );
 }
+
 
 
 
