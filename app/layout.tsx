@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Vida Play",
   description: "App de gerenciamento musical do CT Gotham",
   icons: {
-    icon: "/android-chrome-192x192.png",
+    icon: "/Captura de tela 2026-02-11 090642.ico",
   },
 };
 
