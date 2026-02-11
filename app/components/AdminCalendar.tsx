@@ -8,7 +8,7 @@ interface Props {
   isAdmin?: boolean;
 }
 
-type EventType = "treino" | "reunião" | "feriado";
+type EventType = "treino" | "reunião" | "feriado" ;
 
 interface EventItem {
   title: string;
@@ -38,7 +38,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const pad = (n: number) => n.toString().padStart(2, "0");
@@ -91,7 +90,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
   const getDayBackground = (dateKey: string | null) => {
     if (!dateKey) return "#222";
-    if (dateKey === todayKey) return "#444"; // hoje
+    if (dateKey === todayKey) return "#444";
     const count = events[dateKey]?.length || 0;
     if (count > 2) return "#d33";
     if (count === 2) return "#f90";
@@ -100,13 +99,13 @@ export default function AdminCalendar({ isAdmin }: Props) {
   };
 
   return (
-    <div style={{ background: "#111", padding: 20, borderRadius: 15 }}>
-      <h2 style={{ color: "red" }}>📅 Calendário Admin</h2>
+    <div className="container">
+      <h2>📅 Calendário Admin</h2>
 
       {/* Navegação */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 20, display: "flex", justifyContent: "space-between" }}>
         <button onClick={() => changeMonth(-1)}>⬅</button>
-        <span style={{ margin: "0 20px" }}>
+        <span>
           {currentDate.toLocaleString("pt-BR", {
             month: "long",
             year: "numeric",
@@ -150,7 +149,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
               }}
             >
               <div style={{ fontSize: 14 }}>{day}</div>
-              {/* Mini preview de eventos com cores por tipo */}
               <div style={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
                 {dayEvents.slice(0, 2).map((e, i) => (
                   <span
@@ -200,7 +198,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
             <button onClick={addEvent}>Adicionar</button>
           </div>
 
-          <ul style={{ marginTop: 15 }}>
+          <ul>
             {(events[selectedDate] || []).map((event, index) => (
               <li key={index} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span
@@ -215,20 +213,56 @@ export default function AdminCalendar({ isAdmin }: Props) {
                   {event.type}
                 </span>
                 {event.title}
-                <button
-                  onClick={() => deleteEvent(selectedDate, index)}
-                  style={{ marginLeft: "auto" }}
-                >
-                  ❌
-                </button>
+                <button onClick={() => deleteEvent(selectedDate, index)}>❌</button>
               </li>
             ))}
           </ul>
         </div>
       )}
+
+      <style jsx>{`
+        .container {
+          color: #ff0707;
+          padding: 20px;
+        }
+
+        h2 {
+          text-align: center;
+          margin-bottom: 10px;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin-bottom: 10px;
+        }
+
+        li {
+          margin-bottom: 8px;
+        }
+
+        button {
+          width: 100%;
+          background: #000;
+          color: #ff0707;
+          border: 2px solid #ff0707;
+          padding: 8px 0;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        select,
+        input {
+          border-radius: 6px;
+          border: 2px solid #ff0707;
+          background: #000;
+          color: #ff0707;
+        }
+      `}</style>
     </div>
   );
 }
+
 
 
 
