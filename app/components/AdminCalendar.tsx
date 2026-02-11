@@ -177,6 +177,7 @@ export default function AdminCalendar({ isAdmin }: Props) {
         .container {
           color: #ff0707;
           padding: 20px;
+           width: 200%;
           border: 2px solid #ff0707; /* Quadrado vermelho em volta de tudo */
           border-radius: 12px;
         }
