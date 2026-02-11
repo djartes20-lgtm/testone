@@ -9,101 +9,107 @@ interface Props {
   isAdmin?: boolean;
 }
 
-const AUTO_DJ_LIST = [
-  "GVLMhpzYic0",
-"HP5XR0LiCYI",
-"ToHf7SZfceE",
-"WrJEqTJr9k8",
-"QChwm0w9nxc",
-"xhOIjSUEmS-c",
-"2vMH8lITTCE",
-"D6voxRbuecs",
-"TCLGN6m6AMI",
-"JobscnDUBHc",
-"lhg9bYNLvOg",
-"V1jfP1Uc91I",
-"oLeROuCMwj8",
-"_lj5BGCwsf8",
-"rQ2bIzanCEU",
-"gvLMhpzYic0",
-"lYBUbBu4W08",
-"ffHI8X4OXluQ",
-"_sfLbzK2ugk",
-"dB_c7oZWo1g",
-"oMfMUfgjiLg",
-"9vWNauaZAgg",
-"Q_mQxKviRJM",
-"ikFFVfObwss",
-"XzNWRmqibNE",
-"2zToEPpFEN8",
-"JOBscnDUBHc",
-"Ha3I908WaJo",
-"rtjI1noSSBE",
-"6xzN8Nt0Pok",
-"50hgKo8FocY",
-"c1ZCYY-4lAM",
-"d9jhDwxt22Y",
-"J3H--06Xw6g",
-"_ovdm2yX4MA",
-"CA0OQwuepPo",
-"Vz_JGw3Ht90",
-"VBJsaaU6hjY",
-"HzdD8kbDzZA",
-"STr4Da8ghh4",
-"GVLMhpzYic0",
-"9bibdQXOqyM",
-"Xz3g4HblpE4",
-"lhg9bYNLvOg",
-"lxO2Yrk2IkQ",
-"GVLMhpzYic0",
-"rtjI1noSSBE",
-"0CNPR2qNzxk",
-"FfxsTiFGWT8",
-"JVVt2HWY-1s",
-"cCt5puvhQXc",
-"YsZwtFujvd8",
-"TjUnDOoyU_w",
-"WrJEqTJr9k8",
-"MPGXj3q2Oqc",
-"0OC1vmlmpd0",
-"_oNeLdw7T2o",
-"LjtvF_UuRIU",
-"oFRIda79u_E",
-"36tRma71YUo",
-"bALuHd2EVe8",
-"wF_Rn3US6hs",
-"lhg9bYNLvOg",
-"CA0OQwuepPo",
-"Ha3I908WaJo",
-"DFK6i41GCNo",
-"2UfIXzKXic0",
-"GVLMhpzYic0",
-"VauVTmE6ka4",
-"0CNPR2qNzxk",
-"GVLMhpzYic0",
-"_PBlykN4KIY",
-"lYBUbBu4W08",
-"xd3Rma71YUo",
-"fHI8X4OXluQ",
-"9bibdQXOqyM",
-"DgGsAJPrMus",
-"t0AsQIBFo8k",
-"GVLMhpzYic0",
-"GVLMhpzYic0",
-"rQ2bIzanCEU",
-"GVLMhpzYic0",
-"GVLMhpzYic0",
-"GVLMhpzYic0",
-"GVLMhpzYic0",
-"GVLMhpzYic0"
-];
+// 🔥 Playlists por dia da semana
+// 0 = Domingo, 1 = Segunda, 2 = Terça...
+const AUTO_DJ_PLAYLISTS: Record<number, string[]> = {
+  1: [ // Segunda
+    "GVLMhpzYic0",
+    "HP5XR0LiCYI",
+    "ToHf7SZfceE",
+    "WrJEqTJr9k8",
+    "QChwm0w9nxc",
+    "D6voxRbuecs",
+    "TCLGN6m6AMI",
+  ],
 
+  2: [ // Terça
+    "_lj5BGCwsf8",
+    "rQ2bIzanCEU",
+    "lYBUbBu4W08",
+    "J3H--06Xw6g",
+    "CA0OQwuepPo",
+    "HzdD8kbDzZA",
+  ],
+
+  3: [ // Quarta
+    "STr4Da8ghh4",
+    "Xz3g4HblpE4",
+    "MPGXj3q2Oqc",
+    "_oNeLdw7T2o",
+    "LjtvF_UuRIU",
+    "oFRIda79u_E",
+  ],
+
+  4: [ // Quinta
+    "36tRma71YUo",
+    "VauVTmE6ka4",
+    "DgGsAJPrMus",
+    "t0AsQIBFo8k",
+    "2UfIXzKXic0",
+    "wF_Rn3US6hs",
+  ],
+
+  5: [ // Sexta
+    "9bibdQXOqyM",
+    "TjUnDOoyU_w",
+    "50hgKo8FocY",
+    "6xzN8Nt0Pok",
+    "XzNWRmqibNE",
+    "ikFFVfObwss",
+  ],
+
+  6: [ // Sábado
+    "GVLMhpzYic0",
+    "HP5XR0LiCYI",
+    "ToHf7SZfceE",
+    "WrJEqTJr9k8",
+    "QChwm0w9nxc",
+    "D6voxRbuecs",
+  ],
+};
+
+// 🔥 Estado interno do Auto DJ
 let autoDjIndex = 0;
+let currentDay = new Date().getDay();
+let shuffledList: string[] = [];
+
+// 🔀 Função de embaralhar (Fisher-Yates)
+const shuffle = (array: string[]) => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
+// 🎧 Pega próxima música do dia
 const getNextAutoDj = () => {
-  const id = AUTO_DJ_LIST[autoDjIndex];
-  autoDjIndex = (autoDjIndex + 1) % AUTO_DJ_LIST.length;
+  const today = new Date().getDay();
+
+  // Se mudou o dia, reseta tudo
+  if (today !== currentDay) {
+    currentDay = today;
+    autoDjIndex = 0;
+    shuffledList = [];
+  }
+
+  const todayList =
+    AUTO_DJ_PLAYLISTS[today] || AUTO_DJ_PLAYLISTS[1];
+
+  // Se ainda não embaralhou hoje
+  if (shuffledList.length === 0) {
+    shuffledList = shuffle(todayList);
+  }
+
+  if (!shuffledList.length) return null;
+
+  const id = shuffledList[autoDjIndex];
+  autoDjIndex = (autoDjIndex + 1) % shuffledList.length;
+
   return id;
 };
+
 
 export default function YouTubePlayer({ isAdmin = false }: Props) {
   const playerRef = useRef<any>(null);
@@ -155,7 +161,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   };
 
   const startAutoDJ = async () => {
-    await playVideo(getNextAutoDj(), "autodj");
+
   };
 
   const skipMusic = async () => {
