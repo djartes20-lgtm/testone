@@ -48,7 +48,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
   const todayKey = `${year}-${pad(month + 1)}-${pad(today.getDate())}`;
 
-  // Carrega eventos do Firebase
   useEffect(() => {
     const eventsRef = ref(db, "calendarEvents");
     onValue(eventsRef, (snapshot) => {
@@ -99,91 +98,130 @@ export default function AdminCalendar({ isAdmin }: Props) {
   };
 
   return (
-    <div className="container">
-      <h2 className="title">📅 Calendário Admin</h2>
+    <div className="mainContainer">
+      {/* Calendário */}
+      <div className="calendarContainer">
+        <h2 className="title">📅 Calendário Admin</h2>
 
-      {/* Navegação */}
-      <div className="navigation">
-        <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
-        <span className="monthYear">
-          {currentDate.toLocaleString("pt-BR", {
-            month: "long",
-            year: "numeric",
-          })}
-        </span>
-        <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
-      </div>
-
-      {/* Grade do calendário */}
-      <div className="calendarGrid">
-        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
-          <div key={day} className="dayHeader">{day}</div>
-        ))}
-
-        {daysArray.map((day, index) => {
-          const dateKey = day ? `${year}-${pad(month + 1)}-${pad(day)}` : null;
-          const dayEvents = dateKey ? events[dateKey] || [] : [];
-          return (
-            <div
-              key={index}
-              onClick={() => day && setSelectedDate(dateKey)}
-              className="dayCell"
-              style={{ background: getDayBackground(dateKey) }}
-            >
-              <div className="dayNumber">{day}</div>
-              <div className="miniEvents">
-                {dayEvents.slice(0, 2).map((e, i) => (
-                  <span key={i} style={{ backgroundColor: typeColors[e.type] }} className="eventBadge">
-                    {e.title}
-                  </span>
-                ))}
-                {dayEvents.length > 2 && <span className="moreEvents">...</span>}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Modal de eventos */}
-      {selectedDate && (
-        <div className="eventModal">
-          <h3>Eventos em {selectedDate}</h3>
-          <div className="addEvent">
-            <input
-              value={newEventTitle}
-              onChange={(e) => setNewEventTitle(e.target.value)}
-              placeholder="Novo evento"
-            />
-            <select value={newEventType} onChange={(e) => setNewEventType(e.target.value as EventType)}>
-              <option value="treino">Treino</option>
-              <option value="reunião">Reunião</option>
-              <option value="feriado">Feriado</option>
-            </select>
-            <button onClick={addEvent}>Adicionar</button>
-          </div>
-          <ul>
-            {(events[selectedDate] || []).map((event, index) => (
-              <li key={index}>
-                <span style={{ backgroundColor: typeColors[event.type] }} className="eventType">{event.type}</span>
-                {event.title}
-                <button onClick={() => deleteEvent(selectedDate, index)}>❌</button>
-              </li>
-            ))}
-          </ul>
+        <div className="navigation">
+          <button className="navButton" onClick={() => changeMonth(-1)}>⬅</button>
+          <span className="monthYear">
+            {currentDate.toLocaleString("pt-BR", { month: "long", year: "numeric" })}
+          </span>
+          <button className="navButton" onClick={() => changeMonth(1)}>➡</button>
         </div>
-      )}
+
+        <div className="calendarGrid">
+          {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
+            <div key={day} className="dayHeader">{day}</div>
+          ))}
+
+          {daysArray.map((day, index) => {
+            const dateKey = day ? `${year}-${pad(month + 1)}-${pad(day)}` : null;
+            const dayEvents = dateKey ? events[dateKey] || [] : [];
+            return (
+              <div
+                key={index}
+                onClick={() => day && setSelectedDate(dateKey)}
+                className="dayCell"
+                style={{ background: getDayBackground(dateKey) }}
+              >
+                <div className="dayNumber">{day}</div>
+                <div className="miniEvents">
+                  {dayEvents.slice(0, 2).map((e, i) => (
+                    <span key={i} style={{ backgroundColor: typeColors[e.type] }} className="eventBadge">
+                      {e.title}
+                    </span>
+                  ))}
+                  {dayEvents.length > 2 && <span className="moreEvents">...</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {selectedDate && (
+          <div className="eventModal">
+            <h3>Eventos em {selectedDate}</h3>
+            <div className="addEvent">
+              <input
+                value={newEventTitle}
+                onChange={(e) => setNewEventTitle(e.target.value)}
+                placeholder="Novo evento"
+              />
+              <select value={newEventType} onChange={(e) => setNewEventType(e.target.value as EventType)}>
+                <option value="treino">Treino</option>
+                <option value="reunião">Reunião</option>
+                <option value="feriado">Feriado</option>
+              </select>
+              <button onClick={addEvent}>Adicionar</button>
+            </div>
+            <ul>
+              {(events[selectedDate] || []).map((event, index) => (
+                <li key={index}>
+                  <span style={{ backgroundColor: typeColors[event.type] }} className="eventType">{event.type}</span>
+                  {event.title}
+                  <button onClick={() => deleteEvent(selectedDate, index)}>❌</button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Bloco de anotações */}
+      <div className="notesContainer">
+        <h3>Anotações</h3>
+        <textarea placeholder="Escreva suas notas aqui..."></textarea>
+      </div>
 
       <style jsx>{`
-        .container {
-        color: #ff0707;
-        padding: 20px;               /* espaço interno */
-        border: 2px solid #ff0707;   /* quadrado vermelho */
-        border-radius: 12px;
-        width: 90%;                  /* ocupa 90% da tela */
-        max-width: 1200px;           /* largura máxima para telas grandes */
-        box-sizing: border-box;      /* inclui padding na largura */
+        .mainContainer {
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          align-items: flex-start;
+          flex-wrap: wrap; /* responsivo */
+          padding: 20px;
         }
-        
+
+        .calendarContainer, .notesContainer {
+          border: 2px solid #ff0707;
+          border-radius: 12px;
+          padding: 20px;
+          box-sizing: border-box;
+          background: #000;
+          color: #ff0707;
+        }
+
+        .calendarContainer {
+          flex: 2; /* ocupa mais espaço */
+          min-width: 300px;
+        }
+
+        .notesContainer {
+          flex: 1; /* ocupa menos espaço */
+          min-width: 200px;
+        }
+
+        .notesContainer h3 {
+          text-align: center;
+          margin-bottom: 10px;
+        }
+
+        .notesContainer textarea {
+          width: 100%;
+          height: 400px;
+          background: #000;
+          color: #ff0707;
+          border: 2px solid #ff0707;
+          border-radius: 8px;
+          padding: 10px;
+          resize: vertical;
+          font-size: 14px;
+        }
+
+        /* ---- restante do CSS do calendário ---- */
         .title {
           text-align: center;
           margin-bottom: 15px;
@@ -316,12 +354,3 @@ export default function AdminCalendar({ isAdmin }: Props) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
