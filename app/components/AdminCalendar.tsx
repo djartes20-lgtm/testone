@@ -175,12 +175,16 @@ export default function AdminCalendar({ isAdmin }: Props) {
 
       <style jsx>{`
         .container {
-          color: #ff0707;
-          padding: 20px;
-          border: 2px solid #ff0707; /* Quadrado vermelho em volta de tudo */
-          border-radius: 12px;
+        color: #ff0707;
+        padding: 20px;               /* espaço interno */
+        border: 2px solid #ff0707;   /* quadrado vermelho */
+        border-radius: 12px;
+        width: 90%;                  /* ocupa 90% da tela */
+        max-width: 1200px;           /* largura máxima para telas grandes */
+        margin: 0 auto;              /* centraliza horizontalmente */
+        box-sizing: border-box;      /* inclui padding na largura */
         }
-
+        
         .title {
           text-align: center;
           margin-bottom: 15px;
