@@ -221,7 +221,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
           font-size: 14px;
         }
 
-        /* Calendário CSS */
         .title {
           text-align: center;
           margin-bottom: 15px;
@@ -306,10 +305,27 @@ export default function AdminCalendar({ isAdmin }: Props) {
           border-radius: 10px;
         }
 
+        /* CORREÇÃO DO FLEX DO ADD EVENT */
         .addEvent {
           display: flex;
           gap: 10px;
           margin-bottom: 10px;
+          flex-wrap: wrap;
+        }
+
+        .addEvent input {
+          flex: 2;
+          min-width: 120px;
+        }
+
+        .addEvent select {
+          flex: 1;
+          min-width: 100px;
+        }
+
+        .addEvent button {
+          flex: 1;
+          min-width: 100px;
         }
 
         input, select {
@@ -318,7 +334,6 @@ export default function AdminCalendar({ isAdmin }: Props) {
           background: #000;
           color: #ff0707;
           padding: 6px;
-          flex: 1;
         }
 
         ul {
