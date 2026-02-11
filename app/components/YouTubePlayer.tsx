@@ -9,89 +9,106 @@ interface Props {
   isAdmin?: boolean;
 }
 
+// ===============================
+// AUTO DJ 100% FUNCIONAL
+// ===============================
+
+// Playlists por dia da semana
+// 0 = Domingo
+// 1 = Segunda
+// 2 = Terça
+// 3 = Quarta
+// 4 = Quinta
+// 5 = Sexta
+// 6 = Sábado
+
 const AUTO_DJ_PLAYLISTS: Record<number, string[]> = {
   0: ["GVLMhpzYic0", "HP5XR0LiCYI", "ToHf7SZfceE"],
   1: ["WrJEqTJr9k8", "QChwm0w9nxc", "D6voxRbuecs"],
   2: ["TCLGN6m6AMI", "_lj5BGCwsf8", "rQ2bIzanCEU"],
-  3: [
-    "J3H--06Xw6g",
-    "GVLMhpzYic0",
-    "HP5XR0LiCYI",
-    "ToHf7SZfceE",
-    "WrJEqTJr9k8",
-    "QChwm0w9nxc",
-    "xhOIjSUEmS-c",
-    "2vMH8lITTCE",
-    "D6voxRbuecs",
-    "TCLGN6m6AMI",
-    "JobscnDUBHc",
-    "lhg9bYNLvOg",
-    "V1jfP1Uc91I",
-    "oLeROuCMwj8",
-    "_lj5BGCwsf8",
-    "rQ2bIzanCEU",
-    "lYBUbBu4W08",
-    "ffHI8X4OXluQ",
-    "_sfLbzK2ugk",
-    "dB_c7oZWo1g",
-    "oMfMUfgjiLg",
-    "9vWNauaZAgg",
-    "Q_mQxKviRJM",
-    "ikFFVfObwss",
-    "XzNWRmqibNE",
-    "2zToEPpFEN8",
-    "Ha3I908WaJo",
-    "rtjI1noSSBE",
-    "6xzN8Nt0Pok",
-    "50hgKo8FocY",
-    "c1ZCYY-4lAM",
-    "d9jhDwxt22Y",
-    "_ovdm2yX4MA",
-    "CA0OQwuepPo",
-    "Vz_JGw3Ht90",
-    "VBJsaaU6hjY",
-    "HzdD8kbDzZA",
-    "STr4Da8ghh4",
-    "9bibdQXOqyM",
-    "Xz3g4HblpE4",
-    "lxO2Yrk2IkQ",
-    "0CNPR2qNzxk",
-    "FfxsTiFGWT8",
-    "JVVt2HWY-1s",
-    "cCt5puvhQXc",
-    "YsZwtFujvd8",
-    "TjUnDOoyU_w",
-    "MPGXj3q2Oqc",
-    "0OC1vmlmpd0",
-    "_oNeLdw7T2o",
-    "LjtvF_UuRIU",
-    "oFRIda79u_E",
-    "bALuHd2EVe8",
-    "wF_Rn3US6hs",
-    "DFK6i41GCNo",
-    "2UfIXzKXic0",
-    "VauVTmE6ka4",
-    "_PBlykN4KIY",
-    "DgGsAJPrMus",
-    "t0AsQIBFo8k",
-  ],
+  3: ["J3H--06Xw6g", // 🔥 Música inicial
+
+"GVLMhpzYic0",
+"HP5XR0LiCYI",
+"ToHf7SZfceE",
+"WrJEqTJr9k8",
+"QChwm0w9nxc",
+"xhOIjSUEmS-c",
+"2vMH8lITTCE",
+"D6voxRbuecs",
+"TCLGN6m6AMI",
+"JobscnDUBHc",
+"lhg9bYNLvOg",
+"V1jfP1Uc91I",
+"oLeROuCMwj8",
+"_lj5BGCwsf8",
+"rQ2bIzanCEU",
+"lYBUbBu4W08",
+"ffHI8X4OXluQ",
+"_sfLbzK2ugk",
+"dB_c7oZWo1g",
+"oMfMUfgjiLg",
+"9vWNauaZAgg",
+"Q_mQxKviRJM",
+"ikFFVfObwss",
+"XzNWRmqibNE",
+"2zToEPpFEN8",
+"Ha3I908WaJo",
+"rtjI1noSSBE",
+"6xzN8Nt0Pok",
+"50hgKo8FocY",
+"c1ZCYY-4lAM",
+"d9jhDwxt22Y",
+"_ovdm2yX4MA",
+"CA0OQwuepPo",
+"Vz_JGw3Ht90",
+"VBJsaaU6hjY",
+"HzdD8kbDzZA",
+"STr4Da8ghh4",
+"9bibdQXOqyM",
+"Xz3g4HblpE4",
+"lxO2Yrk2IkQ",
+"0CNPR2qNzxk",
+"FfxsTiFGWT8",
+"JVVt2HWY-1s",
+"cCt5puvhQXc",
+"YsZwtFujvd8",
+"TjUnDOoyU_w",
+"MPGXj3q2Oqc",
+"0OC1vmlmpd0",
+"_oNeLdw7T2o",
+"LjtvF_UuRIU",
+"oFRIda79u_E",
+"bALuHd2EVe8",
+"wF_Rn3US6hs",
+"DFK6i41GCNo",
+"2UfIXzKXic0",
+"VauVTmE6ka4",
+"_PBlykN4KIY",
+"DgGsAJPrMus",
+"t0AsQIBFo8k"],
   4: ["HzdD8kbDzZA", "STr4Da8ghh4", "Xz3g4HblpE4"],
   5: ["MPGXj3q2Oqc", "_oNeLdw7T2o", "LjtvF_UuRIU"],
-  6: ["9OUurVdRGsc", "6xzN8Nt0Pok", "d9jhDwxt22Y"],
+  6: ["9OUurVdRGsc", "6xzN8Nt0Pok", "d9jhDwxt22Y"]
 };
 
 let autoDjIndex = 0;
 
-function getNextAutoDj(): string {
+export function getNextAutoDj(): string {
   const today = new Date().getDay();
-  const todayList = AUTO_DJ_PLAYLISTS[today] || AUTO_DJ_PLAYLISTS[1];
+
+  const todayList =
+    AUTO_DJ_PLAYLISTS[today] ||
+    AUTO_DJ_PLAYLISTS[1];
 
   if (!todayList || todayList.length === 0) {
-    return "GVLMhpzYic0";
+    return "GVLMhpzYic0"; // fallback absoluto
   }
 
   const id = todayList[autoDjIndex % todayList.length];
+
   autoDjIndex++;
+
   return id;
 }
 
@@ -99,6 +116,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
   const playerRef = useRef<any>(null);
   const currentVideoRef = useRef<string | null>(null);
   const currentModeRef = useRef<"queue" | "autodj" | null>(null);
+  const syncingRef = useRef(false);
   const lastSyncRef = useRef(0);
 
   const getTodayKey = () => new Date().toISOString().split("T")[0];
@@ -163,7 +181,6 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     }
   };
 
-  // 🔥 Interrompe AutoDJ quando alguém adiciona música
   useEffect(() => {
     if (!isAdmin) return;
 
@@ -177,28 +194,10 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       const firstKey = Object.keys(queue)[0];
       const next = queue[firstKey];
 
-      if (!next) return;
-
       await playVideo(next.videoId, "queue", next.requestedBy, next.title);
       await remove(ref(db, `queue/${firstKey}`));
     });
   }, [isAdmin]);
-
-  const handleError = async (event: any) => {
-    if (!isAdmin) return;
-
-    const errorCodes = [2, 5, 100, 101, 150];
-
-    if (errorCodes.includes(event.data)) {
-      console.log("Vídeo indisponível, pulando...");
-      skipMusic();
-    }
-  };
-
-  const handleEnd = async () => {
-    if (!isAdmin) return;
-    skipMusic();
-  };
 
   useEffect(() => {
     const playerDB = ref(db, "player");
@@ -212,6 +211,7 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       lastSyncRef.current = Date.now();
 
       if (data.videoId !== currentVideoRef.current) {
+        syncingRef.current = true;
         currentVideoRef.current = data.videoId;
         currentModeRef.current = data.mode;
 
@@ -224,12 +224,46 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
           playerRef.current.mute();
           playerRef.current.playVideo();
         }
+
+        setTimeout(() => (syncingRef.current = false), 800);
       }
     });
   }, [isAdmin]);
 
   const handleReady = (e: any) => {
     playerRef.current = e.target;
+
+    get(ref(db, "player")).then((snap) => {
+      const data = snap.val();
+      if (!data) return;
+
+      const elapsed = (Date.now() - data.startedAt) / 1000;
+      playerRef.current.loadVideoById({
+        videoId: data.videoId,
+        startSeconds: Math.max(elapsed, 0),
+      });
+
+      if (!isAdmin) {
+        playerRef.current.mute();
+        playerRef.current.playVideo();
+      }
+    });
+  };
+
+  const handleEnd = async () => {
+    if (!isAdmin) return;
+
+    const snap = await get(ref(db, "queue"));
+    if (snap.exists()) {
+      const queue = snap.val();
+      const firstKey = Object.keys(queue)[0];
+      const next = queue[firstKey];
+
+      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
+      await remove(ref(db, `queue/${firstKey}`));
+    } else {
+      startAutoDJ();
+    }
   };
 
   return (
@@ -237,7 +271,6 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
       <YouTube
         onReady={handleReady}
         onEnd={isAdmin ? handleEnd : undefined}
-        onError={isAdmin ? handleError : undefined}
         opts={{
           width: "100%",
           height: "390",
@@ -252,12 +285,8 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
 
       {isAdmin && (
         <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
-          <button onClick={skipMusic} style={adminBtn}>
-            ⏭️ Pular música
-          </button>
-          <button onClick={startAutoDJ} style={adminBtn}>
-            🎛️ Auto DJ
-          </button>
+          <button onClick={skipMusic} style={adminBtn}>⏭️ Pular música</button>
+          <button onClick={startAutoDJ} style={adminBtn}>🎛️ Auto DJ</button>
         </div>
       )}
     </div>
@@ -273,5 +302,4 @@ const adminBtn = {
   fontWeight: 600,
   cursor: "pointer",
 };
-
 
