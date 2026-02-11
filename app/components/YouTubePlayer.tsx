@@ -163,6 +163,27 @@ export default function YouTubePlayer({ isAdmin = false }: Props) {
     }
   };
 
+  // 🔥 Interrompe AutoDJ quando alguém adiciona música
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const queueRef = ref(db, "queue");
+
+    return onValue(queueRef, async (snap) => {
+      if (!snap.exists()) return;
+      if (currentModeRef.current !== "autodj") return;
+
+      const queue = snap.val();
+      const firstKey = Object.keys(queue)[0];
+      const next = queue[firstKey];
+
+      if (!next) return;
+
+      await playVideo(next.videoId, "queue", next.requestedBy, next.title);
+      await remove(ref(db, `queue/${firstKey}`));
+    });
+  }, [isAdmin]);
+
   const handleError = async (event: any) => {
     if (!isAdmin) return;
 
