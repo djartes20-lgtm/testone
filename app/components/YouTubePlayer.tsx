@@ -177,9 +177,9 @@ const AUTO_DJ_PLAYLISTS: Record<number, string[]> = {
   "xOIjSUEmS-c","AngEjsqKN0I","0OC1vmlmpd0","fpTAZmA-Ycw","SZLYHWmYcPQ",
   "NGOcn_DYiAw","_PBlykN4KIY","tgIqecROs5M","ele2DMU49Jk","GtEvysh1654",
   "w-sQRS-Lc9k","oLeROuCMwj8","dfk6i41GCNo"],
-  4: ["HzdD8kbDzZA", "STr4Da8ghh4", "Xz3g4HblpE4"],
-  5: ["MPGXj3q2Oqc", "_oNeLdw7T2o", "LjtvF_UuRIU"],
-  6: ["9OUurVdRGsc", "6xzN8Nt0Pok", "d9jhDwxt22Y"]
+  4: ["HzdD8kbDzZA", "STr4Da8ghh4", "Xz3g4HblpE4", "J3H--06Xw6g",],
+  5: ["MPGXj3q2Oqc", "_oNeLdw7T2o", "LjtvF_UuRIU", "J3H--06Xw6g",],
+  6: ["9OUurVdRGsc", "6xzN8Nt0Pok", "d9jhDwxt22Y", "J3H--06Xw6g",]
 };
 
 let autoDjIndex = 0;
