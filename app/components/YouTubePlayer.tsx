@@ -23,9 +23,9 @@ interface Props {
 // 6 = Sábado
 
 const AUTO_DJ_PLAYLISTS: Record<number, string[]> = {
-  0: ["GVLMhpzYic0", "HP5XR0LiCYI", "ToHf7SZfceE"],
-  1: ["WrJEqTJr9k8", "QChwm0w9nxc", "D6voxRbuecs"],
-  2: ["TCLGN6m6AMI", "_lj5BGCwsf8", "rQ2bIzanCEU"],
+  0: ["GVLMhpzYic0", "HP5XR0LiCYI", "ToHf7SZfceE", "J3H--06Xw6g",],
+  1: ["WrJEqTJr9k8", "QChwm0w9nxc", "D6voxRbuecs", "J3H--06Xw6g",],
+  2: ["TCLGN6m6AMI", "_lj5BGCwsf8", "rQ2bIzanCEU", "J3H--06Xw6g",],
   3: ["J3H--06Xw6g", // 🔥 Música inicial
 
 "HzdD8kbDzZA",
