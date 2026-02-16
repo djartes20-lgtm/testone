@@ -25,13 +25,12 @@ export default function History() {
     });
   }, []);
 
-  // Função chamada quando o usuário clica em "Pedir de novo"
+  // Função chamada quando o usuário clica no título da música
   const replayMusic = (item: HistoryItem) => {
     console.log("Usuário pediu de novo a música:", item.title);
 
-    // Exemplo de como adicionar na fila no Firebase
-    // Ajuste "queue" para o caminho correto da sua fila
-    const queueRef = ref(db, "queue");
+    // Exemplo: adiciona a música na fila no Firebase
+    const queueRef = ref(db, "queue"); // ajuste para o caminho correto da sua fila
     push(queueRef, {
       title: item.title,
       requestedAt: Date.now(),
@@ -70,13 +69,12 @@ export default function History() {
               <ul>
                 {musicList.map((item, index) => (
                   <li key={index} className="music-item">
-                    <strong>{item.title}</strong>
-                    <button
-                      className="replay-btn"
+                    <span
+                      className="music-title"
                       onClick={() => replayMusic(item)}
                     >
-                      🔁 Pedir de novo
-                    </button>
+                      {item.title}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -130,10 +128,9 @@ export default function History() {
           margin-bottom: 8px;
         }
 
-        /* 🎵 Novo estilo para música + botão */
+        /* 🎵 Música clicável */
         .music-item {
           display: flex;
-          justify-content: space-between;
           align-items: center;
           background: #111;
           padding: 6px 10px;
@@ -141,20 +138,15 @@ export default function History() {
           margin-bottom: 4px;
         }
 
-        .replay-btn {
-          background: #ff0707;
-          color: #000;
-          border: none;
-          padding: 4px 8px;
-          border-radius: 5px;
+        .music-title {
           cursor: pointer;
           font-weight: bold;
-          transition: all 0.2s ease;
+          transition: color 0.2s, text-shadow 0.2s;
         }
 
-        .replay-btn:hover {
-          background: #ff0000;
-          box-shadow: 0 0 6px #ff0707, 0 0 12px #ff0707;
+        .music-title:hover {
+          color: #ff0000;
+          text-shadow: 0 0 6px #ff0707, 0 0 12px #ff0707;
         }
 
         /* 🔥 Scrollbar neon */
@@ -187,3 +179,4 @@ export default function History() {
     </div>
   );
 }
+
