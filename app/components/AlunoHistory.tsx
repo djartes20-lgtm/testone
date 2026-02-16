@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, push } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
 interface HistoryItem {
   title: string;
   startedAt?: number; // opcional, usado só para ordenar
+  // você pode ter outros campos, como link do YouTube
+  link?: string;
 }
 
 type HistoryByDay = {
@@ -24,6 +26,14 @@ export default function History() {
       setHistory(snapshot.val() || {});
     });
   }, []);
+
+  // Função para pedir de novo
+  const pedirDeNovo = (musica: HistoryItem) => {
+    const filaRef = ref(db, "fila"); // fila global
+    push(filaRef, musica)
+      .then(() => alert(`🎵 Música "${musica.title}" pedida de novo!`))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="history-container">
@@ -54,8 +64,17 @@ export default function History() {
               <h3 className="day-title">📅 Histórico do dia {formattedDate}</h3>
               <ul>
                 {musicList.map((item, index) => (
-                  <li key={index}>
+                  <li
+                    key={index}
+                    className="flex justify-between items-center mb-2"
+                  >
                     <strong>{item.title}</strong>
+                    <button
+                      onClick={() => pedirDeNovo(item)}
+                      className="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
+                    >
+                      Pedir de novo
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -73,7 +92,7 @@ export default function History() {
           max-height: 420px;
           overflow-y: auto;
 
-          box-shadow: 
+          box-shadow:
             0 0 6px rgba(255, 7, 7, 0.6),
             0 0 14px rgba(255, 7, 7, 0.45),
             0 0 24px rgba(255, 7, 7, 0.25),
@@ -140,4 +159,3 @@ export default function History() {
     </div>
   );
 }
-

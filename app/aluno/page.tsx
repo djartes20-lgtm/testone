@@ -14,7 +14,6 @@ import AlunosGenerosRestritos from "@/app/components/AlunosGenerosRestritos";
 import { useQueue } from "@/app/hooks/useQueue";
 import UserHistory from "@/app/components/UserHistory";
 import ChatGotham from "@/app/components/ChatGotham";
-import PedirDeNovo from "../components/PedirDeNovo";
 import MotivationalMessage from "@/app/components/MotivationalMessage";
 
 interface GothamUser {
@@ -152,9 +151,6 @@ export default function AlunoPage() {
 
       {/* HISTÓRICO INDIVIDUAL DO ALUNO */}
       <UserHistory userName={alunoNome} />
-
-      {/* PEDIR MÚSICAS DE NOVO */}
-      <PedirDeNovo userName={alunoNome} />
 
       {/* MENSAGEM MOTIVACIONAL */}
       <div>
