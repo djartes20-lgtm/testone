@@ -25,6 +25,13 @@ export default function History() {
     });
   }, []);
 
+  // Função chamada quando o usuário clica em "Pedir de novo"
+  const replayMusic = (item: HistoryItem) => {
+    console.log("Usuário pediu de novo a música:", item.title);
+    // Aqui você integra com o seu player ou fila do Gotham Play
+    // Exemplo: playMusic(item);
+  };
+
   return (
     <div className="history-container">
       {/* 🔒 HEADER FIXO */}
@@ -39,13 +46,12 @@ export default function History() {
         .map(([day, musics]) => {
           const formattedDate = day.split("-").reverse().join("/");
 
-          // Filtra só os itens que têm title e ordena por startedAt decrescente
           const musicList: HistoryItem[] = Object.values(musics)
             .filter(
               (item): item is HistoryItem =>
                 item && typeof item === "object" && "title" in item
             )
-            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0)); // músicas mais recentes em cima
+            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
 
           if (musicList.length === 0) return null;
 
@@ -54,8 +60,14 @@ export default function History() {
               <h3 className="day-title">📅 Histórico do dia {formattedDate}</h3>
               <ul>
                 {musicList.map((item, index) => (
-                  <li key={index}>
+                  <li key={index} className="music-item">
                     <strong>{item.title}</strong>
+                    <button
+                      className="replay-btn"
+                      onClick={() => replayMusic(item)}
+                    >
+                      🔁 Pedir de novo
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -72,7 +84,6 @@ export default function History() {
           color: #ff0707;
           max-height: 420px;
           overflow-y: auto;
-
           box-shadow: 
             0 0 6px rgba(255, 7, 7, 0.6),
             0 0 14px rgba(255, 7, 7, 0.45),
@@ -110,6 +121,33 @@ export default function History() {
           margin-bottom: 8px;
         }
 
+        /* 🎵 Novo estilo para música + botão */
+        .music-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: #111;
+          padding: 6px 10px;
+          border-radius: 6px;
+          margin-bottom: 4px;
+        }
+
+        .replay-btn {
+          background: #ff0707;
+          color: #000;
+          border: none;
+          padding: 4px 8px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.2s ease;
+        }
+
+        .replay-btn:hover {
+          background: #ff0000;
+          box-shadow: 0 0 6px #ff0707, 0 0 12px #ff0707;
+        }
+
         /* 🔥 Scrollbar neon */
         .history-container::-webkit-scrollbar {
           width: 10px;
@@ -140,4 +178,3 @@ export default function History() {
     </div>
   );
 }
-
