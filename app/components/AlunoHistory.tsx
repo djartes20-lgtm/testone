@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, push } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
 interface HistoryItem {
@@ -28,8 +28,17 @@ export default function History() {
   // Função chamada quando o usuário clica em "Pedir de novo"
   const replayMusic = (item: HistoryItem) => {
     console.log("Usuário pediu de novo a música:", item.title);
-    // Aqui você integra com o seu player ou fila do Gotham Play
-    // Exemplo: playMusic(item);
+
+    // Exemplo de como adicionar na fila no Firebase
+    // Ajuste "queue" para o caminho correto da sua fila
+    const queueRef = ref(db, "queue");
+    push(queueRef, {
+      title: item.title,
+      requestedAt: Date.now(),
+    });
+
+    // Se quiser tocar imediatamente, chame sua função de player aqui
+    // playNextMusic();
   };
 
   return (
@@ -42,7 +51,7 @@ export default function History() {
       {/* 📜 CONTEÚDO */}
       {Object.entries(history)
         .filter(([day]) => /^\d{4}-\d{2}-\d{2}$/.test(day))
-        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime()) // dias mais recentes primeiro
+        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
         .map(([day, musics]) => {
           const formattedDate = day.split("-").reverse().join("/");
 
@@ -124,8 +133,8 @@ export default function History() {
         /* 🎵 Novo estilo para música + botão */
         .music-item {
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
           background: #111;
           padding: 6px 10px;
           border-radius: 6px;
