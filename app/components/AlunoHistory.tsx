@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, onValue, push } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
 interface HistoryItem {
@@ -15,7 +15,11 @@ type HistoryByDay = {
   };
 };
 
-export default function History() {
+interface HistoryProps {
+  playMusic: (item: HistoryItem) => void; // Função do player que toca a música
+}
+
+export default function History({ playMusic }: HistoryProps) {
   const [history, setHistory] = useState<HistoryByDay>({});
 
   useEffect(() => {
@@ -24,21 +28,6 @@ export default function History() {
       setHistory(snapshot.val() || {});
     });
   }, []);
-
-  // Função chamada quando o usuário clica no título da música
-  const replayMusic = (item: HistoryItem) => {
-    console.log("Usuário pediu de novo a música:", item.title);
-
-    // Exemplo: adiciona a música na fila no Firebase
-    const queueRef = ref(db, "queue"); // ajuste para o caminho correto da sua fila
-    push(queueRef, {
-      title: item.title,
-      requestedAt: Date.now(),
-    });
-
-    // Se quiser tocar imediatamente, chame sua função de player aqui
-    // playNextMusic();
-  };
 
   return (
     <div className="history-container">
@@ -71,7 +60,7 @@ export default function History() {
                   <li key={index} className="music-item">
                     <span
                       className="music-title"
-                      onClick={() => replayMusic(item)}
+                      onClick={() => playMusic(item)} // 🔥 Toca a música direto
                     >
                       {item.title}
                     </span>
@@ -179,4 +168,3 @@ export default function History() {
     </div>
   );
 }
-
