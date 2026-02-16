@@ -5,10 +5,10 @@ import { ref, onValue, push } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
 interface HistoryItem {
-  title: string;
+  title?: string;
+  titulo?: string;
   startedAt?: number;
-  // adiciona outros campos se tiver
-  [key: string]: any;
+  [key: string]: any; // outros campos
 }
 
 type HistoryByDay = {
@@ -31,7 +31,7 @@ export default function History() {
   const pedirDeNovo = (musica: HistoryItem) => {
     const filaRef = ref(db, "fila"); // fila global
     push(filaRef, musica)
-      .then(() => alert(`🎵 Música "${musica.title}" pedida de novo!`))
+      .then(() => alert(`🎵 Música "${musica.title || musica.titulo}" pedida de novo!`))
       .catch((err) => console.log(err));
   };
 
@@ -49,10 +49,11 @@ export default function History() {
         .map(([day, musics]) => {
           const formattedDate = day.split("-").reverse().join("/");
 
+          // Pega todos os objetos que tenham title ou titulo
           const musicList: HistoryItem[] = Object.values(musics)
             .filter(
               (item): item is HistoryItem =>
-                item && typeof item === "object" && "title" in item
+                item && typeof item === "object" && ("title" in item || "titulo" in item)
             )
             .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
 
@@ -67,7 +68,7 @@ export default function History() {
                     key={index}
                     className="flex justify-between items-center mb-2"
                   >
-                    <strong>{item.title}</strong>
+                    <strong>{item.title || item.titulo}</strong>
                     {/* ✅ BOTÃO PEDIR DE NOVO */}
                     <button
                       onClick={() => pedirDeNovo(item)}
@@ -162,4 +163,5 @@ export default function History() {
     </div>
   );
 }
+
 
