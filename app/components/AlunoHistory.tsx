@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, onValue, push } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { db } from "@/app/lib/firebase";
 
 interface HistoryItem {
-  title?: string;
-  titulo?: string;
+  title: string;
   startedAt?: number; // opcional, usado só para ordenar
-  [key: string]: any; // outros campos
 }
 
 type HistoryByDay = {
@@ -37,17 +35,17 @@ export default function History() {
       {/* 📜 CONTEÚDO */}
       {Object.entries(history)
         .filter(([day]) => /^\d{4}-\d{2}-\d{2}$/.test(day))
-        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime()) // dias mais recentes primeiro
         .map(([day, musics]) => {
           const formattedDate = day.split("-").reverse().join("/");
 
-          // Pega todos os objetos que tenham title ou titulo
+          // Filtra só os itens que têm title e ordena por startedAt decrescente
           const musicList: HistoryItem[] = Object.values(musics)
             .filter(
               (item): item is HistoryItem =>
-                item && typeof item === "object" && ("title" in item || "titulo" in item)
+                item && typeof item === "object" && "title" in item
             )
-            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0)); // músicas mais recentes em cima
 
           if (musicList.length === 0) return null;
 
@@ -56,33 +54,9 @@ export default function History() {
               <h3 className="day-title">📅 Histórico do dia {formattedDate}</h3>
               <ul>
                 {musicList.map((item, index) => (
-                  <li
-  key={index}
-  className="music-item p-2 border border-red-500 rounded mb-2 flex justify-between items-center"
->
-  <div className="music-info">
-    <div className="music-title font-bold text-red-500">{item.title || item.titulo}</div>
-    <div className="music-date text-red-500 text-sm">
-      {item.startedAt
-        ? new Date(item.startedAt).toLocaleString()
-        : "Data não disponível"}
-    </div>
-  </div>
-
-  <button
-    onClick={() => {
-      const filaRef = ref(db, "fila");
-      push(filaRef, item)
-        .then(() =>
-          alert(`🎵 Música "${item.title || item.titulo}" pedida de novo!`)
-        )
-        .catch((err) => console.log(err));
-    }}
-    className="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded text-sm"
-  >
-    Pedir de novo
-  </button>
-</li>
+                  <li key={index}>
+                    <strong>{item.title}</strong>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -99,7 +73,7 @@ export default function History() {
           max-height: 420px;
           overflow-y: auto;
 
-          box-shadow:
+          box-shadow: 
             0 0 6px rgba(255, 7, 7, 0.6),
             0 0 14px rgba(255, 7, 7, 0.45),
             0 0 24px rgba(255, 7, 7, 0.25),
@@ -134,9 +108,6 @@ export default function History() {
 
         li {
           margin-bottom: 8px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
         }
 
         /* 🔥 Scrollbar neon */
@@ -169,5 +140,4 @@ export default function History() {
     </div>
   );
 }
-
 
