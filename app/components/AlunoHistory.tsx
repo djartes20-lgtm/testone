@@ -6,9 +6,9 @@ import { db } from "@/app/lib/firebase";
 
 interface HistoryItem {
   title: string;
-  startedAt?: number; // opcional, usado só para ordenar
-  // você pode ter outros campos, como link do YouTube
-  link?: string;
+  startedAt?: number;
+  // adiciona outros campos se tiver
+  [key: string]: any;
 }
 
 type HistoryByDay = {
@@ -27,7 +27,7 @@ export default function History() {
     });
   }, []);
 
-  // Função para pedir de novo
+  // 🔥 Função para pedir de novo
   const pedirDeNovo = (musica: HistoryItem) => {
     const filaRef = ref(db, "fila"); // fila global
     push(filaRef, musica)
@@ -45,17 +45,16 @@ export default function History() {
       {/* 📜 CONTEÚDO */}
       {Object.entries(history)
         .filter(([day]) => /^\d{4}-\d{2}-\d{2}$/.test(day))
-        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime()) // dias mais recentes primeiro
+        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
         .map(([day, musics]) => {
           const formattedDate = day.split("-").reverse().join("/");
 
-          // Filtra só os itens que têm title e ordena por startedAt decrescente
           const musicList: HistoryItem[] = Object.values(musics)
             .filter(
               (item): item is HistoryItem =>
                 item && typeof item === "object" && "title" in item
             )
-            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0)); // músicas mais recentes em cima
+            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
 
           if (musicList.length === 0) return null;
 
@@ -69,6 +68,7 @@ export default function History() {
                     className="flex justify-between items-center mb-2"
                   >
                     <strong>{item.title}</strong>
+                    {/* ✅ BOTÃO PEDIR DE NOVO */}
                     <button
                       onClick={() => pedirDeNovo(item)}
                       className="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
@@ -127,6 +127,9 @@ export default function History() {
 
         li {
           margin-bottom: 8px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
 
         /* 🔥 Scrollbar neon */
@@ -159,3 +162,4 @@ export default function History() {
     </div>
   );
 }
+
