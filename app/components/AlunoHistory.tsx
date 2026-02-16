@@ -57,23 +57,32 @@ export default function History() {
               <ul>
                 {musicList.map((item, index) => (
                   <li
-                    key={index}
-                    className="flex justify-between items-center mb-2"
-                  >
-                    <strong>{item.title || item.titulo}</strong>
-                    {/* ✅ BOTÃO PEDIR DE NOVO */}
-                    <button
-                      onClick={() => {
-                        const filaRef = ref(db, "fila"); // fila global
-                        push(filaRef, item)
-                          .then(() => alert(`🎵 Música "${item.title || item.titulo}" pedida de novo!`))
-                          .catch((err) => console.log(err));
-                      }}
-                      className="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded"
-                    >
-                      Pedir de novo
-                    </button>
-                  </li>
+  key={index}
+  className="music-item p-2 border border-red-500 rounded mb-2 flex justify-between items-center"
+>
+  <div className="music-info">
+    <div className="music-title font-bold text-red-500">{item.title || item.titulo}</div>
+    <div className="music-date text-red-500 text-sm">
+      {item.startedAt
+        ? new Date(item.startedAt).toLocaleString()
+        : "Data não disponível"}
+    </div>
+  </div>
+
+  <button
+    onClick={() => {
+      const filaRef = ref(db, "fila");
+      push(filaRef, item)
+        .then(() =>
+          alert(`🎵 Música "${item.title || item.titulo}" pedida de novo!`)
+        )
+        .catch((err) => console.log(err));
+    }}
+    className="bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded text-sm"
+  >
+    Pedir de novo
+  </button>
+</li>
                 ))}
               </ul>
             </div>
