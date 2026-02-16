@@ -15,11 +15,7 @@ type HistoryByDay = {
   };
 };
 
-interface HistoryProps {
-  playMusic: (item: HistoryItem) => void; // Função do player que toca a música
-}
-
-export default function History({ playMusic }: HistoryProps) {
+export default function History() {
   const [history, setHistory] = useState<HistoryByDay>({});
 
   useEffect(() => {
@@ -39,16 +35,17 @@ export default function History({ playMusic }: HistoryProps) {
       {/* 📜 CONTEÚDO */}
       {Object.entries(history)
         .filter(([day]) => /^\d{4}-\d{2}-\d{2}$/.test(day))
-        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+        .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime()) // dias mais recentes primeiro
         .map(([day, musics]) => {
           const formattedDate = day.split("-").reverse().join("/");
 
+          // Filtra só os itens que têm title e ordena por startedAt decrescente
           const musicList: HistoryItem[] = Object.values(musics)
             .filter(
               (item): item is HistoryItem =>
                 item && typeof item === "object" && "title" in item
             )
-            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+            .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0)); // músicas mais recentes em cima
 
           if (musicList.length === 0) return null;
 
@@ -57,13 +54,8 @@ export default function History({ playMusic }: HistoryProps) {
               <h3 className="day-title">📅 Histórico do dia {formattedDate}</h3>
               <ul>
                 {musicList.map((item, index) => (
-                  <li key={index} className="music-item">
-                    <span
-                      className="music-title"
-                      onClick={() => playMusic(item)} // 🔥 Toca a música direto
-                    >
-                      {item.title}
-                    </span>
+                  <li key={index}>
+                    <strong>{item.title}</strong>
                   </li>
                 ))}
               </ul>
@@ -80,6 +72,7 @@ export default function History({ playMusic }: HistoryProps) {
           color: #ff0707;
           max-height: 420px;
           overflow-y: auto;
+
           box-shadow: 
             0 0 6px rgba(255, 7, 7, 0.6),
             0 0 14px rgba(255, 7, 7, 0.45),
@@ -117,27 +110,6 @@ export default function History({ playMusic }: HistoryProps) {
           margin-bottom: 8px;
         }
 
-        /* 🎵 Música clicável */
-        .music-item {
-          display: flex;
-          align-items: center;
-          background: #111;
-          padding: 6px 10px;
-          border-radius: 6px;
-          margin-bottom: 4px;
-        }
-
-        .music-title {
-          cursor: pointer;
-          font-weight: bold;
-          transition: color 0.2s, text-shadow 0.2s;
-        }
-
-        .music-title:hover {
-          color: #ff0000;
-          text-shadow: 0 0 6px #ff0707, 0 0 12px #ff0707;
-        }
-
         /* 🔥 Scrollbar neon */
         .history-container::-webkit-scrollbar {
           width: 10px;
@@ -168,3 +140,4 @@ export default function History({ playMusic }: HistoryProps) {
     </div>
   );
 }
+
