@@ -81,6 +81,15 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
             />
           )}
 
+{/* QUEUE (Mobile + Desktop) */}
+      <div className={`${activeTab === "queue" ? "block" : "hidden"} md:block`}>
+        <QueueList
+          queue={queueHook.queue}
+          isAdmin={isAdmin}
+          removeFromQueue={queueHook.removeFromQueue}
+        />
+      </div>
+
           <GeneroRestricao />
           <div className="border border-red-600 rounded-lg p-2 bg-black">
             <Avisos />
@@ -90,15 +99,6 @@ const [skipMusicFunc, setSkipMusicFunc] = useState<() => void>(() => () => {});
 
       {/* CHAT GLOBAL (ADM) */}
       <ChatGotham userName="ADM" isAdmin />
-
-      {/* QUEUE (Mobile + Desktop) */}
-      <div className={`${activeTab === "queue" ? "block" : "hidden"} md:block`}>
-        <QueueList
-          queue={queueHook.queue}
-          isAdmin={isAdmin}
-          removeFromQueue={queueHook.removeFromQueue}
-        />
-      </div>
 
       {/* HISTORY (Mobile + Desktop) */}
       <div className={`${activeTab === "history" ? "block" : "hidden"} md:block`}>
