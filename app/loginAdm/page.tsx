@@ -7,7 +7,7 @@ export default function Login() {
 
   return (
     <div className="panel">
-      <h2>Bem-vindo ao Vida Play!</h2>
+      <h2>Bem-vindo ao Brasa Play!</h2>
       <LoginAdm/> 
 
       <style jsx>{`
