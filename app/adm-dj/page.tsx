@@ -48,7 +48,7 @@ export default function Home() {
               Olá, {user.nome}!
             </h2>
             <span style={{ color: "#ff0707", fontWeight: "bold" }}>
-              Boas-vindas ao Brasa Play
+              Boas-vindas a Estação Duarte
             </span>
           </div>
         </div>

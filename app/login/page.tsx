@@ -7,7 +7,7 @@ export default function Login() {
 
   return (
     <div className="panel">
-      <h2>Bem-vindo ao Brasa Play!</h2>
+      <h2>Boas-Vinda a Estação Duarte!</h2>
       <LoginButton/> 
 
       <style jsx>{`

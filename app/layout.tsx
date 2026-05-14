@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Brasa Play",
-  description: "App de gerenciamento musical do Brasa Burguer",
+  title: "Estação Duarte",
+  description: "App de gerenciamento musical da Estação Duarte",
   icons: {
     icon: "/Logo-Brasa-Burguer.ico",
   },
