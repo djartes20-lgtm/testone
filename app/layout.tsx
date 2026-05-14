@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Estação Duarte",
   description: "App de gerenciamento musical da Estação Duarte",
   icons: {
-    icon: "/Logo-Brasa-Burguer.ico",
+    icon: "Captura-de-tela-2026-05-14-000947.ico",
   },
 };
 

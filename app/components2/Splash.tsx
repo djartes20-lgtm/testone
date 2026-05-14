@@ -44,7 +44,7 @@ export default function Splash({ onFinish }: SplashProps) {
         }}
       >
         <img
-  src="/Logo Brasa Burguer icon.png"
+  src="Captura-de-tela-2026-05-14-000947.ico"
   alt="Logo"
   style={{
     width: 300,
