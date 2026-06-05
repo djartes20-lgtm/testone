@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Estação Duarte",
+  title: "Gotham Play",
   description: "App de gerenciamento musical da Gotham CT (Centro de treinamento Gotham)",
   icons: {
-    icon: "Logo Gotham sem funo.png",
+    icon: "android-icon-192x192.png",
   },
 };
 
