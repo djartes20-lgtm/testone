@@ -33,7 +33,7 @@ export default function Login({ onLogin }: LoginProps) {
 
   return (
     <div className="panel">
-      <h2>Bem-vindo ao Gotham Play</h2>
+      <h2>Bem-vindo ao Gotham Play!</h2>
       <LoginButton/>
 
       <style jsx>{`

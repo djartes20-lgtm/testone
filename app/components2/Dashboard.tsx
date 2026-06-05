@@ -60,7 +60,7 @@ export default function StudentsPage() {
       {/* Header */}
       <div className="p-3">
         <h1>Olá {user?.nome}</h1>
-        <h2>Boas-vindas à Gotham Play</h2>
+        <h2>Boas-vindas à Gotham Play!</h2>
       </div>
 
       {/* Player / YouTube */}

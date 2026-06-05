@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Estação Duarte",
-  description: "App de gerenciamento musical da Estação Duarte",
+  description: "App de gerenciamento musical da Gotham CT (Centro de treinamento Gotham)",
   icons: {
-    icon: "Captura-de-tela-2026-05-14-000947.ico",
+    icon: "Logo Gotham sem funo.png",
   },
 };
 
