@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Gotham Play",
   description: "App de gerenciamento musical da Gotham CT (Centro de treinamento Gotham)",
   icons: {
-    icon: "android-icon-192x192.png",
+    icon: "LOGO-01-BRANCA-COM-SOMBRA-VERMELHA.ico",
   },
 };
 
